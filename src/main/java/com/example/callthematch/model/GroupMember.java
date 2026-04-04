@@ -1,4 +1,4 @@
-﻿package com.example.callthematch.model;
+package com.example.callthematch.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +17,7 @@ public class GroupMember {
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    private Group group;
+    private CountryGroup group;
 
     @ManyToOne
     @JoinColumn(name = "countryId", nullable = false)

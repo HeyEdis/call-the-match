@@ -1,7 +1,7 @@
-﻿package com.example.callthematch.repository;
+package com.example.callthematch.repository;
 
-import com.example.callthematch.model.Group;
+import com.example.callthematch.model.CountryGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GroupRepository extends JpaRepository<Group, Long> {
+public interface GroupRepository extends JpaRepository<CountryGroup, Long> {
 }

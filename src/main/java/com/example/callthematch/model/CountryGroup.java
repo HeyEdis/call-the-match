@@ -1,4 +1,4 @@
-﻿package com.example.callthematch.model;
+package com.example.callthematch.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "groups")
-public class Group {
+@Table(name = "country_groups")
+public class CountryGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +20,6 @@ public class Group {
     @OneToMany
     private List<GroupMember> members;
 
-    private String name;
+    private String label;
 
 }

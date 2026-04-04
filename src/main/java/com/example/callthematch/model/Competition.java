@@ -1,4 +1,4 @@
-﻿package com.example.callthematch.model;
+package com.example.callthematch.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +38,7 @@ public class Competition {
 
     @ManyToOne
     @JoinColumn(name = "groupId")
-    private Group group;
+    private CountryGroup group;
 
     private Integer scoreA;
 

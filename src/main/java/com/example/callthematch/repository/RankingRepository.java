@@ -1,4 +1,4 @@
-﻿package com.example.callthematch.repository;
+package com.example.callthematch.repository;
 
 import com.example.callthematch.model.Ranking;
 import org.springframework.data.jpa.repository.JpaRepository;

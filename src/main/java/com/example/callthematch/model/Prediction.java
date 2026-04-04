@@ -1,4 +1,4 @@
-﻿package com.example.callthematch.model;
+package com.example.callthematch.model;
 
 import jakarta.persistence.*;
 import lombok.*;

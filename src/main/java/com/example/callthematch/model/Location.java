@@ -17,8 +17,8 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    private List<Stadium> stadiums;
+    /*@OneToMany
+    private List<Stadium> stadiums;*/
 
     private String city;
 }

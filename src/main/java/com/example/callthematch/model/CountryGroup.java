@@ -17,8 +17,8 @@ public class CountryGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    private List<GroupMember> members;
+    /*@OneToMany
+    private List<GroupMember> members; */
 
     private String label;
 

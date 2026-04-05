@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "id")
 @Entity
 @Builder
 @Table(name = "countries")
@@ -17,8 +18,8 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    private List<GroupMember> members;
+   /* @OneToMany
+    private List<GroupMember> members; */
 
     private Integer landCode;
 

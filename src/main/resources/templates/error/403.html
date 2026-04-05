@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styleNotFound.css}" />
+    <title>Access denied</title>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-content">
+        <h1>403 - Access Denied</h1>
+        <p>It seems like you don't have access to this page!</p>
+        <a th:href="@{/}">Return to Homepage</a>
+    </div>
+</div>
+</body>
+</html>

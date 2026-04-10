@@ -7,6 +7,7 @@ import com.example.callthematch.repository.CompetitionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -27,8 +28,7 @@ public class CompetitionService {
         return competitionRepository.findAll()
                 .stream()
                 .map(c -> toDTO(c))
+                .sorted(Comparator.comparing(CompetitionDTO::date))
                 .toList();
     }
-
-
 }

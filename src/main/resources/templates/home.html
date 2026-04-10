@@ -2,19 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
-  <!-- <link rel="stylesheet" th:href="@{/css/main.css}"/> -->
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
   <title>Home</title>
 </head>
 <body>
 
-<!--<header>
+<header>
   <div th:replace="~{fragments/navbar :: navbar}"></div>
-</header> -->
+</header>
 
 <main>
   <div class="page-header">
-    <h1 class="page-title font-headline">hallo</h1>
-    <p>paragraaf</p>
+    <h1 class="page-title font-headline">Worldcup 2026</h1>
+    <h2>Schedule</h2>
+    <p>Stay updated with the complete match schedule for the FIFA World Cup 2026.</p>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Team A</th>
+        <th>Team B</th>
+        <th>Stadium</th>
+        <th>City</th>
+        <th>Score</th>
+      </tr>
+
+      <tr th:each="competition : ${competitionList}">
+        <td th:text="${competition.date}"></td>
+        <td th:text="${competition.time}"></td>
+        <td th:text="${competition.teamA.name}"></td>
+        <td th:text="${competition.teamB.name}"></td>
+        <td th:text="${competition.stadium.name}"></td>
+        <td th:text="${competition.stadium.location.city}"></td>
+        <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+      </tr>
+    </table>
   </div>
 </main>
 

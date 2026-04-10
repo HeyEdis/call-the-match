@@ -17,8 +17,8 @@ public class Ranking {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "countryId", nullable = false)
-    private Country country;
+    @JoinColumn(name = "teamId", nullable = false)
+    private Team team;
 
     private Integer wins;
 

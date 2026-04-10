@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h1>Competitions</h1>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Team A</th>
+        <th>Team B</th>
+        <th>Stadium</th>
+        <th>City</th>
+        <th>Score</th>
+    </tr>
+
+    <tr th:each="competition : ${competitionList}">
+        <td th:text="${competition.date}"></td>
+        <td th:text="${competition.time}"></td>
+        <td th:text="${competition.teamA.name}"></td>
+        <td th:text="${competition.teamB.name}"></td>
+        <td th:text="${competition.stadium.name}"></td>
+        <td th:text="${competition.stadium.location.city}"></td>
+        <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+    </tr>
+</table>
+
+</body>
+</html>

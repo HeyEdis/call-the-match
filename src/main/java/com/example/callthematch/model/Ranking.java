@@ -20,10 +20,6 @@ public class Ranking {
     @JoinColumn(name = "countryId", nullable = false)
     private Country country;
 
-    @ManyToOne
-    @JoinColumn(name = "groupId", nullable = true)
-    private CountryGroup group;
-
     private Integer wins;
 
     private Integer losses;

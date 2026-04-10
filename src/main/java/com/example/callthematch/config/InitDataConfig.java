@@ -3,9 +3,6 @@ package com.example.callthematch.config;
 import com.example.callthematch.model.*;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.CountryRepository;
-import com.example.callthematch.repository.GoalRepository;
-import com.example.callthematch.repository.GroupMemberRepository;
-import com.example.callthematch.repository.GroupRepository;
 import com.example.callthematch.repository.LocationRepository;
 import com.example.callthematch.repository.PredictionRepository;
 import com.example.callthematch.repository.RankingRepository;
@@ -31,9 +28,6 @@ public class InitDataConfig implements CommandLineRunner {
 
     private final CompetitionRepository competitionRepository;
     private final CountryRepository countryRepository;
-    private final GoalRepository goalRepository;
-    private final GroupMemberRepository groupMemberRepository;
-    private final GroupRepository groupRepository;
     private final LocationRepository locationRepository;
     private final PredictionRepository predictionRepository;
     private final RankingRepository rankingRepository;
@@ -42,7 +36,8 @@ public class InitDataConfig implements CommandLineRunner {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
 
-    Faker faker = new Faker(new Locale("nl", "BELGIUM"));
+    Faker faker = new Faker(Locale.of("nl", "BE"));
+    Random r = new Random();
 
     @Override
     public void run(String... args) throws Exception {
@@ -55,7 +50,7 @@ public class InitDataConfig implements CommandLineRunner {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        List<User> generatedUsers = new ArrayList<>();
+        var generatedUsers = new ArrayList<User>();
 
         for (int i = 0; i < 30; i++) {
             User user = User.builder()
@@ -131,106 +126,8 @@ public class InitDataConfig implements CommandLineRunner {
                 curacao, haiti
         ));
 
-        // ── 3. GROUPS ─────────────────────────────────────────────────────────
-        CountryGroup groupA = CountryGroup.builder().label("A").build();
-        CountryGroup groupB = CountryGroup.builder().label("B").build();
-        CountryGroup groupC = CountryGroup.builder().label("C").build();
-        CountryGroup groupD = CountryGroup.builder().label("D").build();
-        CountryGroup groupE = CountryGroup.builder().label("E").build();
-        CountryGroup groupF = CountryGroup.builder().label("F").build();
-        CountryGroup groupG = CountryGroup.builder().label("G").build();
-        CountryGroup groupH = CountryGroup.builder().label("H").build();
-        CountryGroup groupI = CountryGroup.builder().label("I").build();
-        CountryGroup groupJ = CountryGroup.builder().label("J").build();
-        CountryGroup groupK = CountryGroup.builder().label("K").build();
-        CountryGroup groupL = CountryGroup.builder().label("L").build();
-
-        groupRepository.saveAll(List.of(
-                groupA, groupB, groupC, groupD, groupE, groupF,
-                groupG, groupH, groupI, groupJ, groupK, groupL
-        ));
-
-        // ── 4. GROUP MEMBERS ──────────────────────────────────────────────────
-        // Group A: Mexico, South Korea, South Africa, Czechia
-        // Group B: Canada, Switzerland, Qatar, Bosnia
-        // Group C: Brazil, Scotland, Morocco, Haiti
-        // Group D: USA, Australia, Paraguay, Turkey
-        // Group E: Germany, Ecuador, Ivory Coast, Curacao
-        // Group F: Netherlands, Japan, Tunisia, Sweden
-        // Group G: Belgium, Iran, Egypt, New Zealand
-        // Group H: France, Norway, Senegal, Iraq
-        // Group I: Argentina, Austria, Algeria, Jordan
-        // Group J: Spain, Uruguay, Saudi Arabia, Cape Verde
-        // Group K: Portugal, Colombia, Uzbekistan, DR Congo
-        // Group L: England, Croatia, Ghana, Panama
-
-        List<GroupMember> groupMembers = List.of(
-                GroupMember.builder().group(groupA).country(mexico).build(),
-                GroupMember.builder().group(groupA).country(southKorea).build(),
-                GroupMember.builder().group(groupA).country(southAfrica).build(),
-                GroupMember.builder().group(groupA).country(czechia).build(),
-
-                GroupMember.builder().group(groupB).country(canada).build(),
-                GroupMember.builder().group(groupB).country(switzerland).build(),
-                GroupMember.builder().group(groupB).country(qatar).build(),
-                GroupMember.builder().group(groupB).country(bosnia).build(),
-
-                GroupMember.builder().group(groupC).country(brazil).build(),
-                GroupMember.builder().group(groupC).country(scotland).build(),
-                GroupMember.builder().group(groupC).country(morocco).build(),
-                GroupMember.builder().group(groupC).country(haiti).build(),
-
-                GroupMember.builder().group(groupD).country(usa).build(),
-                GroupMember.builder().group(groupD).country(australia).build(),
-                GroupMember.builder().group(groupD).country(paraguay).build(),
-                GroupMember.builder().group(groupD).country(turkey).build(),
-
-                GroupMember.builder().group(groupE).country(germany).build(),
-                GroupMember.builder().group(groupE).country(ecuador).build(),
-                GroupMember.builder().group(groupE).country(ivoryCoast).build(),
-                GroupMember.builder().group(groupE).country(curacao).build(),
-
-                GroupMember.builder().group(groupF).country(netherlands).build(),
-                GroupMember.builder().group(groupF).country(japan).build(),
-                GroupMember.builder().group(groupF).country(tunisia).build(),
-                GroupMember.builder().group(groupF).country(sweden).build(),
-
-                GroupMember.builder().group(groupG).country(belgium).build(),
-                GroupMember.builder().group(groupG).country(iran).build(),
-                GroupMember.builder().group(groupG).country(egypt).build(),
-                GroupMember.builder().group(groupG).country(newZealand).build(),
-
-                GroupMember.builder().group(groupH).country(france).build(),
-                GroupMember.builder().group(groupH).country(norway).build(),
-                GroupMember.builder().group(groupH).country(senegal).build(),
-                GroupMember.builder().group(groupH).country(iraq).build(),
-
-                GroupMember.builder().group(groupI).country(argentina).build(),
-                GroupMember.builder().group(groupI).country(austria).build(),
-                GroupMember.builder().group(groupI).country(algeria).build(),
-                GroupMember.builder().group(groupI).country(jordan).build(),
-
-                GroupMember.builder().group(groupJ).country(spain).build(),
-                GroupMember.builder().group(groupJ).country(uruguay).build(),
-                GroupMember.builder().group(groupJ).country(saudiArabia).build(),
-                GroupMember.builder().group(groupJ).country(capeVerde).build(),
-
-                GroupMember.builder().group(groupK).country(portugal).build(),
-                GroupMember.builder().group(groupK).country(colombia).build(),
-                GroupMember.builder().group(groupK).country(uzbekistan).build(),
-                GroupMember.builder().group(groupK).country(drCongo).build(),
-
-                GroupMember.builder().group(groupL).country(england).build(),
-                GroupMember.builder().group(groupL).country(croatia).build(),
-                GroupMember.builder().group(groupL).country(ghana).build(),
-                GroupMember.builder().group(groupL).country(panama).build()
-
-        );
-
-        groupMemberRepository.saveAll(groupMembers);
-
         // ── 5. LOCATIONS ──────────────────────────────────────────────────────
-        Location newYork = Location.builder().city("New York / New Jersey").build();
+        Location newYork = Location.builder().city("New York").build();
         Location dallas = Location.builder().city("Dallas").build();
         Location atlanta = Location.builder().city("Atlanta").build();
         Location losAngeles = Location.builder().city("Los Angeles").build();
@@ -278,7 +175,7 @@ public class InitDataConfig implements CommandLineRunner {
         ));
 
         // ── 7. TEAMS (friend groups) ───────────────────────────────────────────
-        List<Team> generatedTeams = new ArrayList<>();
+        var generatedTeams = new ArrayList<Team>();
         for (int i = 0; i < 6; i++) {
             Team team = Team.builder()
                     .name(faker.team().name())
@@ -294,7 +191,7 @@ public class InitDataConfig implements CommandLineRunner {
         teamRepository.saveAll(generatedTeams);
 
         // ── 8. TEAM MEMBERS ───────────────────────────────────────────────────
-        List<TeamMember> generatedTeamMembers = new ArrayList<>();
+        var generatedTeamMembers = new ArrayList<TeamMember>();
         int userIndex = generatedTeams.size();
         for (Team team : generatedTeams) {
             for (int i = 0; i < 4; i++) {
@@ -311,112 +208,82 @@ public class InitDataConfig implements CommandLineRunner {
 
         teamMemberRepository.saveAll(generatedTeamMembers);
 
-        // ── 9. RANKINGS ───────────────────────────────────────────────────────
-        /*List<Country> allCountries = countryRepository.findAll();
-        List<Ranking> rankings = allCountries.stream()
-                .map(c -> Ranking.builder()
-                        .country(c)
-                        .position(0)
-                        .wins(0).draws(0).losses(0)
-                        .goalsScored(0).goalsAgainst(0)
-                        .points(0)
-                        .build())
-                .toList();
-
-        rankingRepository.saveAll(rankings);*/
-
-        // ── 10. COMPETITIONS (sample group stage matches) ─────────────────────
-        // A few sample matches per group to demonstrate the structure
-        // Group A: Mexico, South Korea, South Africa, Czechia
-/*
-        Competition compA1 = Competition.builder()
-                .teamA(mexico).teamB(southKorea)
-                .stadium(azteca).group(groupA)
-                .stage(Stage.GROUP_STAGE)
-                .date(LocalDate.of(2026, 6, 12))
-                .time(LocalTime.of(18, 0))
+        // ── 10. COMPETITIONS ─────────────────────
+        Competition c1 = Competition.builder()
+                .teamA(bosnia).teamB(canada)
+                .stadium(attStadium)
+                .date(LocalDate.of(2026, 5, 12))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
+                .scoreA(3)
+                .scoreB(1)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        Competition compA2 = Competition.builder()
-                .teamA(southAfrica).teamB(czechia)
-                .stadium(attStadium).group(groupA)
-                .stage(Stage.GROUP_STAGE)
-                .date(LocalDate.of(2026, 6, 12))
-                .time(LocalTime.of(21, 0))
+        Competition c2 = Competition.builder()
+                .teamA(qatar).teamB(switzerland)
+                .stadium(azteca)
+                .date(LocalDate.of(2026, 5, 18))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
+                .scoreA(2)
+                .scoreB(2)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Group B: Canada, Switzerland, Qatar, Bosnia
-        Competition compB1 = Competition.builder()
-                .teamA(canada).teamB(switzerland)
-                .stadium(bmo).group(groupB)
-                .stage(Stage.GROUP_STAGE)
-                .date(LocalDate.of(2026, 6, 13))
-                .time(LocalTime.of(18, 0))
+        Competition c3 = Competition.builder()
+                .teamA(brazil).teamB(morocco)
+                .stadium(akron)
+                .date(LocalDate.of(2026, 5, 20))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
+                .createdAt(LocalDateTime.now())
+                .scoreA(4)
+                .scoreB(3)
+                .build();
+
+        Competition c4 = Competition.builder()
+                .teamA(haiti).teamB(scotland)
+                .stadium(lincolnFinancial)
+                .date(LocalDate.of(2026, 5, 24))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Group C: Brazil, Scotland, Morocco, Haiti
-        Competition compC1 = Competition.builder()
-                .teamA(brazil).teamB(scotland)
-                .stadium(metLife).group(groupC)
-                .stage(Stage.GROUP_STAGE)
-                .date(LocalDate.of(2026, 6, 14))
-                .time(LocalTime.of(18, 0))
+        Competition c5 = Competition.builder()
+                .teamA(belgium).teamB(egypt)
+                .stadium(mercedesBenz)
+                .date(LocalDate.of(2026, 5, 30))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Group D: USA, Australia, Paraguay, Turkey
-        Competition compD1 = Competition.builder()
-                .teamA(usa).teamB(australia)
-                .stadium(sofi).group(groupD)
-                .stage(Stage.GROUP_STAGE)
-                .date(LocalDate.of(2026, 6, 14))
-                .time(LocalTime.of(21, 0))
+        Competition c6 = Competition.builder()
+                .teamA(iran).teamB(newZealand)
+                .stadium(metLife)
+                .date(LocalDate.of(2026, 6, 2))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        competitionRepository.saveAll(List.of(compA1, compA2, compB1, compC1, compD1));
-        */
+        Competition c7 = Competition.builder()
+                .teamA(england).teamB(croatia)
+                .stadium(gillette)
+                .date(LocalDate.of(2026, 6, 6))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        // ── COMPETITIONS (generated, all group stage matches) ──────────────
-        List<Stadium> allStadiums = stadiumRepository.findAll();
-        List<Competition> generatedCompetitions = new ArrayList<>();
+        Competition c8 = Competition.builder()
+                .teamA(ghana).teamB(panama)
+                .stadium(hardRock)
+                .date(LocalDate.of(2026, 6, 15))
+                .time(LocalTime.of(13 + (r.nextInt(9)), 0))
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        Map<CountryGroup, List<Country>> groupCountryMap = new HashMap<>();
-        for (GroupMember gm : groupMembers) {
-            groupCountryMap
-                    .computeIfAbsent(gm.getGroup(), k -> new ArrayList<>())
-                    .add(gm.getCountry());
-        }
+        competitionRepository.saveAll(List.of(c1,c2,c3,c4,c5,c6,c7,c8));
 
-        for (Map.Entry<CountryGroup, List<Country>> entry : groupCountryMap.entrySet()) {
-            CountryGroup group = entry.getKey();
-            List<Country> countries = entry.getValue();
-
-            for (int i = 0; i < countries.size(); i++) {
-                for (int j = i + 1; j < countries.size(); j++) {
-                    Competition comp = Competition.builder()
-                            .teamA(countries.get(i))
-                            .teamB(countries.get(j))
-                            .stadium(allStadiums.get(faker.random().nextInt(allStadiums.size())))
-                            .group(group)
-                            .stage(Stage.GROUP_STAGE)
-                            .date(LocalDate.of(2026, 6, faker.number().numberBetween(11, 26)))
-                            .time(LocalTime.of(faker.number().numberBetween(14, 21), 0))
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    generatedCompetitions.add(comp);
-                }
-            }
-        }
-
-        competitionRepository.saveAll(generatedCompetitions);
-
-        // ── 11. PREDICTIONS (sample) ──────────────────────────────────────────
-        List<Competition> allCompetitions = competitionRepository.findAll();
-        List<Prediction> generatedPredictions = new ArrayList<>();
+        // ── 11. PREDICTIONS  ──────────────────────────────────────────
+        var allCompetitions = competitionRepository.findAll();
+        var generatedPredictions = new ArrayList<Prediction>();
         for (User user : generatedUsers) {
             for (Competition competition : allCompetitions) {
                 Prediction prediction = Prediction.builder()
@@ -432,64 +299,19 @@ public class InitDataConfig implements CommandLineRunner {
 
         predictionRepository.saveAll(generatedPredictions);
 
-        // ── 12. GOALS ──────────────────────────────────────────
-        List<Goal> generatedGoals = new ArrayList<>();
-        for (Competition competition : generatedCompetitions) {
-            int totalGoals = faker.number().numberBetween(1, 6);
-            int scoreA = 0;
-            int scoreB = 0;
-
-            for (int i = 0; i < totalGoals; i++) {
-                boolean isTeamA = faker.bool().bool();
-                if (isTeamA){
-                    scoreA++;
-                }
-                else scoreB++;
-
-                Goal goal = Goal.builder()
-                        .competition(competition)
-                        .minute(faker.number().numberBetween(1,90))
-                        .isTeamA(isTeamA)
-                        .playerName(faker.football().players())
-                        .scoreA(scoreA)
-                        .scoreB(scoreB)
-                        .build();
-                generatedGoals.add(goal);
-            }
-            competition.setScoreA(scoreA);
-            competition.setScoreB(scoreB);
-
-        }
-        competitionRepository.saveAll(generatedCompetitions);
-        goalRepository.saveAll(generatedGoals);
-
         // -- RANKINGS ----------------------------
-        List<Country> allCountries = countryRepository.findAll();
-        Map<Country,Ranking> rankingMap = new HashMap<>();
-        for (Country country : allCountries){
-            CountryGroup group = groupMembers.stream()
-                    .filter(gm -> gm.getCountry().equals(country))
-                    .map(GroupMember::getGroup)
-                    .findFirst()
-                    .orElse(null);
+        /*List<Country> allCountries = countryRepository.findAll();
+        List<Ranking> rankings = allCountries.stream()
+                .map(c -> Ranking.builder()
+                        .country(c)
+                        .position(0)
+                        .wins(0).draws(0).losses(0)
+                        .goalsScored(0).goalsAgainst(0)
+                        .points(0)
+                        .build())
+                .toList();
 
-            rankingMap.put(country,Ranking.builder()
-                    .country(country)
-                    .group(group)
-                    .wins(0).draws(0).losses(0)
-                    .points(0)
-                    .build());
-        }
-
-        calculateRankings(generatedCompetitions, rankingMap);
-
-        List<Ranking> rankings = new ArrayList<>(rankingMap.values());
-        rankings.sort((a,b) -> b.getPoints() - a.getPoints());
-        for(int i = 0; i < rankings.size(); i++){
-            rankings.get(i).setPoints(i + 1);
-        }
-
-        rankingRepository.saveAll(rankings);
+        rankingRepository.saveAll(rankings);*/
 
     }
     private void calculateRankings(List<Competition> competitions, Map<Country, Ranking> rankingMap) {

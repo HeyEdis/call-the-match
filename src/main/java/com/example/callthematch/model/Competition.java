@@ -20,10 +20,6 @@ public class Competition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Stage stage;
-
     @ManyToOne
     @JoinColumn(name = "teamA_id", nullable = false)
     private Country teamA;
@@ -35,10 +31,6 @@ public class Competition {
     @ManyToOne
     @JoinColumn(name = "stadiumId", nullable = false)
     private Stadium stadium;
-
-    @ManyToOne
-    @JoinColumn(name = "groupId")
-    private CountryGroup group;
 
     private Integer scoreA;
 

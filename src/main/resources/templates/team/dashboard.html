@@ -30,7 +30,7 @@
         </tr>
 
         <tr th:each="team : ${teamList}">
-            <td th:text="${team.name}"></td>
+            <td><a th:href="|/team/${team.id}|" th:text="${team.name}"></a></td>
             <td th:text="${team.owner.userName}"></td>
             <td th:text="${team.score}"></td>
         </tr>

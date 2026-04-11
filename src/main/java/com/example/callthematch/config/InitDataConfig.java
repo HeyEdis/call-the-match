@@ -182,7 +182,7 @@ public class InitDataConfig implements CommandLineRunner {
                 bbva, bmo, bcPlace, lincolnFinancial
         ));
 
-        // ── 7. TEAMS (friend groups) ───────────────────────────────────────────
+        // ── 7. TEAMS ───────────────────────────────────────────
         var generatedTeams = new ArrayList<Team>();
         for (int i = 0; i < 6; i++) {
             Team team = Team.builder()
@@ -193,7 +193,6 @@ public class InitDataConfig implements CommandLineRunner {
                     .updatedAt(LocalDateTime.now())
                     .build();
             generatedTeams.add(team);
-
         }
 
         teamRepository.saveAll(generatedTeams);
@@ -206,6 +205,7 @@ public class InitDataConfig implements CommandLineRunner {
                 TeamMember teamMember = TeamMember.builder()
                         .user(generatedUsers.get(userIndex))
                         .team(team)
+                        .role(TeamRole.MEMBER)
                         .score(faker.number().randomDigitNotZero())
                         .joinedAt(LocalDateTime.now())
                         .build();
@@ -215,6 +215,20 @@ public class InitDataConfig implements CommandLineRunner {
         }
 
         teamMemberRepository.saveAll(generatedTeamMembers);
+
+        // ADDING OWNERS TO TEAM
+        var ownerMembers = new ArrayList<TeamMember>();
+        for (int i = 0; i < generatedTeams.size(); i++) {
+            TeamMember ownerMember = TeamMember.builder()
+                    .user(generatedUsers.get(i))
+                    .team(generatedTeams.get(i))
+                    .role(TeamRole.OWNER)
+                    .score(faker.number().randomDigitNotZero())
+                    .joinedAt(LocalDateTime.now())
+                    .build();
+            ownerMembers.add(ownerMember);
+        }
+        teamMemberRepository.saveAll(ownerMembers);
 
         // ── 10. COMPETITIONS ─────────────────────
         Competition c1 = Competition.builder()

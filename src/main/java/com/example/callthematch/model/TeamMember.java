@@ -26,6 +26,9 @@ public class TeamMember {
     @JoinColumn(name = "teamId")
     private Team team;
 
+    @Enumerated(EnumType.STRING)
+    private TeamRole role;
+
     private Integer score;
 
     private LocalDateTime joinedAt;

@@ -19,6 +19,7 @@
     <table>
         <tr>
             <th>Member</th>
+            <th>Role</th>
             <th>Personal Score</th>
             <th>Active Since</th>
             <th>Actions</th>
@@ -27,11 +28,21 @@
 
         <tr th:each="member : ${team.members}">
             <td th:text="${member.user.userName}"></td>
+            <td th:text="${member.role}"></td>
             <td th:text="${member.score}"></td>
             <td th:text="${{member.joinedAt}}"></td>
+            <td>
+                    <button>Remove</button>
+            </td>
         </tr>
     </table>
+</div>
 
+<div>
+    <h2>Recruit Members</h2>
+    <span>PRIVATE INVITE CODE</span>
+    <p th:text="${team.inviteCode}"></p>
+    <button>Regenerate Code</button>
 </div>
 
 

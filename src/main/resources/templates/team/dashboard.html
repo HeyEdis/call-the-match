@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Squad up for the next match</h1>
+<p>Enter your squad's invite code to join existing competitions or create your own legacy from scratch.</p>
+
+<div>
+    <input placeholder="Enter invite code" name="inviteCode" />
+    <button>JOIN TEAM</button>
+</div>
+
+<div>
+    <h2>Create a team</h2>
+    <input placeholder="Team name" name="teamName" />
+    <button>CREATE SQUAD</button>
+</div>
+
+<div>
+    <h2>My teams</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Score</th>
+        </tr>
+
+        <tr th:each="team : ${teamList}">
+            <td th:text="${team.name}"></td>
+            <td th:text="${team.owner.userName}"></td>
+            <td th:text="${team.score}"></td>
+        </tr>
+    </table>
+
+</div>
+
+</body>
+</html>

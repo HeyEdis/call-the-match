@@ -44,6 +44,9 @@ public class InitDataConfig implements CommandLineRunner {
 
         User admin = User.builder()
                 .email("admin@example.com")
+                .firstName("Admin")
+                .lastName("User")
+                .userName("Lord of Lords")
                 .passwordHash("password")
                 .role(Role.ADMIN)
                 .createdAt(LocalDateTime.now())
@@ -53,8 +56,13 @@ public class InitDataConfig implements CommandLineRunner {
         var generatedUsers = new ArrayList<User>();
 
         for (int i = 0; i < 30; i++) {
+            String username = faker.animal().name().replace(" ", "")
+                    + faker.number().numberBetween(1, 999);
             User user = User.builder()
                     .email(faker.internet().emailAddress())
+                    .firstName(faker.name().firstName())
+                    .lastName(faker.name().lastName())
+                    .userName(username)
                     .passwordHash("password")
                     .role(Role.USER)
                     .createdAt(LocalDateTime.now())

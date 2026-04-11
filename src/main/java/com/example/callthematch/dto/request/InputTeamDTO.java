@@ -1,8 +1,10 @@
-﻿package com.example.callthematch.dto.request;
+package com.example.callthematch.dto.request;
 
+import com.example.callthematch.model.TeamMember;
 import com.example.callthematch.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
-public record InputTeamDTO(Long id, String name, User owner, String inviteCode, Integer score, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record InputTeamDTO(Long id, String name, User owner, Set<TeamMember> members, String inviteCode, Integer score, LocalDateTime createdAt, LocalDateTime updatedAt) {
 }

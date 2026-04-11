@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title>Team</title>
+</head>
+<body>
+<div>
+    <p>Rank: #1</p>
+    <h2 th:text="${team.name}"></h2>
+</div>
+
+<div>
+    <h2>Team Score</h2>
+    <p th:text="${team.score}"></p>
+</div>
+<div>
+    <table>
+        <tr>
+            <th>Member</th>
+            <th>Personal Score</th>
+            <th>Active Since</th>
+            <th>Actions</th>
+
+        </tr>
+
+        <tr th:each="member : ${team.members}">
+            <td th:text="${member.user.userName}"></td>
+            <td th:text="${member.score}"></td>
+            <td th:text="${{member.joinedAt}}"></td>
+        </tr>
+    </table>
+
+</div>
+
+
+<!-- <a th:href="|/contacts/edit/${contact.id}|"><Button th:text="Update"></Button></a> -->
+
+
+
+</body>
+</html>

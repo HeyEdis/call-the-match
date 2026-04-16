@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record InputCompetitionDTO(
@@ -33,9 +32,10 @@ public record InputCompetitionDTO(
         LocalDate date,
 
         @NotNull
-        LocalTime time,
+        LocalTime time
 
-        @NotNull
-        LocalDateTime createdAt
 ) {
+    public InputCompetitionDTO() {
+        this(null, null, null, null, null, null, null, null);
+    }
 }

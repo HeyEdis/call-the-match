@@ -5,10 +5,11 @@
 <nav th:fragment="navbar" class="glass-nav">
     <div class="nav-inner">
       <span>Call The Match</span>
+        <a th:href="@{/home}">Home</a>
       <a th:href="@{/rankings}">Top 10</a>
       <a th:href="@{/team/dashboard}">My Teams</a>
       <a th:href="@{/predictions}">My Predictions</a>
-      <a th:href="@{/admin/competitions}">Manage Competitions</a>
+      <a th:href="@{/competition/add}">Add Competitions</a>
       <a th:href="@{/login}">Login</a>
       <a th:href="@{/register}" class="btn-register">Register</a>
     </div>

@@ -6,6 +6,11 @@
     <title>Team</title>
 </head>
 <body>
+
+<header>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
 <div>
     <p>Rank: #1</p>
     <h2 th:text="${team.name}"></h2>
@@ -42,7 +47,7 @@
     <h2>Recruit Members</h2>
     <span>PRIVATE INVITE CODE</span>
     <p th:text="${team.inviteCode}"></p>
-    <button th:text="${}">Regenerate Code</button>
+    <button>Regenerate Code</button>
 </div>
 
 

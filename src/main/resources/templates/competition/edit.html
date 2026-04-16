@@ -2,10 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title>Edit Competition</title>
 </head>
 <body>
-<h1>Competitions</h1>
+<h1>Competition</h1>
 
 <table>
     <tr>
@@ -18,7 +19,7 @@
         <th>Score</th>
     </tr>
 
-    <tr th:each="competition : ${competitionList}">
+    <tr>
         <td th:text="${competition.date}"></td>
         <td th:text="${competition.time}"></td>
         <td th:text="${competition.teamA.name}"></td>

@@ -17,11 +17,11 @@ public class TeamService {
     private final TeamRepository teamRepository;
 
     private TeamDTO toDTO(Team t) {
-        return new TeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.calculateTeamScore(),t.getCreatedAt(),t.getUpdatedAt());
+        return new TeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.calculateTeamScore());
     }
 
     private InputTeamDTO toInputDTO(Team t) {
-        return new InputTeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.getScore(),t.getCreatedAt(),t.getUpdatedAt());
+        return new InputTeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.getScore());
     }
 
     private Team findTeamById(Long id)

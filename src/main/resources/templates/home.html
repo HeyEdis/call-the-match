@@ -25,6 +25,8 @@
         <th>Stadium</th>
         <th>City</th>
         <th>Score</th>
+        <th>Match</th>
+        <th>Action</th>
       </tr>
 
       <tr th:each="competition : ${competitionList}">
@@ -35,6 +37,8 @@
         <td th:text="${competition.stadium.name}"></td>
         <td th:text="${competition.stadium.location.city}"></td>
         <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+        <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
+        <td><button>Edit</button></td>
       </tr>
     </table>
   </div>

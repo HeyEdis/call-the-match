@@ -6,5 +6,5 @@ import com.example.callthematch.model.User;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public record TeamDTO(Long id, String name, User owner, Set<TeamMember> members, String inviteCode, Integer score, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record TeamDTO(Long id, String name, User owner, Set<TeamMember> members, String inviteCode, Integer score) {
 }

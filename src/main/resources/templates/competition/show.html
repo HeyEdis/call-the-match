@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title>Competition</title>
+</head>
+<body>
+<header>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
+<button>Edit</button>
+
+<div>
+  <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+  <div>
+    <p th:text="${competition.date}"></p>
+    <p th:text="${competition.time}"></p>
+    <p th:text="${competition.stadium.name}"></p>
+    <p th:text="${competition.stadium.location.city}"></p>
+    <p th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
+  </div>
+</div>
+
+<div>
+  <h2>My Prediction</h2>
+  <p>You can change your prediction 1 hour before the match starts.</p>
+  <p>getal - getal</p>
+
+</div>
+
+
+</body>
+</html>

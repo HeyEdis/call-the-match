@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public record CompetitionDTO(Long id, Country teamA, Country teamB, Stadium stadium, Integer scoreA, Integer scoreB, LocalDate date, LocalTime time, LocalDateTime createdAt ) {
+public record CompetitionDTO(Long id, Country teamA, Country teamB, Stadium stadium, Integer scoreA, Integer scoreB, LocalDate date, LocalTime time ) {
 }

@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/rankings")
+@RequestMapping("/ranking")
 public class RankingController {
 
     private final TeamService teamService;
 
+    @GetMapping
     public String showTeams(Model model) {
         model.addAttribute("teamList", teamService.getTop10Teams());
         return "ranking/list";

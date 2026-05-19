@@ -16,7 +16,7 @@ public class TeamController {
     private final TeamService teamService;
 
     @GetMapping("/dashboard")
-    public String showHome(Model model) {
+    public String showDashboard(Model model) {
         model.addAttribute("teamList", teamService.getAllTeams());
         return "team/dashboard";
     }

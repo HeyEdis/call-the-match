@@ -26,6 +26,10 @@ import java.util.*;
 @Profile("dev") // laten weten enkel in development
 public class InitDataConfig implements CommandLineRunner {
 
+    private static final int GENERATED_TEAM_COUNT = 10;
+    private static final int MEMBERS_PER_TEAM = 4;
+    private static final int GENERATED_USER_COUNT = GENERATED_TEAM_COUNT * (MEMBERS_PER_TEAM + 1);
+
     private final CompetitionRepository competitionRepository;
     private final CountryRepository countryRepository;
     private final LocationRepository locationRepository;
@@ -55,7 +59,7 @@ public class InitDataConfig implements CommandLineRunner {
 
         var generatedUsers = new ArrayList<User>();
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < GENERATED_USER_COUNT; i++) {
             String username = faker.animal().name().replace(" ", "")
                     + faker.number().numberBetween(1, 999);
             User user = User.builder()
@@ -184,9 +188,9 @@ public class InitDataConfig implements CommandLineRunner {
 
         // ── 7. TEAMS ───────────────────────────────────────────
         var generatedTeams = new ArrayList<Team>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < GENERATED_TEAM_COUNT; i++) {
             Team team = Team.builder()
-                    .name(faker.team().name())
+                    .name(faker.team().name() + " " + (i + 1))
                     .inviteCode(faker.bothify("????####").toUpperCase())
                     .owner(generatedUsers.get(i))
                     .createdAt(LocalDateTime.now())
@@ -201,7 +205,7 @@ public class InitDataConfig implements CommandLineRunner {
         var generatedTeamMembers = new ArrayList<TeamMember>();
         int userIndex = generatedTeams.size();
         for (Team team : generatedTeams) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < MEMBERS_PER_TEAM; i++) {
                 TeamMember teamMember = TeamMember.builder()
                         .user(generatedUsers.get(userIndex))
                         .team(team)
@@ -229,6 +233,26 @@ public class InitDataConfig implements CommandLineRunner {
             ownerMembers.add(ownerMember);
         }
         teamMemberRepository.saveAll(ownerMembers);
+
+        // -- RANKINGS ----------------------------
+        var generatedRankings = new ArrayList<Ranking>();
+        for (int i = 0; i < generatedTeams.size(); i++) {
+            int wins = GENERATED_TEAM_COUNT - i;
+            int draws = i % 3;
+            int losses = i / 2;
+
+            Ranking ranking = Ranking.builder()
+                    .team(generatedTeams.get(i))
+                    .wins(wins)
+                    .draws(draws)
+                    .losses(losses)
+                    .points((wins * 3) + draws)
+                    .build();
+
+            generatedRankings.add(ranking);
+        }
+
+        rankingRepository.saveAll(generatedRankings);
 
         // ── 10. COMPETITIONS ─────────────────────
         Competition c1 = Competition.builder()
@@ -320,21 +344,6 @@ public class InitDataConfig implements CommandLineRunner {
         }
 
         predictionRepository.saveAll(generatedPredictions);
-
-        // -- RANKINGS ----------------------------
-        /*List<Country> allCountries = countryRepository.findAll();
-        List<Ranking> rankings = allCountries.stream()
-                .map(c -> Ranking.builder()
-                        .country(c)
-                        .position(0)
-                        .wins(0).draws(0).losses(0)
-                        .goalsScored(0).goalsAgainst(0)
-                        .points(0)
-                        .build())
-                .toList();
-
-        rankingRepository.saveAll(rankings);*/
-
     }
     private void calculateRankings(List<Competition> competitions, Map<Country, Ranking> rankingMap) {
         for (Competition competition : competitions) {

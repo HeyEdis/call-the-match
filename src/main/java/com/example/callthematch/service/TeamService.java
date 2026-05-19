@@ -8,6 +8,7 @@ import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,6 +34,15 @@ public class TeamService {
         return teamRepository.findAll()
                 .stream()
                 .map(c -> toDTO(c))
+                .toList();
+    }
+
+    public List<TeamDTO> getTop10Teams() {
+        return teamRepository.findAll()
+                .stream()
+                .map(c -> toDTO(c))
+                .sorted(Comparator.comparing(TeamDTO::score).reversed())
+                .limit(10)
                 .toList();
     }
 

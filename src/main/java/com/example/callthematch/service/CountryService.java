@@ -1,10 +1,7 @@
 package com.example.callthematch.service;
 
-import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.CountryDTO;
-import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.CountryNotFound;
-import com.example.callthematch.model.Competition;
 import com.example.callthematch.model.Country;
 import com.example.callthematch.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;

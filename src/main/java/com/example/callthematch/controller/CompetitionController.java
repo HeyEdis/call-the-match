@@ -34,6 +34,12 @@ public class CompetitionController {
     private final CountryService countryService;
     private final MessageSource messageSource;
 
+    @GetMapping
+    public String showAll(Model model) {
+        model.addAttribute("competitionList", competitionService.getAllCompetitions());
+        return "competition/list";
+    }
+
     @GetMapping(value = "/{id}")
     public String show(@PathVariable Long id, Model model) {
         model.addAttribute("competition", competitionService.findById(id));
@@ -69,9 +75,9 @@ public class CompetitionController {
             return "competition/add";
         }
 
-        Country teamA = countryService.findById(inputCompetitionDTO.teamA().getId());
-        Country teamB = countryService.findById(inputCompetitionDTO.teamA().getId());
-        Stadium stadium = stadiumService.findById(inputCompetitionDTO.stadium().getId());
+        //Country teamA = countryService.findById(inputCompetitionDTO.teamA().getId());
+        //Country teamB = countryService.findById(inputCompetitionDTO.teamA().getId());
+        //Stadium stadium = stadiumService.findById(inputCompetitionDTO.stadium().getId());
 
         //Competition competition = inputCompetitionDTO
 

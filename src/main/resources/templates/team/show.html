@@ -47,7 +47,10 @@
     <h2>Recruit Members</h2>
     <span>PRIVATE INVITE CODE</span>
     <p th:text="${team.inviteCode}"></p>
-    <button>Regenerate Code</button>
+    <form th:action="@{|/team/${team.id}/invite-code|}" method="post">
+        <button type="submit">Regenerate Code</button>
+    </form>
+    <p th:if="${message}" th:text="${message}"></p>
 </div>
 
 

@@ -49,6 +49,11 @@ public class Team {
                 .sum();
     }
 
+    public void regenerateInviteCode(){
+        generateInviteCode();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void generateInviteCode() {
         String chars   = generateCharSegment();
         String digits  = generateDigitSegment();
@@ -74,4 +79,13 @@ public class Team {
         return sb.toString();
     }
 
+    public TeamMember addMember(User user){
+        return TeamMember.builder()
+                .user(user)
+                .team(this)
+                .role(TeamRole.MEMBER)
+                .score(0)
+                .joinedAt(LocalDateTime.now())
+                .build();
+    }
 }

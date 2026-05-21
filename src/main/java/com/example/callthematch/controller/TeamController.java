@@ -4,9 +4,8 @@ import com.example.callthematch.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,6 +24,21 @@ public class TeamController {
     public String show(@PathVariable Long id, Model model) {
         model.addAttribute("team", teamService.findById(id));
         return "team/show";
+    }
+
+    @PostMapping("/{id}/invite-code")
+    public String regenerateInviteCode(@PathVariable Long id, RedirectAttributes ra) {
+        teamService.regenerateInviteCode(id);
+        ra.addFlashAttribute("message", "Invite code regenerated");
+        return "redirect:/team/{id}";
+    }
+
+    @PostMapping("/join")
+    public String joinTeam(@RequestParam String inviteCode, RedirectAttributes ra) {
+        Long temporaryUserId = 1L;
+        teamService.joinTeamWithInviteCode(inviteCode, temporaryUserId);
+        ra.addFlashAttribute("message", "Team joined");
+        return "redirect:/team/dashboard";
     }
 
 

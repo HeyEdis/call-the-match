@@ -15,8 +15,10 @@
 <p>Enter your squad's invite code to join existing competitions or create your own legacy from scratch.</p>
 
 <div>
-    <input placeholder="Enter invite code" name="inviteCode" />
-    <button>JOIN TEAM</button>
+    <form th:action="@{/team/join}" method="post">
+        <input placeholder="Enter invite code" name="inviteCode" />
+        <button type="submit">JOIN TEAM</button>
+    </form>
 </div>
 
 <div>

@@ -1,0 +1,3 @@
+display_name: Ralph Init
+short_description: Scaffold Codex Ralph workflow files for call-the-match.
+default_prompt: Initialize the Ralph workflow for an existing call-the-match feature plan.

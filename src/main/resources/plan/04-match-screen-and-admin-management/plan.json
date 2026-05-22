@@ -1,0 +1,241 @@
+{
+  "sources": [
+    {
+      "url": "local://FIFA_World_Cup_2026_-_Team_Prediction.pdf#pages=4,6",
+      "description": "FIFA World Cup 2026 Team Prediction PDF pages 4 and 6: match screen, admin match management and technical validation requirements."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_Flow.pdf",
+      "description": "School web-flow guideline slides for MVC forms, DTO validation and BindingResult handling."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_MVC_i18n.pdf",
+      "description": "School MVC and i18n guideline slides for Thymeleaf forms, resource bundles and type mismatch messages."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Exceptions.pdf",
+      "description": "School exception-handling guideline slides for MVC error behavior."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_MultipleRow.pdf",
+      "description": "School guideline slides for multiple-row MVC flows, path variables and related error handling."
+    },
+    {
+      "url": "local://Notes/13-03-26-Validation.md",
+      "description": "Lesson notes for DTO validation, custom messages and school validation flow."
+    },
+    {
+      "url": "local://Notes/03-04-2026-ErrorMessageEnI18n.md",
+      "description": "Lesson notes for error messages, i18n and type mismatch handling."
+    },
+    {
+      "url": "local://Notes/Project.md",
+      "description": "Project reminders carried into the match and admin management plan."
+    },
+    {
+      "url": "local://WorkspacesIntelij/validator-form-binding-i18n-exception-exercises",
+      "description": "Exercise projects identified in the school reference map for validators, form binding, i18n and exception patterns."
+    },
+    {
+      "url": "local://call-the-match",
+      "description": "Existing call-the-match competition domain, DTO annotations, MVC flow, resource messages and error templates."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    },
+    {
+      "url": "local://conversation/match-screen-and-admin-management",
+      "description": "User and project decisions carried into this plan: chosen date range, admin-only official result management and safe passing first."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "finish-public-match-detail-baseline",
+      "title": "Finish Public Match Detail Baseline",
+      "description": "Finish the public match detail surface before expanding admin writes. Keep `/competition/{id}` on the MVC controller-to-service path and render persisted fixture context with nullable official result behavior while leaving later user prediction context outside this task.",
+      "acceptance_criteria": [
+        "Guests, USER actors and ADMIN actors can open public detail for an existing competition without entering match mutation behavior.",
+        "The match detail screen receives selected CompetitionDTO data through the service boundary rather than direct repository access from MVC presentation code.",
+        "Both countries, match date, match time, stadium and stadium location render from persisted competition data.",
+        "Official final score renders only when both official score values are available and future fixtures keep a clear no-result state.",
+        "The task does not add prediction write UI to the public match detail page."
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "fix-admin-add-match-form-binding",
+      "title": "Fix Admin Add Match Form Binding",
+      "description": "Stabilize the existing admin add form before deepening validation. Make the country and stadium controls bind through the school-style MVC form path and prove that their options come from backend service and repository data rather than hardcoded view values.",
+      "acceptance_criteria": [
+        "Only ADMIN can use the add-match route boundary while guest and normal USER public read access remains separate.",
+        "The add form renders country choices loaded through the country service from persisted data.",
+        "The add form renders stadium choices loaded through the stadium service from persisted data.",
+        "Country and stadium select values bind reliably through a school-style converter, formatter or equivalent DTO binding solution.",
+        "The Thymeleaf add form keeps repository lookup out of the controller and view."
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "complete-admin-add-match-validation-and-persistence",
+      "title": "Complete Admin Add Match Validation And Persistence",
+      "description": "Complete the add-fixture vertical slice through request DTO validation, MVC field feedback and service persistence. Keep the form options available after invalid submissions and return resource-bundle redirect feedback after a valid admin create.",
+      "acceptance_criteria": [
+        "Required fixture create input uses existing Jakarta Validation annotations on the request DTO.",
+        "The add controller action follows school flow with `@Valid` and `BindingResult` immediately after the validated DTO.",
+        "Invalid submissions return the add form with Thymeleaf field errors and reload backend-backed country and stadium options.",
+        "A valid ADMIN add submission persists the Competition through the competition service and repository boundary.",
+        "Successful create feedback after redirect uses `src/main/resources/i18n/messages.properties` rather than hardcoded controller text.",
+        "Guests and normal USER actors cannot submit fixture creation writes."
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "add-fixture-cross-field-validator",
+      "title": "Add Fixture Cross-Field Validator",
+      "description": "Add the validator-class slice for fixture rules that do not fit simple field annotations. Attach a competition validator to the fixture form flow so add and later edit submissions reject impossible country pairing and out-of-project-period match dates with bundle-backed feedback.",
+      "acceptance_criteria": [
+        "A validator class participates in fixture form validation through the school-style MVC binding or controller-advice pattern.",
+        "Fixture validation rejects the same country selected for both match sides.",
+        "Fixture validation rejects match dates before `20 May 2026` or after `6 June 2026`.",
+        "Validator feedback is bundle-backed and returns to the fixture form with backend-backed select data still available.",
+        "Cross-field fixture rules stay out of Thymeleaf and controller business logic."
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "reject-stadium-time-conflicts",
+      "title": "Reject Stadium Time Conflicts",
+      "description": "Extend the fixture validator with the repository-backed schedule rule. Reject writes that would place two matches in the same stadium at the same fixture time slot and keep edit-safe conflict decisions at the validation/service boundary.",
+      "acceptance_criteria": [
+        "Fixture validation checks persisted Competition data for same-stadium same-time conflicts before accepting a write.",
+        "A conflicting admin add submission returns form feedback instead of saving a duplicate stadium/time slot.",
+        "Conflict validation is shaped so fixture edit work can avoid treating the edited competition as its own conflicting duplicate.",
+        "Repository-backed conflict decisions remain outside Thymeleaf and do not become ad hoc controller queries.",
+        "Conflict error messages visible to the admin are backed by the resource bundle."
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "add-stadium-checksum-custom-annotation",
+      "title": "Add Stadium Checksum Custom Annotation",
+      "description": "Add the required custom-annotation validation evidence for admin match management. Implement `@ValidStadiumChecksum` with its validator on the chosen fixture input boundary and render its message in the existing DTO and Thymeleaf validation flow.",
+      "acceptance_criteria": [
+        "The project defines a custom `@ValidStadiumChecksum` constraint and validator.",
+        "The checksum constraint is applied to the fixture input boundary chosen for stadium code validation.",
+        "Invalid checksum data yields a bundle-backed message near the relevant admin form input.",
+        "The custom annotation remains distinct from the fixture validator-class rules for country pairing, date range and stadium/time conflicts.",
+        "Checksum failure follows school DTO validation and BindingResult behavior instead of bypassing the form flow."
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "expose-admin-edit-fixture-entry-and-form",
+      "title": "Expose Admin Edit Fixture Entry And Form",
+      "description": "Make fixture correction visible as an admin-only form surface. Provide an edit entry point from match context and load the selected competition into a prefilled form with backend-backed country and stadium choices.",
+      "acceptance_criteria": [
+        "ADMIN can reach an edit entry point from match context while guest and normal USER actors cannot mutate fixture data.",
+        "The edit form loads persisted fixture state for the selected competition.",
+        "The edit form renders backend-backed country and stadium selections needed to correct the persisted fixture.",
+        "Missing fixture ids for the edit entry point resolve through the existing MVC competition lookup boundary.",
+        "The task prepares the edit form without moving update business logic into the view."
+      ],
+      "priority": 7,
+      "passes": false
+    },
+    {
+      "id": "persist-admin-fixture-edits",
+      "title": "Persist Admin Fixture Edits",
+      "description": "Complete the fixture edit vertical slice after the form entry point exists. Reuse the fixture validation boundary, update Competition state through the service and repository layers, and return field feedback or redirect feedback appropriate to the admin submission outcome.",
+      "acceptance_criteria": [
+        "Edit submissions use the fixture DTO validation path with existing Jakarta annotations and fixture validator rules.",
+        "The stadium checksum custom constraint is applied on edit when the chosen fixture input boundary requires it.",
+        "Invalid edit submissions return the form with Thymeleaf errors and restored backend country and stadium data.",
+        "A valid ADMIN edit submission updates the persisted Competition through the service and repository layers.",
+        "Successful edit feedback after redirect is resource-bundle backed.",
+        "Guest and normal USER actors remain unable to submit edit writes."
+      ],
+      "priority": 8,
+      "passes": false
+    },
+    {
+      "id": "build-official-result-form-boundary",
+      "title": "Build Official Result Form Boundary",
+      "description": "Split official result input away from fixture add and edit concerns. Add the admin-only MVC form surface and result-specific request DTO validation so future fixtures can remain score-null while recorded official scores receive the correct school-style field validation.",
+      "acceptance_criteria": [
+        "Only ADMIN can open the official-result form for a competition.",
+        "Official result input uses a dedicated request DTO or equivalent separate validation boundary from fixture add/edit input.",
+        "Result score fields use existing Jakarta Validation annotations for required and non-negative recorded scores where applicable.",
+        "Invalid result submissions render score field feedback through the MVC and Thymeleaf validation flow.",
+        "Fixture create/edit rules and prediction input remain outside the official result form boundary."
+      ],
+      "priority": 9,
+      "passes": false
+    },
+    {
+      "id": "persist-official-match-results",
+      "title": "Persist Official Match Results",
+      "description": "Complete official result recording for admin match management. Save validated official scores for the selected Competition through the service/repository boundary, return redirect feedback, and preserve nullable score behavior for fixtures that do not yet have results.",
+      "acceptance_criteria": [
+        "A valid ADMIN result submission persists official score values through the competition service and repository boundary.",
+        "Successful result writes return resource-bundle redirect feedback.",
+        "Competitions without recorded official results can still exist with nullable official score values.",
+        "Guest and normal USER actors cannot submit result writes.",
+        "The task does not add scoring recalculation or prediction write behavior beyond the official result source data."
+      ],
+      "priority": 10,
+      "passes": false
+    },
+    {
+      "id": "harden-match-mutation-security-and-errors",
+      "title": "Harden Match Mutation Security And Errors",
+      "description": "Close the access and MVC failure boundary around match browsing and admin match writes. Keep public detail readable, protect add/edit/result writes for admin only, and route missing competitions or malformed ids through shared MVC error behavior.",
+      "acceptance_criteria": [
+        "Security rules keep public competition detail readable for guests and normal USER actors.",
+        "Add, edit and official-result mutation routes remain ADMIN-only under Spring Security rather than relying only on hidden controls.",
+        "Admin match management does not create team or prediction participation behavior.",
+        "Missing competition ids on public or admin match paths produce friendly MVC not-found behavior.",
+        "Invalid competition path ids use shared type mismatch and project error-page handling.",
+        "This task stays in MVC security and error handling and does not add REST error-response or WebClient implementation."
+      ],
+      "priority": 11,
+      "passes": false
+    },
+    {
+      "id": "add-match-mvc-and-security-closure-tests",
+      "title": "Add Match MVC And Security Closure Tests",
+      "description": "Add the late MVC and Spring Security evidence for public match detail and admin match-management flows. Cover observable add, edit, result, model, view, redirect and error outcomes together with public-read and admin-write access rules.",
+      "acceptance_criteria": [
+        "MVC controller tests verify public match detail model and view behavior for existing competitions.",
+        "MVC tests cover admin add, edit and official-result success or invalid-submission behavior using status, view, model, binding, redirect or error assertions.",
+        "MVC tests cover friendly not-found or type-mismatch behavior for invalid match ids where observable at the controller boundary.",
+        "Security tests verify guests and normal USER actors can read public match detail.",
+        "Security tests verify guests and normal USER actors cannot use add, edit or official-result writes while ADMIN can use match management routes.",
+        "This task does not add REST controller, WebClient or e2e tests to the MVC admin match feature."
+      ],
+      "priority": 12,
+      "passes": false
+    },
+    {
+      "id": "add-match-validation-closure-tests",
+      "title": "Add Match Validation Closure Tests",
+      "description": "Add focused late validation evidence for the three school validation categories carried by match management. Cover existing Jakarta annotations, the custom stadium checksum constraint and the validator-class fixture rules without folding validation proof into unrelated web tests.",
+      "acceptance_criteria": [
+        "Validation tests using a Jakarta Validator cover existing annotation behavior for required fixture input introduced by match management.",
+        "Validation tests using a Jakarta Validator cover existing annotation behavior for official result score constraints introduced by the result DTO.",
+        "Custom annotation tests verify `@ValidStadiumChecksum` accepts valid checksum input and rejects invalid checksum input.",
+        "Validator-class tests verify different-country and project-date-range fixture rules with the school validator error test shape.",
+        "Validator-class tests verify same-stadium same-time conflict rejection against the repository-backed fixture rule.",
+        "Validation closure stays outside REST controller, WebClient and prediction-write test scope."
+      ],
+      "priority": 13,
+      "passes": false
+    }
+  ]
+}

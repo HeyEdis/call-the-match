@@ -1,12 +1,12 @@
-# PRD: REST Controllers & React WebClient
+# PRD: REST Controllers & Reactive WebClient
 
 ## Problem Statement
 
-De schoolopdracht vereist minstens één REST controller en het consumeren van een externe (of eigen) REST API via WebClient/React. Deze PRD beperkt zich tot twee concrete vereisten: het ophalen van wedstrijden op een bepaalde datum, en het ophalen van de capaciteit van een stadion.
+De schoolopdracht vereist minstens één REST controller en het consumeren van een REST API via Spring Reactive WebClient. Deze PRD beperkt zich tot twee concrete vereisten: het ophalen van wedstrijden op een bepaalde datum, en het ophalen van de capaciteit van een stadion.
 
 ## Solution
 
-Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw daarnaast een React-frontend (of standalone React-pagina) die via fetch/axios deze endpoints consumeert en de data toont. Houd het minimaal en gericht op veilig slagen.
+Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw daarnaast een service die via Spring Reactive WebClient de eigen REST endpoints consumeert en de data beschikbaar maakt (bijv. via een Thymeleaf-pagina of gewoon als bewijs dat WebClient werkt). Demonstratie tijdens evaluatie gebeurt via HTTPie GET requests op de REST endpoints. Houd het minimaal en gericht op veilig slagen.
 
 ## Current Codebase State
 
@@ -14,12 +14,12 @@ Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw d
 - `Stadium` entity bevat `id`, `name`, `code`, `capacity`, `location`.
 - `CompetitionRepository` en `StadiumRepository` bestaan maar hebben nog geen custom query methods.
 - Er is nog geen REST controller in het project.
-- Er is nog geen React/WebClient frontend aanwezig.
+- Er is nog geen WebClient consumer aanwezig.
 
 ## School Requirements
 
 - Minstens één REST controller met JSON responses.
-- Minstens één WebClient- of React-consumer die de REST API aanroept.
+- Minstens één Spring Reactive WebClient consumer die de eigen REST API aanroept.
 - REST endpoints moeten publiek toegankelijk zijn voor guests (GET only).
 - Tests voor REST controllers zijn vereist (kan in het late test block).
 
@@ -34,8 +34,8 @@ Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw d
 
 1. As anyone, I want to retrieve a list of matches for a specific date via REST, so that I can see the schedule for that day.
 2. As anyone, I want to retrieve the capacity of a stadium by its id via REST, so that I can see how many spectators the stadium holds.
-3. As anyone, I want a React page that shows matches for a chosen date, so that the WebClient/frontend requirement is fulfilled.
-4. As anyone, I want a React page that shows a stadium's capacity, so that both REST endpoints are consumed by the frontend.
+3. As a developer, I want a Spring WebClient service that consumes the matches endpoint, so that the WebClient requirement is fulfilled.
+4. As a developer, I want a Spring WebClient service that consumes the stadium capacity endpoint, so that both REST endpoints are consumed via WebClient.
 
 ## Implementation Decisions
 
@@ -68,12 +68,12 @@ Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw d
 
 - Voeg `/api/**` toe aan de publieke permit-list in de security config.
 
-### React Frontend
+### WebClient Consumer
 
-- Minimale React-app (kan als standalone HTML+JS met CDN React, of als apart project).
-- Aanbevolen: plaats in `src/main/resources/static/react/` als standalone HTML die React via CDN laadt.
-- Twee simpele componenten: één voor matches-by-date, één voor stadium capacity.
-- Gebruik `fetch()` om de eigen REST endpoints aan te roepen.
+- Voeg `spring-boot-starter-webflux` dependency toe aan `pom.xml`.
+- Maak een `WebClient` bean (bijv. in een `@Configuration` class).
+- Maak een service (bijv. `MatchWebClientService`) die via WebClient de eigen `/api/matches` en `/api/stadiums/{id}/capacity` endpoints aanroept.
+- Optioneel: een Thymeleaf-pagina die de WebClient service aanroept om het resultaat te tonen, of gewoon een demonstratie via logging/test.
 
 ### i18n
 
@@ -93,25 +93,24 @@ Bouw twee publieke REST GET endpoints in een Spring Boot REST controller. Bouw d
 ## REST And WebClient Decisions
 
 - Volledig in scope: dit IS de REST/WebClient feature PRD.
-- React frontend fungeert als de "WebClient" consumer die de school vereist.
+- Spring Reactive WebClient consumer roept de eigen REST endpoints aan als bewijs.
+- Evaluatie/demo: HTTPie GET requests op de endpoints.
 
 ## Out Of Scope
 
 - Mutatie-endpoints (POST/PUT/DELETE) voor wedstrijden of stadions.
 - Authenticatie/autorisatie op REST endpoints.
-- Complexe React routing of state management.
-- Server-side WebClient die een externe derde-partij API aanroept (tenzij de school dit expliciet vereist boven een React consumer).
+- React frontend of andere JavaScript UI.
+- Consumeren van externe derde-partij APIs.
 
 ## Sources
 
 1. FIFA World Cup 2026 Team Prediction PDF (wedstrijd- en stadioncontext).
 2. School guidelines uit `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen` (REST + WebClient vereiste).
 3. Bestaande `call-the-match` codebase (Competition, Stadium entities en repositories).
-4. User beslissing: scope beperkt tot twee GET endpoints + React consumer.
+4. User beslissing: scope beperkt tot twee GET endpoints + Spring WebClient consumer, demo via HTTPie.
 
 ## Further Notes
 
-- Dit is bewust minimaal gehouden: twee endpoints, twee React-componenten. Genoeg om de REST + WebClient rubric items af te vinken.
-- Als de school een server-side `WebClient` (Spring WebClient bean) vereist i.p.v. een browser fetch, kan één van de twee calls omgebouwd worden naar een Thymeleaf-page die via server-side WebClient de eigen REST API aanroept. Vraag dit na bij de docent als er twijfel is.
-- De React bestanden in `static/react/` worden automatisch geserveerd door Spring Boot zonder extra config.
-
+- Dit is bewust minimaal gehouden: twee endpoints, één WebClient service. Genoeg om de REST + WebClient rubric items af te vinken.
+- Geen frontend nodig; evaluatie gebeurt met HTTPie.

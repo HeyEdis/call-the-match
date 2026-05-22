@@ -1,0 +1,73 @@
+{
+  "sources": [
+    {
+      "url": "src/main/resources/prd/07-rest-and-webclient/plan.md",
+      "description": "Feature plan for REST Controllers & Reactive WebClient"
+    },
+    {
+      "url": "src/main/resources/prd/07-rest-and-webclient-prd.md",
+      "description": "PRD for REST Controllers & Reactive WebClient"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "matches-rest-endpoint",
+      "title": "Matches REST GET Endpoint",
+      "description": "Build the complete vertical slice for retrieving matches by date via REST. Add findByDate(LocalDate date) to CompetitionRepository. Create a MatchRestDTO record with fields: id, teamAName, teamBName, date, time, stadiumName, scoreA, scoreB. Create a @RestController (e.g. CompetitionRestController) with GET /api/matches accepting a @RequestParam date in yyyy-MM-dd format. Map Competition entities to MatchRestDTO. Return 200 with JSON array (empty list if no matches). Return 400 with error JSON for invalid date format. Add /api/** to the public permit-list in the Spring Security configuration so guests, users, and admins can access it without authentication.",
+      "acceptance_criteria": [
+        "CompetitionRepository has a findByDate(LocalDate date) query method",
+        "MatchRestDTO record contains id, teamAName, teamBName, date, time, stadiumName, scoreA, scoreB",
+        "GET /api/matches?date=2026-05-20 returns 200 with JSON array of matches for that date",
+        "GET /api/matches?date=2026-05-20 returns 200 with empty array when no matches exist for that date",
+        "GET /api/matches?date=invalid returns 400 with error JSON body",
+        "/api/** is added to the public security permit-list",
+        "Endpoint is accessible without authentication for guest, user, and admin"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "stadium-capacity-rest-endpoint",
+      "title": "Stadium Capacity REST GET Endpoint",
+      "description": "Build the complete vertical slice for retrieving stadium capacity by id. Create a StadiumCapacityDTO record with fields: id, name, capacity. Add a GET /api/stadiums/{id}/capacity endpoint (in the existing or a new @RestController) using @PathVariable. Look up the stadium via StadiumRepository.findById. Return 200 with JSON object containing id, name, capacity. Return 404 with { \"error\": \"Stadium not found\" } when the stadium id does not exist.",
+      "acceptance_criteria": [
+        "StadiumCapacityDTO record contains id, name, capacity",
+        "GET /api/stadiums/1/capacity returns 200 with JSON object for an existing stadium",
+        "GET /api/stadiums/999/capacity returns 404 with { \"error\": \"Stadium not found\" }",
+        "Endpoint is accessible without authentication for guest, user, and admin"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "webclient-consumer-service",
+      "title": "Spring WebClient Consumer Service",
+      "description": "Add spring-boot-starter-webflux dependency to pom.xml. Create a @Configuration class that defines a WebClient bean with the application's base URL (e.g. http://localhost:8080). Create a service class (e.g. MatchWebClientService) that uses the WebClient bean to call GET /api/matches?date={date} returning Flux<MatchRestDTO> and GET /api/stadiums/{id}/capacity returning Mono<StadiumCapacityDTO>. The service must be injectable and callable as proof that the application consumes its own REST API via Spring Reactive WebClient.",
+      "acceptance_criteria": [
+        "spring-boot-starter-webflux dependency is present in pom.xml",
+        "A @Configuration class defines a WebClient bean with the correct base URL",
+        "A service class consumes GET /api/matches via WebClient and returns Flux<MatchRestDTO>",
+        "The same service consumes GET /api/stadiums/{id}/capacity via WebClient and returns Mono<StadiumCapacityDTO>",
+        "The WebClient consumer service is injectable and callable as proof of the WebClient requirement"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "rest-controller-tests",
+      "title": "REST Controller Tests",
+      "description": "Write @WebMvcTest tests for both REST endpoints. Use MockMvc and mock the service/repository layer. Cover: happy path for matches endpoint (200 with data), empty list for matches endpoint (200 with []), happy path for stadium capacity (200 with JSON), and 404 for unknown stadium. This fulfills the school-required 'REST controller tests' category.",
+      "acceptance_criteria": [
+        "Test class uses @WebMvcTest targeting the REST controller(s)",
+        "Test: GET /api/matches?date=2026-05-20 returns 200 with expected JSON array",
+        "Test: GET /api/matches?date=2026-05-20 returns 200 with empty list when no matches exist",
+        "Test: GET /api/stadiums/1/capacity returns 200 with expected JSON object",
+        "Test: GET /api/stadiums/999/capacity returns 404",
+        "Tests use MockMvc with mocked service/repository layers"
+      ],
+      "priority": 4,
+      "passes": false
+    }
+  ]
+}
+

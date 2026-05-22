@@ -97,7 +97,7 @@
         "Ranking score ordering is driven from the team score boundary rather than duplicated ranking calculations inside Thymeleaf."
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "finish-public-navigation-and-i18n-screen",
@@ -111,7 +111,7 @@
         "Navigation and public screen updates remain compatible with the access-and-roles route boundaries already in the project."
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-public-mvc-and-security-closure-tests",
@@ -126,7 +126,7 @@
         "This task does not add REST controller, WebClient or e2e test work to the public MVC feature."
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     }
   ]
 }

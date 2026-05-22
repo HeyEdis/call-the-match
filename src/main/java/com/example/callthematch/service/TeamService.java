@@ -1,6 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputTeamDTO;
+import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNotFound;
@@ -27,6 +28,10 @@ public class TeamService {
         return new TeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.calculateTeamScore());
     }
 
+    private PublicRankingDTO toPublicRankingDTO(Team t) {
+        return new PublicRankingDTO(t.getName(), t.calculateTeamScore(), t.getMembers().size());
+    }
+
     private InputTeamDTO toInputDTO(Team t) {
         return new InputTeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.getScore());
     }
@@ -43,11 +48,11 @@ public class TeamService {
                 .toList();
     }
 
-    public List<TeamDTO> getTop10Teams() {
+    public List<PublicRankingDTO> getTop10Teams() {
         return teamRepository.findAll()
                 .stream()
-                .map(c -> toDTO(c))
-                .sorted(Comparator.comparing(TeamDTO::score).reversed())
+                .map(this::toPublicRankingDTO)
+                .sorted(Comparator.comparing(PublicRankingDTO::score).reversed())
                 .limit(10)
                 .toList();
     }

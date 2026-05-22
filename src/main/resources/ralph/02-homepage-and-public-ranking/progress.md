@@ -42,3 +42,28 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The public detail template was inspected after the run to confirm it retains only fixture/result context and nullable score output. The shared MVC advice was inspected to confirm both `CompetitionNotFound` and `MethodArgumentTypeMismatchException` return `error/404` with not-found status.
   - Focused MVC error assertions remain scheduled for the public closure-test task.
 - **Status**: acceptance criteria verified for both tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Finish Public Ranking, Shell i18n And Closure Tests
+
+- **Tasks**:
+  - `harden-public-top-ten-ranking-summary` - Harden Public Top-10 Ranking Summary
+  - `finish-public-navigation-and-i18n-screen` - Finish Public Navigation And i18n Screen
+  - `add-public-mvc-and-security-closure-tests` - Add Public MVC And Security Closure Tests
+- **What changed**: narrowed the ranking model to a public summary DTO with team name, total score and member count; kept score ordering and top-10 limiting in the team service; moved all visible ranking-screen title, copy and table labels into the message bundle; and added MVC/security assertions for public home, ranking and match-detail browsing including friendly detail errors.
+- **Decisions**: used the ranking page for the full public i18n slice because it has no date field to format. The existing shared navbar already keeps home, ranking, login, registration, user and admin entry points role-aware, so this batch kept that navigation behavior and verified public access rather than widening the public shell.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/dto/response/PublicRankingTeamDTO.java`
+  - `src/main/java/com/example/callthematch/service/TeamService.java`
+  - `src/main/resources/templates/ranking/list.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/test/java/com/example/callthematch/PublicBrowseMvcTests.java`
+  - `src/test/java/com/example/callthematch/AccessSecurityMvcTests.java`
+  - `src/main/resources/plan/02-homepage-and-public-ranking/plan.json`
+  - `src/main/resources/ralph/02-homepage-and-public-ranking/progress.md`
+- **Verification**:
+  - `.\mvnw.cmd test` did not start Maven because the wrapper PowerShell startup path failed with `Cannot index into a null array`.
+  - A first sandboxed direct Maven 3.9.14 run could not resolve the Spring Boot parent because Maven Central access was denied.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - Final test result: 11 tests run, 0 failures and 0 errors.
+  - Existing Hibernate missing-table DDL warnings and Mockito agent warnings remain noisy in the passing build output.
+- **Status**: acceptance criteria verified for all three tasks and their `"passes"` flags set to `true`.

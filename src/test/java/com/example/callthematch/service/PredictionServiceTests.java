@@ -1,6 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
+import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Prediction;
@@ -10,8 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,7 +28,7 @@ class PredictionServiceTests {
         PredictionRepository predictionRepository = mock(PredictionRepository.class);
         PredictionService predictionService = predictionService(predictionRepository);
         MyUser user = MyUser.builder().id(1L).build();
-        Competition competition = Competition.builder().id(2L).build();
+        Competition competition = openCompetition();
 
         when(predictionRepository.save(any(Prediction.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -44,7 +48,7 @@ class PredictionServiceTests {
         PredictionRepository predictionRepository = mock(PredictionRepository.class);
         PredictionService predictionService = predictionService(predictionRepository);
         MyUser user = MyUser.builder().id(1L).build();
-        Competition competition = Competition.builder().id(2L).build();
+        Competition competition = openCompetition();
         Prediction existingPrediction = Prediction.builder()
                 .user(user)
                 .competition(competition)
@@ -56,12 +60,27 @@ class PredictionServiceTests {
                 .thenReturn(Optional.of(existingPrediction));
         when(predictionRepository.save(any(Prediction.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Prediction savedPrediction = predictionService.savePrediction(
-                user, competition, new InputPredictionDTO(3, 4));
+        predictionService.savePrediction(user, competition, new InputPredictionDTO(3, 4));
 
-        assertThat(savedPrediction).isSameAs(existingPrediction);
-        assertThat(savedPrediction.getPredictedScoreA()).isEqualTo(3);
-        assertThat(savedPrediction.getPredictedScoreB()).isEqualTo(4);
+        assertThat(existingPrediction.getPredictedScoreA()).isEqualTo(3);
+        assertThat(existingPrediction.getPredictedScoreB()).isEqualTo(4);
+        verify(predictionRepository).save(existingPrediction);
+    }
+
+    @Test
+    void savePredictionRejectsPredictionAfterOneHourCutoff() {
+        PredictionRepository predictionRepository = mock(PredictionRepository.class);
+        PredictionService predictionService = predictionService(predictionRepository);
+        MyUser user = MyUser.builder().id(1L).build();
+        Competition competition = Competition.builder()
+                .id(2L)
+                .date(LocalDate.now().minusDays(1))
+                .time(LocalTime.NOON)
+                .build();
+
+        assertThatThrownBy(() -> predictionService.savePrediction(
+                user, competition, new InputPredictionDTO(2, 1)))
+                .isInstanceOf(PredictionCutoffPassed.class);
     }
 
     private PredictionService predictionService(PredictionRepository predictionRepository) {
@@ -69,5 +88,13 @@ class PredictionServiceTests {
                 predictionRepository,
                 mock(CompetitionRepository.class),
                 mock(UserService.class));
+    }
+
+    private Competition openCompetition() {
+        return Competition.builder()
+                .id(2L)
+                .date(LocalDate.now().plusDays(1))
+                .time(LocalTime.NOON)
+                .build();
     }
 }

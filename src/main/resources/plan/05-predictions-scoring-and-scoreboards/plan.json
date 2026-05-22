@@ -107,7 +107,7 @@
         "Form disables submit button when cutoff has passed"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-constants-bundle",
@@ -120,7 +120,7 @@
         "messages.properties contains scoring.uniqueOutcomeBonus=1"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-service",
@@ -136,7 +136,7 @@
         "Bonuses computed per team predictions list, not globally"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "result-triggers-recalculation",

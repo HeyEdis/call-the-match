@@ -2,6 +2,7 @@ package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
+import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Prediction;
@@ -31,14 +32,18 @@ public class PredictionService {
                 .orElseGet(InputPredictionDTO::new);
     }
 
-    public Prediction saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto) {
+    public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto) {
         MyUser user = userService.getCurrentUser();
         Competition competition = findCompetitionById(competitionId);
 
-        return savePrediction(user, competition, dto);
+        savePrediction(user, competition, dto);
     }
 
-    public Prediction savePrediction(MyUser user, Competition competition, InputPredictionDTO dto) {
+    public void savePrediction(MyUser user, Competition competition, InputPredictionDTO dto) {
+        if (isCutoffPassed(competition)) {
+            throw new PredictionCutoffPassed();
+        }
+
         Prediction prediction = predictionRepository.findByUserAndCompetition(user, competition)
                 .orElseGet(() -> Prediction.builder()
                         .user(user)
@@ -49,7 +54,16 @@ public class PredictionService {
         prediction.setPredictedScoreA(dto.predictedScoreA());
         prediction.setPredictedScoreB(dto.predictedScoreB());
 
-        return predictionRepository.save(prediction);
+        predictionRepository.save(prediction);
+    }
+
+    public boolean isCutoffPassed(Long competitionId) {
+        return isCutoffPassed(findCompetitionById(competitionId));
+    }
+
+    private boolean isCutoffPassed(Competition competition) {
+        LocalDateTime kickoff = LocalDateTime.of(competition.getDate(), competition.getTime());
+        return !LocalDateTime.now().isBefore(kickoff.minusHours(1));
     }
 
     private Competition findCompetitionById(Long id) {

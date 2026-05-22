@@ -37,7 +37,7 @@ class PredictionMvcTests {
 
     @Test
     void invalidPredictionReturnsFieldErrorsAndValidPredictionRedirects() throws Exception {
-        mockMvc.perform(post("/predictions/3")
+        mockMvc.perform(post("/predictions/5")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
                         .param("predictedScoreA", "-1"))
@@ -46,12 +46,28 @@ class PredictionMvcTests {
                 .andExpect(model().attributeHasFieldErrors(
                         "inputPredictionDto", "predictedScoreA", "predictedScoreB"));
 
-        mockMvc.perform(post("/predictions/3")
+        mockMvc.perform(post("/predictions/5")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
                         .param("predictedScoreA", "2")
                         .param("predictedScoreB", "1"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/competition/3"));
+                .andExpect(redirectedUrl("/competition/5"));
+    }
+
+    @Test
+    void closedPredictionFormDisablesSubmitAndShowsCutoffErrorOnSave() throws Exception {
+        mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("disabled")));
+
+        mockMvc.perform(post("/predictions/3")
+                        .with(user("user1@example.com").roles("USER"))
+                        .with(csrf())
+                        .param("predictedScoreA", "2")
+                        .param("predictedScoreB", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("prediction/form"))
+                .andExpect(model().attributeExists("errorMessage"));
     }
 }

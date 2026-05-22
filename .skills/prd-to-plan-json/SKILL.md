@@ -18,7 +18,7 @@ The PRD and Markdown plans remain under:
 
 ## Project Context
 
-Before drafting tasks for call-the-match, use the ewd-schoolrichtlijnen skill. Its school conventions are mandatory context for task descriptions and acceptance criteria.
+Before drafting tasks for call-the-match, use the project-guidelines skill. Its school conventions are mandatory context for task descriptions and acceptance criteria.
 
 This skill is meant for a Java Spring Boot application using:
 

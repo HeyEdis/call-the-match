@@ -5,7 +5,7 @@ description: Turn a call-the-match PRD into a school-conform multi-phase Markdow
 
 # PRD to Plan
 
-Break a `call-the-match` PRD into a phased Markdown implementation plan using vertical slices (tracer bullets). This skill is tailored to the local Spring Boot school project and must follow `ewd-schoolrichtlijnen`.
+Break a `call-the-match` PRD into a phased Markdown implementation plan using vertical slices (tracer bullets). This skill is tailored to the local Spring Boot school project and must follow `project-guidelines`.
 
 Generated plans are written to:
 
@@ -15,7 +15,7 @@ Do not use `docs/features` for this project.
 
 ## Required Context
 
-Before drafting or updating a plan, use the `ewd-schoolrichtlijnen` skill. Its rules are mandatory for this project.
+Before drafting or updating a plan, use the `project-guidelines` skill. Its rules are mandatory for this project.
 
 Carry these durable project decisions into plans when relevant:
 
@@ -93,7 +93,7 @@ Break the PRD into tracer-bullet phases. A phase is a thin, complete path throug
 - If a phase touches tests, acceptance criteria must map to the required school categories: MVC controller, REST controller, security, validation for existing annotations, custom annotation, and validator class.
 - Keep REST/WebClient as a separate late phase unless the user explicitly asks to interleave it.
 - Keep tests as late closure phases unless the feature is a small validator/scoring module where testability must be designed immediately.
-- For good/bad examples, refer to `ewd-schoolrichtlijnen/references/good-bad-examples.md` instead of duplicating large examples here.
+- For good/bad examples, refer to `project-guidelines/references/good-bad-examples.md` instead of duplicating large examples here.
 - If the PRD contains a Sources section, carry those references into the plan.
 - If sources lack the Git repository URL, identify it with `git remote -v` and add it.
 </vertical-slice-rules>

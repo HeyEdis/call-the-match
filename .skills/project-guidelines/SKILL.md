@@ -1,9 +1,9 @@
 ﻿---
-name: ewd-schoolrichtlijnen
+name: project-guidelines
 description: Apply the EWD school conventions for the call-the-match Spring Boot project. Use when planning, implementing, reviewing, testing, or generating Ralph tasks for this project, especially for MVC/Thymeleaf, JPA/MySQL, login and Spring Security, validation/i18n, exceptions, REST/WebClient, and JUnit/MockMvc tests.
 ---
 
-# EWD Schoolrichtlijnen
+# Project Guidelines for call-the-match
 
 ## Purpose
 

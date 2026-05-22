@@ -56,7 +56,7 @@ Example prompt in Codex:
 
 ```text
 Gebruik ralph-init voor feature 01-access-accounts-and-roles.
-Maak de Ralph scaffold en volg ewd-schoolrichtlijnen.
+Maak de Ralph scaffold en volg project-guidelines.
 ```
 
 After initialization, check that the script, prompts, progress log, and TODO file exist.
@@ -103,7 +103,7 @@ Start with one supervised task:
 
 HITL mode should:
 
-1. use `ewd-schoolrichtlijnen`;
+1. use `project-guidelines`;
 2. read the feature PRD, `plan.md`, `plan.json`, `progress.md`, and `TODO.md`;
 3. check the current codebase and `git status`;
 4. pick the highest-priority incomplete task;
@@ -131,7 +131,7 @@ AFK mode may continue through low-risk decisions that can be derived from:
 - `plan.json`;
 - `progress.md`;
 - `TODO.md`;
-- `ewd-schoolrichtlijnen`;
+- `project-guidelines`;
 - the school notes, richtlijnen, and exercise patterns.
 
 AFK mode must not guess on:
@@ -236,7 +236,7 @@ src/main/resources/plan/03-team-management/plan.json
 
 ```text
 Use the Ralph HITL workflow for feature 01-access-accounts-and-roles.
-Read the PRD, plan.md, plan.json, progress.md, TODO.md and ewd-schoolrichtlijnen.
+Read the PRD, plan.md, plan.json, progress.md, TODO.md and project-guidelines.
 Work only the highest-priority incomplete task and stop for review.
 ```
 

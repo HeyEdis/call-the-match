@@ -4,7 +4,7 @@ You are Codex working inside the `call-the-match` Spring Boot EWD project in AFK
 
 ## Context To Read First
 
-1. Use the `ewd-schoolrichtlijnen` skill.
+1. Use the `project-guidelines` skill.
 2. Read the selected feature PRD, feature `plan.md`, `plan.json`, `progress.md`, and `TODO.md`.
 3. Check `git status --short`.
 4. Inspect the relevant current code before editing.
@@ -49,7 +49,7 @@ Do not ask questions for low-risk choices that can be inferred from:
 - `plan.md`;
 - `plan.json` acceptance criteria;
 - `progress.md` and `TODO.md`;
-- `ewd-schoolrichtlijnen`;
+- `project-guidelines`;
 - local notes, richtlijnen and exercise patterns already available.
 
 Do not guess on:

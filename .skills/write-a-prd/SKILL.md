@@ -7,7 +7,7 @@ description: Create or revise a school-conform PRD for the call-the-match Spring
 
 Create a Product Requirements Document for the `call-the-match` Spring Boot school project.
 
-This skill is tailored to the HOGENT EWD project workflow. It must follow `ewd-schoolrichtlijnen` and prioritize safe passing before polish.
+This skill is tailored to the HOGENT EWD project workflow. It must follow `project-guidelines` and prioritize safe passing before polish.
 
 Generated feature PRDs are written to:
 
@@ -19,7 +19,7 @@ Create or revise one feature PRD at a time. Only create a master PRD when the us
 
 ## Required Context
 
-Before writing or revising a PRD, use the `ewd-schoolrichtlijnen` skill. Its rules are mandatory for this project.
+Before writing or revising a PRD, use the `project-guidelines` skill. Its rules are mandatory for this project.
 
 Carry these durable project decisions into PRDs when relevant:
 

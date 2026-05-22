@@ -108,4 +108,4 @@ if ($mode -eq "preview") {
 
 Write-Host ""
 Write-Host "Paste this into Codex:"
-Write-Host "Use the Ralph $mode workflow for feature '$Feature'. Task limit: $taskLimit. Read @$prdPath @$planMdPath @$planJsonPath @$progressPath @$todoPath and @$promptFile, follow ewd-schoolrichtlijnen, check git status --short, then work the highest-priority incomplete task(s). Commit only if Commit=$Commit."
+Write-Host "Use the Ralph $mode workflow for feature '$Feature'. Task limit: $taskLimit. Read @$prdPath @$planMdPath @$planJsonPath @$progressPath @$todoPath and @$promptFile, follow project-guidelines, check git status --short, then work the highest-priority incomplete task(s). Commit only if Commit=$Commit."

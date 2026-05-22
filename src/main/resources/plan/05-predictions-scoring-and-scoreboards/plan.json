@@ -1,0 +1,206 @@
+{
+  "sources": [
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for call-the-match"
+    },
+    {
+      "url": "src/main/resources/prd/05-predictions-scoring-and-scoreboards-prd.md",
+      "description": "Feature PRD: Predictions, Scoring And Scoreboards"
+    },
+    {
+      "url": "src/main/resources/prd/05-predictions-scoring-and-scoreboards/plan.md",
+      "description": "Approved feature plan with phased vertical slices"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "prediction-dto-validation",
+      "title": "Prediction Input DTO With Validation",
+      "description": "Create InputPredictionDTO in the dto package with two Integer fields: predictedScoreA and predictedScoreB. Annotate both with @NotNull and @Min(0) using Jakarta Validation. Add corresponding error messages to src/main/resources/i18n/messages.properties (e.g. prediction.scoreA.required, prediction.scoreA.min, prediction.scoreB.required, prediction.scoreB.min).",
+      "acceptance_criteria": [
+        "InputPredictionDTO exists with predictedScoreA and predictedScoreB fields",
+        "Both fields annotated with @NotNull and @Min(0)",
+        "Resource bundle contains error messages for null and negative score validation failures"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "prediction-repository-query",
+      "title": "Prediction Repository User+Competition Query",
+      "description": "Add a findByUserAndCompetition(MyUser user, Competition competition) method to PredictionRepository returning Optional<Prediction>. Add a unique constraint on (userId, competitionId) to the Prediction entity @Table annotation to enforce one prediction per user per match at the database level.",
+      "acceptance_criteria": [
+        "PredictionRepository has findByUserAndCompetition returning Optional<Prediction>",
+        "Prediction entity has @Table uniqueConstraints on (userId, competitionId)",
+        "Application starts without errors with the new constraint"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "prediction-service-upsert",
+      "title": "Prediction Service Create/Update",
+      "description": "Create PredictionService in the service package. Implement a savePrediction(MyUser user, Competition competition, InputPredictionDTO dto) method that finds an existing prediction via the repository or creates a new one, sets the predicted scores from the DTO, sets createdAt on new predictions, and saves. Return the saved Prediction.",
+      "acceptance_criteria": [
+        "PredictionService exists with savePrediction method",
+        "If no existing prediction, a new one is created and persisted",
+        "If an existing prediction exists, its scores are updated and persisted",
+        "createdAt is set on new predictions"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "prediction-controller-form",
+      "title": "Prediction Controller And Thymeleaf Form",
+      "description": "Create PredictionController mapped to /predictions. GET /predictions/{competitionId} loads the competition, finds the user's existing prediction if any, pre-fills InputPredictionDTO, and renders a Thymeleaf form template (templates/prediction/form.html). POST /predictions/{competitionId} validates the DTO, calls PredictionService.savePrediction, and redirects on success or re-renders with errors. The route requires ROLE_USER in SecurityConfig. The form shows both country names and input fields for scores.",
+      "acceptance_criteria": [
+        "GET /predictions/{competitionId} renders the prediction form for authenticated USER",
+        "Form displays country names for teamA and teamB",
+        "Form pre-fills existing prediction values when editing",
+        "POST validates DTO and shows errors on invalid input",
+        "POST saves prediction and redirects on success",
+        "Security config restricts /predictions/** to ROLE_USER",
+        "Guest is redirected to login, admin gets 403"
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "cutoff-enforcement",
+      "title": "One-Hour Cutoff Enforcement",
+      "description": "In PredictionService.savePrediction, before saving, compute the cutoff as competition.date at competition.time minus 1 hour. If LocalDateTime.now() is at or after the cutoff, throw a custom exception or return an error. Add a resource bundle message (prediction.cutoff.passed). In PredictionController, catch the error and display it on the form. Optionally pass a cutoffPassed boolean to the template to disable the submit button.",
+      "acceptance_criteria": [
+        "Service computes cutoff as competition date+time minus 1 hour",
+        "Service rejects prediction when current time >= cutoff",
+        "Error message prediction.cutoff.passed exists in resource bundle",
+        "Controller displays cutoff error message to the user",
+        "Form disables submit button when cutoff has passed"
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "scoring-constants-bundle",
+      "title": "Scoring Constants In Resource Bundle",
+      "description": "Add scoring constants to src/main/resources/i18n/messages.properties: scoring.exactScore=5, scoring.correctOutcome=2, scoring.uniqueExactBonus=3, scoring.uniqueOutcomeBonus=1. These will be read by ScoringService.",
+      "acceptance_criteria": [
+        "messages.properties contains scoring.exactScore=5",
+        "messages.properties contains scoring.correctOutcome=2",
+        "messages.properties contains scoring.uniqueExactBonus=3",
+        "messages.properties contains scoring.uniqueOutcomeBonus=1"
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "scoring-service",
+      "title": "Scoring Service Implementation",
+      "description": "Create ScoringService in the service package. Load scoring constants from the resource bundle (via @Value with property placeholders or MessageSource). Implement calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB, List<Prediction> teamPredictions) that: awards exactScore points for exact match; awards correctOutcome points for correct winner/draw without exact match; awards 0 otherwise. Then compute unique bonuses: if only one prediction in teamPredictions has that exact score, add uniqueExactBonus; if only one has that outcome, add uniqueOutcomeBonus. Return total points.",
+      "acceptance_criteria": [
+        "ScoringService exists and reads constants from resource bundle",
+        "Exact-score match awards 5 points",
+        "Correct outcome only awards 2 points",
+        "Wrong prediction awards 0 points",
+        "Unique exact-score bonus (+3) awarded when prediction is unique in team",
+        "Unique outcome bonus (+1) awarded when outcome is unique in team",
+        "Bonuses computed per team predictions list, not globally"
+      ],
+      "priority": 7,
+      "passes": false
+    },
+    {
+      "id": "result-triggers-recalculation",
+      "title": "Official Result Triggers Recalculation",
+      "description": "When admin saves an official result (scoreA/scoreB) on a Competition via the existing CompetitionController/CompetitionService, trigger score recalculation. Add a method in ScoringService (or a new RecalculationService) that: finds all predictions for the competition, groups them by team (via each prediction user's team memberships), calculates points for each prediction using team context, updates prediction.pointsEarned, recalculates each affected TeamMember.score as sum of their prediction points, and recalculates each affected Team.score via calculateTeamScore(). Call this from the admin result-save flow.",
+      "acceptance_criteria": [
+        "Admin saving official result triggers recalculation",
+        "All predictions for the competition are rescored",
+        "Each prediction.pointsEarned is updated and persisted",
+        "Each affected TeamMember.score is recalculated as sum of their prediction points",
+        "Each affected Team.score is recalculated from member scores",
+        "Changing an already-entered result recalculates correctly (idempotent)",
+        "Public ranking reflects updated team totals"
+      ],
+      "priority": 8,
+      "passes": false
+    },
+    {
+      "id": "private-scoreboard-page",
+      "title": "Private Team Scoreboard",
+      "description": "Add GET /team/{id}/scoreboard to TeamController (or a new ScoreboardController). Load the team and its members sorted by score descending. Verify the authenticated user is a member of the team; if not, throw AccessDeniedException (403). Render a Thymeleaf template (templates/team/scoreboard.html) showing member names, scores, and team total. Guests redirected to login. Admin gets 403.",
+      "acceptance_criteria": [
+        "GET /team/{id}/scoreboard renders scoreboard for team members",
+        "Members listed sorted by score descending",
+        "Each row shows member name and score",
+        "Team total score displayed",
+        "Non-member authenticated user gets 403",
+        "Guest redirected to login",
+        "Admin gets 403"
+      ],
+      "priority": 9,
+      "passes": false
+    },
+    {
+      "id": "security-hardening",
+      "title": "Prediction And Scoreboard Security Config",
+      "description": "Ensure SecurityConfig explicitly restricts /predictions/** to ROLE_USER and /team/*/scoreboard to ROLE_USER. Admin (ROLE_ADMIN) should not have access to these routes. Membership check for scoreboard is enforced in the controller/service layer via AccessDeniedException, not only by URL pattern.",
+      "acceptance_criteria": [
+        "Security config restricts /predictions/** to ROLE_USER",
+        "Security config restricts /team/*/scoreboard to ROLE_USER",
+        "Admin role gets 403 on prediction and scoreboard routes",
+        "Guest redirected to login on prediction and scoreboard routes",
+        "Scoreboard membership enforced server-side in controller/service"
+      ],
+      "priority": 10,
+      "passes": false
+    },
+    {
+      "id": "scoring-service-tests",
+      "title": "Scoring Service Unit Tests",
+      "description": "Create ScoringServiceTests in the test package. Test cases: exact-score prediction earns 5; correct-outcome-only earns 2; wrong prediction earns 0; draw scenario works; unique exact bonus awards +3 when unique in team; unique outcome bonus awards +1 when unique; no bonus when multiple members share same prediction; cutoff rejection in PredictionService.",
+      "acceptance_criteria": [
+        "Test: exact-score prediction earns 5 points",
+        "Test: correct-outcome-only earns 2 points",
+        "Test: wrong prediction earns 0 points",
+        "Test: draw scenario scored correctly",
+        "Test: unique exact bonus +3 when unique in team",
+        "Test: unique outcome bonus +1 when unique in team",
+        "Test: no bonus when multiple members share prediction",
+        "Test: cutoff enforcement rejects late predictions"
+      ],
+      "priority": 11,
+      "passes": false
+    },
+    {
+      "id": "prediction-mvc-tests",
+      "title": "Prediction MVC And Security Tests",
+      "description": "Create PredictionMvcTests using MockMvc. Test GET and POST /predictions/{competitionId} for authenticated user with valid and invalid input. Security tests: guest cannot access prediction routes (redirect to login); admin gets 403; non-member cannot access scoreboard (403).",
+      "acceptance_criteria": [
+        "MVC test: form submission succeeds for valid input",
+        "MVC test: form rejects invalid input with validation errors",
+        "Security test: guest cannot access prediction routes",
+        "Security test: admin cannot access prediction routes (403)",
+        "Security test: non-member cannot access scoreboard (403)"
+      ],
+      "priority": 12,
+      "passes": false
+    },
+    {
+      "id": "prediction-validation-tests",
+      "title": "Prediction DTO Validation Tests",
+      "description": "Create InputPredictionDTOValidationTests using Jakarta Validator. Test that null predictedScoreA/B fails validation. Test that negative values fail @Min(0). Test that valid non-negative integers pass.",
+      "acceptance_criteria": [
+        "Test: null predictedScoreA fails validation",
+        "Test: null predictedScoreB fails validation",
+        "Test: negative predictedScoreA fails @Min(0)",
+        "Test: negative predictedScoreB fails @Min(0)",
+        "Test: valid non-negative values pass validation"
+      ],
+      "priority": 13,
+      "passes": false
+    }
+  ]
+}
+

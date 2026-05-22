@@ -7,7 +7,7 @@ description: Scaffold a Codex-native Ralph workflow for the call-the-match Sprin
 
 Scaffold a Codex-native Ralph workflow into the current `call-the-match` repository.
 
-This skill is tailored to the HOGENT EWD Spring Boot project. It must follow `ewd-schoolrichtlijnen`.
+This skill is tailored to the HOGENT EWD Spring Boot project. It must follow `project-guidelines`.
 
 Ralph here means: a repeatable Codex workflow that works through `plan.json` tasks, keeps a `progress.md` log, respects the PRD and school guidelines, and supports human-in-the-loop or AFK-style runs.
 
@@ -40,7 +40,7 @@ Read these existing inputs:
 - PRD: `src/main/resources/prd/{feature}-prd.md`
 - Markdown plan: `src/main/resources/prd/{feature}/plan.md`
 - JSON task plan: `src/main/resources/plan/{feature}/plan.json`
-- School rules: `ewd-schoolrichtlijnen`
+- School rules: `project-guidelines`
 
 Do not use `docs/features` for this project.
 
@@ -74,7 +74,7 @@ Default behavior without `--hitl` or `--afk`: preview only. Show feature paths, 
 
 Every generated prompt must instruct Codex to use:
 
-- `ewd-schoolrichtlijnen`
+- `project-guidelines`
 - the feature PRD
 - the feature `plan.md`
 - the feature `plan.json`
@@ -226,7 +226,7 @@ Write-Host "Prompt: $promptFile"
 
 Write-Host ""
 Write-Host "Paste this into Codex:"
-Write-Host "Use ralph-init workflow for feature '$Feature'. Mode: $(if ($Hitl) { 'HITL' } elseif ($Afk) { 'AFK' } else { 'standard preview' }). Task limit: $taskLimit. Read @$prdPath @$planMdPath @$planJsonPath @$progressPath @$todoPath and @$promptFile, follow ewd-schoolrichtlijnen, then work the highest-priority incomplete task(s). Commit only if Commit=$Commit."
+Write-Host "Use ralph-init workflow for feature '$Feature'. Mode: $(if ($Hitl) { 'HITL' } elseif ($Afk) { 'AFK' } else { 'standard preview' }). Task limit: $taskLimit. Read @$prdPath @$planMdPath @$planJsonPath @$progressPath @$todoPath and @$promptFile, follow project-guidelines, then work the highest-priority incomplete task(s). Commit only if Commit=$Commit."
 ```
 
 ### 4. Create Standard Prompt
@@ -235,7 +235,7 @@ Create `prompts/ralph-iteration.md`.
 
 It must instruct Codex to:
 
-1. Read `ewd-schoolrichtlijnen`.
+1. Read `project-guidelines`.
 2. Read the feature PRD, `plan.md`, `plan.json`, `progress.md`, and `TODO.md`.
 3. Check `git status --short`.
 4. Pick the highest-priority incomplete task where `passes` is `false`.
@@ -267,7 +267,7 @@ You are Codex working inside the `call-the-match` Spring Boot EWD project.
 
 ## Context To Read First
 
-1. Use the `ewd-schoolrichtlijnen` skill.
+1. Use the `project-guidelines` skill.
 2. Read the feature PRD, feature `plan.md`, `plan.json`, `progress.md`, and `TODO.md`.
 3. Check `git status --short`.
 4. Inspect the relevant code before editing.
@@ -374,7 +374,7 @@ Do not ask questions for low-risk choices that can be inferred from:
 - plan.md;
 - plan.json acceptance criteria;
 - progress.md/TODO.md;
-- ewd-schoolrichtlijnen;
+- project-guidelines;
 - local notes/richtlijnen/exercise patterns when already available.
 
 Do not guess on:

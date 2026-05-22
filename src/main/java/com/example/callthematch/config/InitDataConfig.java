@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ public class InitDataConfig implements CommandLineRunner {
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     Faker faker = new Faker(Locale.of("nl", "BE"));
     Random r = new Random();
@@ -51,7 +53,7 @@ public class InitDataConfig implements CommandLineRunner {
                 .firstName("Admin")
                 .lastName("User")
                 .userName("Lord of Lords")
-                .passwordHash("password")
+                .passwordHash(passwordEncoder.encode("password"))
                 .role(Role.ADMIN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -67,7 +69,7 @@ public class InitDataConfig implements CommandLineRunner {
                     .firstName(faker.name().firstName())
                     .lastName(faker.name().lastName())
                     .userName(username)
-                    .passwordHash("password")
+                    .passwordHash(passwordEncoder.encode("password"))
                     .role(Role.USER)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())

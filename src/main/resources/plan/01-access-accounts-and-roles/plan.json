@@ -1,0 +1,161 @@
+{
+  "sources": [
+    {
+      "url": "local://FIFA_World_Cup_2026_-_Team_Prediction.pdf#pages=2,6",
+      "description": "FIFA World Cup 2026 Team Prediction PDF pages 2 and 6: roles and security requirements."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Security.pdf",
+      "description": "School security guideline slides for Spring Security, login, logout and role access."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Security_JDBC.pdf",
+      "description": "School security guideline slides for database-backed security and security tests."
+    },
+    {
+      "url": "local://Notes/24-04-26-Security.md",
+      "description": "Lesson notes for custom login, CSRF, principal usage, role display and 403 handling."
+    },
+    {
+      "url": "local://Notes/Project.md",
+      "description": "Project notes for REST permitting, messages and global school-project reminders."
+    },
+    {
+      "url": "local://WorkspacesIntelij/security-exercises",
+      "description": "Security exercise projects identified by the plan: Spring_Boot_security_JPA, Spring_Boot_security_Form and Spring_Boot_security_roles."
+    },
+    {
+      "url": "local://call-the-match",
+      "description": "Existing call-the-match codebase state used by the PRD and Markdown plan."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    },
+    {
+      "url": "local://conversation/access-accounts-and-roles",
+      "description": "User and project decisions carried into this plan: email login, default USER registration, admin separation and real deadline 27 May 2026."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "add-email-based-security-identity",
+      "title": "Add Email-Based Security Identity",
+      "description": "Make the existing User and Role model usable by Spring Security before adding UI flows. Add the JPA-backed email lookup used for authentication, configure school-style password encoding, and map domain roles to user/admin authorities without moving repository access into MVC controllers.",
+      "acceptance_criteria": [
+        "Authentication can load an existing user by email through the repository and security service boundary.",
+        "Passwords used by authentication are encoded with the configured password encoder and are not stored or compared as plain text.",
+        "Role values map consistently to user and admin Spring Security authorities for later route rules.",
+        "MVC controllers do not query UserRepository directly to perform authentication lookup."
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "protect-public-and-user-routes",
+      "title": "Protect Public And User Routes",
+      "description": "Create the first explicit SecurityFilterChain route matrix for public browsing and user-only work. Keep the public home, ranking, competition detail, login, registration, static resources and error pages reachable to guests while protecting existing team routes and the later prediction route group for USER access.",
+      "acceptance_criteria": [
+        "Guests can access public home, public ranking, public competition detail, login, registration, static resources and error pages.",
+        "Guest requests to user-only team routes are no longer treated as public actions.",
+        "Prediction routes are reserved for USER access when that feature is added.",
+        "The route configuration remains explicit about later public REST GET endpoints without implementing REST or WebClient in this task."
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "protect-admin-routes-and-forbidden-access",
+      "title": "Protect Admin Routes And Forbidden Access",
+      "description": "Complete the actor route split for admin work. Restrict match creation, match editing and official result management paths to ADMIN, keep normal users out of official match mutations, keep admins out of team and prediction participation routes for this project, and wire school-style forbidden MVC behavior.",
+      "acceptance_criteria": [
+        "Match-management mutation routes are ADMIN-only in the security route matrix.",
+        "USER access to admin match-management routes is forbidden.",
+        "ADMIN access does not permit team or prediction participation routes in this project.",
+        "Forbidden MVC access resolves through the chosen school-style 403 behavior rather than a raw default error."
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "build-custom-email-login-and-logout-ui",
+      "title": "Build Custom Email Login And Logout UI",
+      "description": "Expose the authentication foundation through school-style MVC and Thymeleaf surfaces. Add the custom login path configured for email credentials and provide visible logout behavior that follows Spring Security and CSRF expectations.",
+      "acceptance_criteria": [
+        "The application renders a custom login screen through MVC and Thymeleaf.",
+        "The login flow accepts email and password parameters that match the project login decision.",
+        "Authenticated screens expose a logout action and mutating logout uses the required security form or CSRF handling.",
+        "Login and logout user-facing copy that belongs in resource bundles is prepared through bundle-backed keys."
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "make-shared-navigation-role-aware",
+      "title": "Make Shared Navigation Role-Aware",
+      "description": "Update the shared Thymeleaf navigation so guest, user and admin entry points reflect the route matrix. Expose account or role context through a school-style MVC/security mechanism where the shared UI needs it.",
+      "acceptance_criteria": [
+        "Guest navigation shows public and access-entry actions without user-only or admin-only workflow links.",
+        "USER navigation exposes team and prediction entry points while hiding admin match-management actions.",
+        "ADMIN navigation exposes match-management entry points while hiding team and prediction participation actions.",
+        "Authenticated account or role context is available to Thymeleaf for the shared navigation without repository calls from the view."
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "build-registration-form-with-validation",
+      "title": "Build Registration Form With Validation",
+      "description": "Add the guest-facing registration form slice using a request DTO, MVC controller behavior and Thymeleaf field error rendering. Use existing Jakarta Validation annotations and resource bundle messages so registration demonstrates the course validation pattern without adding account polish.",
+      "acceptance_criteria": [
+        "Guests can open a registration form backed by a request DTO rather than binding directly to the User entity.",
+        "Existing Jakarta Validation annotations cover required registration form inputs.",
+        "Invalid registration submissions return the form with field errors rendered through Thymeleaf.",
+        "Registration labels, validation messages and user-facing feedback that belong in messages are backed by resource bundle keys."
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "persist-registered-users-as-user",
+      "title": "Persist Registered Users As USER",
+      "description": "Complete registration through the service and repository layers. Save validated accounts with encoded passwords and the default USER role while keeping security lookup concerns separate from normal account persistence.",
+      "acceptance_criteria": [
+        "A valid registration submission persists a new account through the service and repository layers.",
+        "Newly registered accounts receive role USER by default and do not gain ADMIN privileges.",
+        "Registration persists an encoded password hash suitable for the configured login flow.",
+        "The registration implementation keeps MVC controllers thin and keeps normal account persistence separate from the security authentication lookup boundary."
+      ],
+      "priority": 7,
+      "passes": false
+    },
+    {
+      "id": "resolve-team-join-from-authenticated-user",
+      "title": "Resolve Team Join From Authenticated User",
+      "description": "Prove the access work on an existing user-owned action by replacing the hardcoded temporary team join user id with authenticated current-user resolution. Keep the boundary reusable for later team and prediction features and preserve the project rule that admin does not participate in team flows.",
+      "acceptance_criteria": [
+        "The existing team join path no longer uses a hardcoded temporary user id.",
+        "The user used for team join is resolved from the authenticated current-user boundary rather than from controller repository access.",
+        "Guests cannot use the touched team join action and USER behavior remains tied to the authenticated account.",
+        "ADMIN remains excluded from team participation for the touched route."
+      ],
+      "priority": 8,
+      "passes": false
+    },
+    {
+      "id": "add-security-and-mvc-closure-tests",
+      "title": "Add Security And MVC Closure Tests",
+      "description": "Close the feature with focused school-required verification after the access surfaces are stable. Add Security and relevant MVC/validation tests for public access, protected routes, actor restrictions, login and registration behavior introduced by this plan.",
+      "acceptance_criteria": [
+        "Security tests verify guest access to public screens and deny or redirect guest access for protected user/admin flows.",
+        "Security tests verify USER access to user routes, USER denial from admin match-management routes and ADMIN access to admin match-management routes.",
+        "Security tests verify ADMIN is not allowed into team or prediction participation routes for this project.",
+        "MVC controller tests cover observable login or registration behavior introduced by this feature without relying only on contextLoads.",
+        "Validation tests cover existing Jakarta annotation behavior for the registration DTO when registration validation is present.",
+        "This task does not add REST controller, WebClient or e2e test work to the access feature."
+      ],
+      "priority": 9,
+      "passes": false
+    }
+  ]
+}

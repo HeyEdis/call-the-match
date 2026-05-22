@@ -27,6 +27,19 @@ public class CompetitionService {
         return new CompetitionDTO(c.getId(),c.getTeamA(),c.getTeamB(),c.getStadium(),c.getScoreA(),c.getScoreB(),c.getDate(),c.getTime());
     }
 
+    private InputCompetitionDTO toInputDTO(Competition c) {
+        Integer stadiumCode = c.getStadium().getCode();
+        return new InputCompetitionDTO(
+                c.getId(),
+                c.getTeamA().getId(),
+                c.getTeamB().getId(),
+                c.getStadium().getId(),
+                stadiumCode,
+                stadiumCode % 97,
+                c.getDate(),
+                c.getTime());
+    }
+
     private Competition findCompetitionById(Long id)
     {
         return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
@@ -45,6 +58,10 @@ public class CompetitionService {
         return toDTO(findCompetitionById(id));
     }
 
+    public InputCompetitionDTO findInputById(Long id) {
+        return toInputDTO(findCompetitionById(id));
+    }
+
     public Long add(InputCompetitionDTO dto) {
         Competition competition = Competition.builder()
                 .teamA(countryRepository.findById(dto.teamA()).orElseThrow(() -> new CountryNotFound(dto.teamA())))
@@ -53,6 +70,17 @@ public class CompetitionService {
                 .date(dto.date())
                 .time(dto.time())
                 .build();
+
+        return competitionRepository.save(competition).getId();
+    }
+
+    public Long update(InputCompetitionDTO dto) {
+        Competition competition = findCompetitionById(dto.id());
+        competition.setTeamA(countryRepository.findById(dto.teamA()).orElseThrow(() -> new CountryNotFound(dto.teamA())));
+        competition.setTeamB(countryRepository.findById(dto.teamB()).orElseThrow(() -> new CountryNotFound(dto.teamB())));
+        competition.setStadium(stadiumRepository.findById(dto.stadium()).orElseThrow(() -> new StadiumNotFound(dto.stadium())));
+        competition.setDate(dto.date());
+        competition.setTime(dto.time());
 
         return competitionRepository.save(competition).getId();
     }

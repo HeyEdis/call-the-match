@@ -147,7 +147,7 @@
         "The task prepares the edit form without moving update business logic into the view."
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-admin-fixture-edits",
@@ -162,7 +162,7 @@
         "Guest and normal USER actors remain unable to submit edit writes."
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "build-official-result-form-boundary",

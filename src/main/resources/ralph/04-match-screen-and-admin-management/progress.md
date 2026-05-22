@@ -68,3 +68,25 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Ran `.\mvnw.cmd test` successfully.
   - Maven result: 28 tests run, 0 failures, 0 errors and 0 skipped. Existing Hibernate create-drop missing-table DDL warnings and Mockito dynamic-agent warnings remain in the passing output.
 - **Status**: acceptance criteria verified for the five add-fixture tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Complete Admin Fixture Edit Slice
+
+- **Tasks completed**:
+  - `expose-admin-edit-fixture-entry-and-form` - Expose Admin Edit Fixture Entry And Form
+  - `persist-admin-fixture-edits` - Persist Admin Fixture Edits
+- **What changed**: added an admin-only edit link on the public match context, replaced the read-only edit page with a prefilled fixture edit form, loaded backend country and stadium choices for the GET and invalid POST flows, and added the service/controller update path that saves fixture corrections and redirects with bundle-backed feedback.
+- **Decisions**: followed the local `Spring_Boot_list_crud-opl` edit pattern with a service `findInputById(...)` mapper plus service `update(...)`. The edit form reuses `InputCompetitionDTO`, the school validator advice path and `@ValidStadiumChecksum`, so fixture update validation stays aligned with fixture creation.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/CompetitionController.java`
+  - `src/main/java/com/example/callthematch/service/CompetitionService.java`
+  - `src/main/resources/templates/competition/show.html`
+  - `src/main/resources/templates/competition/edit.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/plan/04-match-screen-and-admin-management/plan.json`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/progress.md`
+- **Verification**:
+  - Inspected `SecurityConfig` to confirm `/competition/edit/**` remains ADMIN-only for both GET and POST requests.
+  - Ran `.\mvnw.cmd test` successfully.
+  - Maven result: 28 tests run, 0 failures, 0 errors and 0 skipped. Existing Hibernate create-drop missing-table DDL warnings and Mockito dynamic-agent warnings remain in the passing output.
+  - Ran `git diff --check`; no whitespace errors were reported.
+- **Status**: acceptance criteria verified for the fixture edit form and persistence tasks and both `"passes"` flags set to `true`.

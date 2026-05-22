@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
@@ -35,6 +36,10 @@
        th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
     <p th:unless="${competition.scoreA != null and competition.scoreB != null}"
        th:text="#{competition.detail.noResult}">No official result yet.</p>
+    <p sec:authorize="hasRole('ADMIN')">
+      <a th:href="@{/competition/edit/{id}(id=${competition.id})}"
+         th:text="#{competition.edit.link}">Edit match</a>
+    </p>
   </div>
 </div>
 

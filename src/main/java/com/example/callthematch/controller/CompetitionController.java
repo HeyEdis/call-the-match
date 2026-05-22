@@ -45,7 +45,9 @@ public class CompetitionController {
 
     @GetMapping(value = "/edit/{id}")
     public String edit(@PathVariable Long id, Model model) {
-        model.addAttribute("competition", competitionService.findById(id));
+        model.addAttribute("stadiums", stadiumService.getAllStadiums());
+        model.addAttribute("countries", countryService.getAllCountries());
+        model.addAttribute("inputCompetitionDto", competitionService.findInputById(id));
         return "competition/edit";
     }
 
@@ -80,5 +82,30 @@ public class CompetitionController {
         ra.addFlashAttribute("successMessage", successMessage);
 
         return "redirect:/home";
+    }
+
+    @PostMapping(value = "/edit/{id}")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("inputCompetitionDto") InputCompetitionDTO inputCompetitionDTO,
+                         BindingResult result, Model model,
+                         Locale locale, RedirectAttributes ra) {
+
+        if (result.hasErrors()){
+            log.error("Validation failed for competition {}: {}", id, result.getAllErrors());
+            String errorMessage = messageSource.getMessage("competition_save_fail", null, locale);
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("stadiums", stadiumService.getAllStadiums());
+            model.addAttribute("countries", countryService.getAllCountries());
+            return "competition/edit";
+        }
+
+        Long competitionId = competitionService.update(inputCompetitionDTO);
+        log.info("Competition updated successfully with id {}", competitionId);
+
+        String successMessage =
+                messageSource.getMessage("competition_update_success", new Object[] {competitionId}, locale);
+        ra.addFlashAttribute("successMessage", successMessage);
+
+        return "redirect:/competition/" + competitionId;
     }
 }

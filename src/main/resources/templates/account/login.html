@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{login.title}">Login</title>
+    <title th:text="#{login.label}">Login</title>
 </head>
 <body>
 <header>
@@ -11,7 +11,7 @@
 </header>
 
 <main>
-    <h1 th:text="#{login.title}">Login</h1>
+    <h1 th:text="#{login.label}">Login</h1>
     <p th:if="${param.error}" class="error" th:text="#{login.error}"></p>
     <p th:if="${param.logout}" th:text="#{logout.success}"></p>
     <p th:if="${registrationSuccess}" th:text="#{registration.success}"></p>
@@ -26,7 +26,7 @@
             <label for="password" th:text="#{label.account.password}">Password</label>
             <input id="password" name="password" type="password" autocomplete="current-password" required/>
         </p>
-        <button type="submit" th:text="#{login.submit}">Login</button>
+        <button type="submit" th:text="#{login.label}">Login</button>
     </form>
 </main>
 </body>

@@ -62,7 +62,7 @@
         "The task does not add prediction write UI to the public match detail page."
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "fix-admin-add-match-form-binding",
@@ -76,7 +76,7 @@
         "The Thymeleaf add form keeps repository lookup out of the controller and view."
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "complete-admin-add-match-validation-and-persistence",
@@ -91,7 +91,7 @@
         "Guests and normal USER actors cannot submit fixture creation writes."
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-fixture-cross-field-validator",
@@ -105,7 +105,7 @@
         "Cross-field fixture rules stay out of Thymeleaf and controller business logic."
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "reject-stadium-time-conflicts",
@@ -119,7 +119,7 @@
         "Conflict error messages visible to the admin are backed by the resource bundle."
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-stadium-checksum-custom-annotation",
@@ -133,7 +133,7 @@
         "Checksum failure follows school DTO validation and BindingResult behavior instead of bypassing the form flow."
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "expose-admin-edit-fixture-entry-and-form",
@@ -147,7 +147,7 @@
         "The task prepares the edit form without moving update business logic into the view."
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-admin-fixture-edits",
@@ -162,7 +162,7 @@
         "Guest and normal USER actors remain unable to submit edit writes."
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "build-official-result-form-boundary",
@@ -176,7 +176,7 @@
         "Fixture create/edit rules and prediction input remain outside the official result form boundary."
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-official-match-results",
@@ -190,7 +190,7 @@
         "The task does not add scoring recalculation or prediction write behavior beyond the official result source data."
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "harden-match-mutation-security-and-errors",
@@ -205,7 +205,7 @@
         "This task stays in MVC security and error handling and does not add REST error-response or WebClient implementation."
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-match-mvc-and-security-closure-tests",
@@ -220,7 +220,7 @@
         "This task does not add REST controller, WebClient or e2e tests to the MVC admin match feature."
       ],
       "priority": 12,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-match-validation-closure-tests",
@@ -235,7 +235,7 @@
         "Validation closure stays outside REST controller, WebClient and prediction-write test scope."
       ],
       "priority": 13,
-      "passes": false
+      "passes": true
     }
   ]
 }

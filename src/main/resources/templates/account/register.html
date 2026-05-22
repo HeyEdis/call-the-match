@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{registration.title}">Register</title>
+    <title th:text="#{registration.label}">Register</title>
 </head>
 <body>
 <header>
@@ -11,7 +11,7 @@
 </header>
 
 <main>
-    <h1 th:text="#{registration.title}">Register</h1>
+    <h1 th:text="#{registration.label}">Register</h1>
 
     <form th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
         <p>
@@ -44,7 +44,7 @@
             <span th:if="${#fields.hasErrors('password')}" th:errorclass="error"
                   th:errors="*{password}"></span>
         </p>
-        <button type="submit" th:text="#{registration.submit}">Register</button>
+        <button type="submit" th:text="#{registration.label}">Register</button>
     </form>
 </main>
 </body>

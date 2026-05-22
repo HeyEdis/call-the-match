@@ -52,11 +52,36 @@ class AccessSecurityMvcTests {
     }
 
     @Test
+    void guestIsRedirectedFromAdminMatchWrites() throws Exception {
+        mockMvc.perform(post("/competition/add").with(csrf()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(post("/competition/edit/3").with(csrf()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(post("/competition/3/result").with(csrf()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
     void userCanOpenUserRoutesButNotAdminMatchManagement() throws Exception {
         mockMvc.perform(get("/team/dashboard").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/competition/add").with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/competition/edit/3")
+                        .with(user("user1@example.com").roles("USER"))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/competition/3/result")
+                        .with(user("user1@example.com").roles("USER"))
+                        .with(csrf()))
                 .andExpect(status().isForbidden());
     }
 
@@ -77,6 +102,12 @@ class AccessSecurityMvcTests {
     @Test
     void adminCanOpenMatchManagementButNotParticipationRoutes() throws Exception {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/competition/edit/3").with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/competition/3/result").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/team/dashboard").with(user("admin@example.com").roles("ADMIN")))

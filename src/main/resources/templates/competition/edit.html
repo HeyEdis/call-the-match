@@ -1,34 +1,86 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Edit Competition</title>
+    <title th:text="#{competition.edit.label}">Edit match</title>
 </head>
 <body>
-<h1>Competition</h1>
+<header>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
 
-<table>
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Team A</th>
-        <th>Team B</th>
-        <th>Stadium</th>
-        <th>City</th>
-        <th>Score</th>
-    </tr>
+<h1 th:text="#{competition.edit.label}">Edit match</h1>
+<p th:text="#{competition.edit.summary}">Correct the fixture details.</p>
 
-    <tr>
-        <td th:text="${competition.date}"></td>
-        <td th:text="${competition.time}"></td>
-        <td th:text="${competition.teamA.name}"></td>
-        <td th:text="${competition.teamB.name}"></td>
-        <td th:text="${competition.stadium.name}"></td>
-        <td th:text="${competition.stadium.location.city}"></td>
-        <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
-    </tr>
-</table>
+<div>
+    <form th:action="@{/competition/edit/{id}(id=${inputCompetitionDto.id})}"
+          th:object="${inputCompetitionDto}" method="post">
+
+        <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
+        <input type="hidden" th:field="*{id}"/>
+
+        <p>
+            <label th:text="#{label_competition_teamA}"></label>
+            <select th:field="*{teamA}">
+                <option value="" th:text="#{competition.country.select}">Select a country</option>
+                <option th:each="country : ${countries}" th:value="${country.id}"
+                        th:text="${country.name}"></option>
+            </select>
+            <span th:if="${#fields.hasErrors('teamA')}" th:errorclass="error" th:errors="*{teamA}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_teamB}"></label>
+            <select th:field="*{teamB}">
+                <option value="" th:text="#{competition.country.select}">Select a country</option>
+                <option th:each="country : ${countries}" th:value="${country.id}"
+                        th:text="${country.name}"></option>
+            </select>
+            <span th:if="${#fields.hasErrors('teamB')}" th:errorclass="error" th:errors="*{teamB}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_stadium}"></label>
+            <select th:field="*{stadium}">
+                <option value="" th:text="#{competition.stadium.select}">Select a stadium</option>
+                <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
+                        th:attr="data-code=${stadium.code}"
+                        th:text="|${stadium.location.city} - ${stadium.name}|"></option>
+            </select>
+            <span th:if="${#fields.hasErrors('stadium')}" th:errorclass="error" th:errors="*{stadium}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_stadiumCode}"></label>
+            <input type="number" th:field="*{stadiumCode}" min="0" max="9999" readonly/>
+            <span th:if="${#fields.hasErrors('stadiumCode')}" th:errorclass="error" th:errors="*{stadiumCode}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_checksum}"></label>
+            <input type="number" th:field="*{checksum}" min="0" max="96"/>
+            <span th:if="${#fields.hasErrors('checksum')}" th:errorclass="error" th:errors="*{checksum}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_date}"></label>
+            <input type="date" th:field="*{date}"/>
+            <span th:if="${#fields.hasErrors('date')}" th:errorclass="error" th:errors="*{date}"></span>
+        </p>
+
+        <p>
+            <label th:text="#{label_competition_time}"></label>
+            <input type="time" th:field="*{time}"/>
+            <span th:if="${#fields.hasErrors('time')}" th:errorclass="error" th:errors="*{time}"></span>
+        </p>
+
+        <button type="submit" th:text="#{competition.add.submit}">Save</button>
+        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
+    </form>
+</div>
+
+<script th:src="@{/js/matchStadiumChecksum.js}"></script>
 
 </body>
 </html>

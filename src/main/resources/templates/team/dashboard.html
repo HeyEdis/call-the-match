@@ -33,7 +33,7 @@
         <p>
             <label for="teamName" th:text="#{label.team.name}">Team name</label>
             <input id="teamName" type="text" th:field="*{name}"
-                   th:placeholder="#{team.name.placeholder}"/>
+                   th:placeholder="#{label.team.name}"/>
             <span th:if="${#fields.hasErrors('name')}" th:errorclass="error"
                   th:errors="*{name}"></span>
         </p>

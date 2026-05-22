@@ -1,0 +1,213 @@
+{
+  "sources": [
+    {
+      "url": "local://FIFA_World_Cup_2026_-_Team_Prediction.pdf#pages=3,4",
+      "description": "FIFA World Cup 2026 Team Prediction PDF pages 3 and 4: team creation, team page and invitecode requirements."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring&JPA_mySql.pdf",
+      "description": "School JPA and MySQL guideline slides for repository, entity and service boundaries."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_Flow.pdf",
+      "description": "School MVC web-flow guideline slides for forms, DTO validation and controller flow."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_MVC_i18n.pdf",
+      "description": "School MVC and i18n guideline slides for Thymeleaf pages and resource bundles."
+    },
+    {
+      "url": "local://Richtlijnen/security-guidance",
+      "description": "School security guidance carried by the PRD for user-only and owner-aware team flows."
+    },
+    {
+      "url": "local://Notes/13-03-26-Validation.md",
+      "description": "Lesson notes for DTO validation, BindingResult and field error rendering."
+    },
+    {
+      "url": "local://Notes/03-04-2026-MySQL.md",
+      "description": "Lesson notes for JPA repository and service-repository separation."
+    },
+    {
+      "url": "local://Notes/Project.md",
+      "description": "Project notes and school reminders carried into the team-management plan."
+    },
+    {
+      "url": "local://WorkspacesIntelij/jpa-validation-security-exercises",
+      "description": "Exercise projects identified in the school reference map for JPA, validation and security patterns."
+    },
+    {
+      "url": "local://call-the-match",
+      "description": "Existing call-the-match team model, membership model, invitecode behavior, team service and team screens."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    },
+    {
+      "url": "local://conversation/team-management",
+      "description": "User and project decisions carried into this plan: admin exclusion from teams and authenticated current-user lookup."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "scope-team-dashboard-to-current-user",
+      "title": "Scope Team Dashboard To Current User",
+      "description": "Make the existing private team dashboard membership-aware before expanding team UI. Keep `/team/dashboard` on the MVC controller-to-service path, load persisted team rows for the authenticated normal user's memberships through the repository boundary, and stop the dashboard from rendering every team in the system.",
+      "acceptance_criteria": [
+        "An authenticated USER can open `/team/dashboard` and receives team rows loaded through the team service from persisted memberships for the current user.",
+        "Dashboard team rows no longer include teams the current user has not joined or created.",
+        "Guest access stays blocked by the `/team/**` Spring Security boundary.",
+        "ADMIN remains excluded from team participation routes for this project.",
+        "Dashboard links continue into member-visible team routes without making private team data public."
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "build-team-create-form-validation",
+      "title": "Build Team Create Form Validation",
+      "description": "Create the validated MVC form boundary for team creation on the dashboard. Use a request DTO with existing Jakarta Validation annotations, immediate BindingResult handling, Thymeleaf field errors and resource-bundle messages so later persistence work starts from school-style form input rather than writable entity binding.",
+      "acceptance_criteria": [
+        "The private dashboard exposes a team create form backed by a request DTO rather than binding the Team entity directly.",
+        "Required create input uses existing Jakarta Validation annotations on the request DTO.",
+        "The create controller action uses `@Valid` with `BindingResult` immediately after the validated DTO and returns the form with field errors on invalid input.",
+        "Team create labels, validation messages and visible form feedback that belong in messages are backed by keys in `src/main/resources/i18n/messages.properties`.",
+        "The form boundary keeps team creation decisions in the service layer instead of the Thymeleaf view or controller."
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "persist-created-team-with-owner-membership",
+      "title": "Persist Created Team With Owner Membership",
+      "description": "Complete the create-team vertical slice through service and repository persistence. Resolve the creator from the authenticated current-user boundary, keep team names and generated invitecodes unique, save the owner relation and owner TeamMember entry, and return the user to the private team flow with a usable new team.",
+      "acceptance_criteria": [
+        "A valid create submission persists a Team through the service and repository layers for the authenticated current USER.",
+        "The created Team stores the authenticated user as owner without accepting a caller-provided owner id.",
+        "The creator receives an owner TeamMember relation so the created team appears on the private dashboard immediately.",
+        "Persisted team names remain unique and duplicate name attempts produce clear user-facing MVC feedback.",
+        "Invitecode generation yields a code of at least eight characters and checks generated uniqueness before the new team is accepted.",
+        "Guest and ADMIN actors cannot create participating teams through this flow."
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "build-invite-code-join-form-validation",
+      "title": "Build Invite Code Join Form Validation",
+      "description": "Make the invitecode join form a proper MVC input boundary before extending membership rules. Move raw invitecode input behind a request DTO, use Jakarta required-input validation with Thymeleaf field feedback, and prepare clear bundle-backed feedback for invalid join attempts on the dashboard.",
+      "acceptance_criteria": [
+        "The dashboard invitecode join form posts through an MVC request DTO instead of relying on an unvalidated raw request field.",
+        "Required invitecode input uses existing Jakarta Validation annotations and invalid empty submissions render field feedback on the team dashboard.",
+        "The join controller action follows the school validation flow with `@Valid` and immediate `BindingResult` handling.",
+        "Join form labels and visible validation/error messages that belong in messages are backed by keys in `src/main/resources/i18n/messages.properties`.",
+        "This task prepares the input boundary without moving membership business rules into the controller or view."
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "join-team-from-authenticated-invite-code",
+      "title": "Join Team From Authenticated Invite Code",
+      "description": "Complete the invitecode join behavior through service and repository membership decisions. Resolve the join actor from authentication, find the target team by invitecode, save a single membership, reject invalid codes clearly, and prevent duplicate membership without reintroducing hardcoded user ids.",
+      "acceptance_criteria": [
+        "A valid persisted invitecode joins the matched team for the authenticated current USER through the service and repository path.",
+        "The join flow never accepts or reconstructs the membership actor from a hardcoded or request-provided user id.",
+        "An unknown invitecode resolves to clear school-style MVC error or dashboard feedback rather than a raw framework page or silent failure.",
+        "Duplicate membership is blocked so the same user appears only once in a team.",
+        "Join success and failure feedback used by the screen is resource-bundle backed rather than hardcoded controller text.",
+        "Guest and ADMIN actors remain excluded from the invitecode join path."
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "restrict-team-detail-to-members",
+      "title": "Restrict Team Detail To Members",
+      "description": "Turn the existing team detail view into a private member scoreboard slice. Keep `/team/{id}` behind member-aware service decisions before Thymeleaf receives team data, then render the owner, membership rows, personal scores and team total from persisted team data without exposing private score data to outsiders.",
+      "acceptance_criteria": [
+        "A team member can open `/team/{id}` and receives team detail data through the controller-to-service boundary.",
+        "The detail view renders team name, owner and member rows backed by persisted Team and TeamMember data.",
+        "Member rows include personal score data intended for the private team page.",
+        "The team total uses the domain or service score source rather than score calculation in Thymeleaf.",
+        "A non-member cannot open another team's private page or receive its member score data through the MVC detail route.",
+        "Guest and ADMIN behavior stays explicit: guests are stopped at team-route security and admins are not admitted into team participation."
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "protect-team-detail-error-paths",
+      "title": "Protect Team Detail Error Paths",
+      "description": "Close the error surface around private team detail browsing. Route missing teams and malformed team identifiers through the project's MVC exception and error-page direction while preserving the member-only privacy boundary for valid private data.",
+      "acceptance_criteria": [
+        "A missing team id on the private detail path resolves through the chosen MVC not-found behavior.",
+        "An invalid team detail path variable resolves through school-style type mismatch MVC error handling instead of a raw framework page.",
+        "Shared MVC exception handling is reused for team detail error cases where it matches the project convention.",
+        "Error behavior does not expose private team membership or score data to non-members.",
+        "This task stays on MVC error handling and does not add REST error-response or WebClient work."
+      ],
+      "priority": 7,
+      "passes": false
+    },
+    {
+      "id": "make-invite-code-regeneration-owner-only",
+      "title": "Make Invite Code Regeneration Owner-Only",
+      "description": "Harden the existing invitecode regeneration action as an owner-only MVC mutation. Keep the visible control on the private team page for owners, require service-layer owner enforcement and CSRF-safe form behavior, regenerate a unique invitecode, and return bundle-backed feedback.",
+      "acceptance_criteria": [
+        "A team owner can regenerate the invitecode from the private team screen through a CSRF-protected MVC mutation.",
+        "Invitecode regeneration is denied for non-owner members even when they forge a direct request.",
+        "The replacement invitecode remains unique before it becomes active.",
+        "Visible invitecode regeneration feedback comes from the resource bundle rather than hardcoded controller text.",
+        "The owner decision is enforced in service/repository behavior and not only by hiding a Thymeleaf control."
+      ],
+      "priority": 8,
+      "passes": false
+    },
+    {
+      "id": "add-owner-member-removal",
+      "title": "Add Owner Member Removal",
+      "description": "Add the second owner management slice for team membership. Let owners remove members through a private MVC mutation that updates persisted membership data, hide management controls from non-owner members, and keep removal authorization outside the view.",
+      "acceptance_criteria": [
+        "A team owner can remove a team member through an MVC action that updates persisted TeamMember data and returns to the private team page.",
+        "Non-owner members do not see member removal controls on the Thymeleaf team page.",
+        "Non-owner forged removal requests are blocked server-side.",
+        "Member removal decisions remain in the service and repository boundary instead of controller or Thymeleaf business logic.",
+        "Guest and ADMIN actors remain outside owner team-management actions."
+      ],
+      "priority": 9,
+      "passes": false
+    },
+    {
+      "id": "add-team-mvc-and-security-closure-tests",
+      "title": "Add Team MVC And Security Closure Tests",
+      "description": "Close the visible team flows with school-required MVC and security evidence after dashboard, create, join, detail and owner routes are stable. Cover model/view/redirect/error behavior and the actor matrix for guest, normal user, admin, member and owner without adding REST or e2e scope.",
+      "acceptance_criteria": [
+        "MVC controller tests verify the dashboard is current-user scoped and renders persisted team data through the expected model contract.",
+        "MVC tests cover observable create, join and private detail behavior using status, view, model, binding, redirect or error assertions.",
+        "Security tests verify guest denial from team routes and normal USER access to allowed team flows.",
+        "Security tests verify ADMIN exclusion from team participation for this project.",
+        "Security tests verify non-member team detail denial and non-owner denial for owner-only mutations.",
+        "This task does not add REST controller, WebClient or e2e tests to team management."
+      ],
+      "priority": 10,
+      "passes": false
+    },
+    {
+      "id": "add-team-validation-and-membership-rule-tests",
+      "title": "Add Team Validation And Membership Rule Tests",
+      "description": "Add focused late evidence for team DTO validation and membership rules that are clearer below the MVC surface. Use the school validation test category for existing Jakarta annotations and service-focused tests or equivalent focused verification for create/join and uniqueness-sensitive membership decisions.",
+      "acceptance_criteria": [
+        "Validation tests using a Jakarta Validator cover existing annotation behavior for team create DTO required input.",
+        "Validation tests using a Jakarta Validator cover existing annotation behavior for invitecode join DTO required input.",
+        "Focused service tests or equivalent focused evidence cover owner membership creation when a team is created.",
+        "Focused service tests or equivalent focused evidence cover duplicate join prevention and invalid invitecode handling.",
+        "Uniqueness-sensitive team name or invitecode rules introduced by this feature have focused verification at the boundary that owns them.",
+        "The validation and membership rule tests do not broaden into REST controller, WebClient or unrelated scoring recalculation work."
+      ],
+      "priority": 11,
+      "passes": false
+    }
+  ]
+}

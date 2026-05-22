@@ -48,6 +48,16 @@ public class TeamService {
                 .toList();
     }
 
+    public List<TeamDTO> getCurrentUserTeams() {
+        MyUser user = userService.getCurrentUser();
+
+        return teamMemberRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(TeamMember::getTeam)
+                .map(this::toDTO)
+                .toList();
+    }
+
     public List<PublicRankingDTO> getTop10Teams() {
         return teamRepository.findAll()
                 .stream()

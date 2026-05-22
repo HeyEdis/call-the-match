@@ -49,10 +49,10 @@ class AccessSecurityMvcTests {
 
     @Test
     void userCanOpenUserRoutesButNotAdminMatchManagement() throws Exception {
-        mockMvc.perform(get("/team/dashboard").with(user("user@example.com").roles("USER")))
+        mockMvc.perform(get("/team/dashboard").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/competition/add").with(user("user@example.com").roles("USER")))
+        mockMvc.perform(get("/competition/add").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
     }
 

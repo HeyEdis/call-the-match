@@ -70,7 +70,7 @@
         "Guest-facing competition detail does not expose private prediction content or public admin mutation controls."
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "handle-public-match-detail-errors",
@@ -83,7 +83,7 @@
         "The task stays on MVC error handling and does not add REST error response or WebClient work."
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "harden-public-top-ten-ranking-summary",

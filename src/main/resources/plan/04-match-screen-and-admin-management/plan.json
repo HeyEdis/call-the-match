@@ -62,7 +62,7 @@
         "The task does not add prediction write UI to the public match detail page."
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "fix-admin-add-match-form-binding",

@@ -11,15 +11,30 @@
 </header>
 
 <div>
+  <h1 th:text="#{competition.detail.title}">Match</h1>
   <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
   <div>
-    <p th:text="${competition.date}"></p>
-    <p th:text="${competition.time}"></p>
-    <p th:text="${competition.stadium.name}"></p>
-    <p th:text="${competition.stadium.location.city}"></p>
+    <p>
+      <span th:text="#{label_competition_date}">Date</span>:
+      <span th:text="${competition.date}"></span>
+    </p>
+    <p>
+      <span th:text="#{label_competition_time}">Time</span>:
+      <span th:text="${competition.time}"></span>
+    </p>
+    <p>
+      <span th:text="#{label_competition_stadium}">Stadium</span>:
+      <span th:text="${competition.stadium.name}"></span>
+    </p>
+    <p>
+      <span th:text="#{competition.detail.location}">Location</span>:
+      <span th:text="${competition.stadium.location.city}"></span>
+    </p>
+    <p th:text="#{competition.detail.officialResult}">Official result</p>
     <p th:if="${competition.scoreA != null and competition.scoreB != null}"
        th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
-    <p th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</p>
+    <p th:unless="${competition.scoreA != null and competition.scoreB != null}"
+       th:text="#{competition.detail.noResult}">No official result yet.</p>
   </div>
 </div>
 

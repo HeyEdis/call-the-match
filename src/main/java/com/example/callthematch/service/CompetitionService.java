@@ -34,7 +34,8 @@ public class CompetitionService {
         return competitionRepository.findAll()
                 .stream()
                 .map(c -> toDTO(c))
-                .sorted(Comparator.comparing(CompetitionDTO::date))
+                .sorted(Comparator.comparing(CompetitionDTO::date)
+                        .thenComparing(CompetitionDTO::time))
                 .toList();
     }
 

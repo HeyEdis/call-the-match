@@ -24,10 +24,7 @@ public class SecurityConfig {
                                 "/login**",
                                 "/register**",
                                 "/css/**",
-                                "/error",
-                                "/403",
-                                "/404",
-                                "/500"
+                                "/error/**"
                         ).permitAll()
                         .requestMatchers("/team/**", "/predictions/**").hasRole("USER")
                         .anyRequest().permitAll())
@@ -38,7 +35,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
                         .permitAll())
-                .exceptionHandling(handling -> handling.accessDeniedPage("/403"));
+                .exceptionHandling(handling -> handling
+                        .accessDeniedHandler((request, response, ex) -> response.sendError(403)));
 
         return http.build();
     }

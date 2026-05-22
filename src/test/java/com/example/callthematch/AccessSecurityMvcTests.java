@@ -27,6 +27,12 @@ class AccessSecurityMvcTests {
         mockMvc.perform(get("/home"))
                 .andExpect(status().isOk());
 
+        mockMvc.perform(get("/ranking"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/competition/1"))
+                .andExpect(status().isOk());
+
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk());
 

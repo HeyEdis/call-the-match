@@ -10,8 +10,6 @@
   <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<button>Edit</button>
-
 <div>
   <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
   <div>
@@ -19,15 +17,10 @@
     <p th:text="${competition.time}"></p>
     <p th:text="${competition.stadium.name}"></p>
     <p th:text="${competition.stadium.location.city}"></p>
-    <p th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
+    <p th:if="${competition.scoreA != null and competition.scoreB != null}"
+       th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
+    <p th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</p>
   </div>
-</div>
-
-<div>
-  <h2>My Prediction</h2>
-  <p>You can change your prediction 1 hour before the match starts.</p>
-  <p>getal - getal</p>
-
 </div>
 
 

@@ -15,17 +15,33 @@
 <p>Enter your squad's invite code to join existing competitions or create your own legacy from scratch.</p>
 
 <div>
-    <form th:action="@{/team/join}" method="post">
-        <input placeholder="Enter invite code" name="inviteCode" />
-        <button type="submit">JOIN TEAM</button>
+    <form th:action="@{/team/join}" th:object="${inputTeamJoinDto}" method="post">
+        <p>
+            <label for="inviteCode" th:text="#{label.team.inviteCode}">Invite code</label>
+            <input id="inviteCode" type="text" th:field="*{inviteCode}"
+                   th:placeholder="#{team.inviteCode.placeholder}"/>
+            <span th:if="${#fields.hasErrors('inviteCode')}" th:errorclass="error"
+                  th:errors="*{inviteCode}"></span>
+        </p>
+        <button type="submit" th:text="#{team.join.submit}">Join team</button>
     </form>
 </div>
 
 <div>
     <h2>Create a team</h2>
-    <input placeholder="Team name" name="teamName" />
-    <button>CREATE SQUAD</button>
+    <form th:action="@{/team/create}" th:object="${inputTeamDto}" method="post">
+        <p>
+            <label for="teamName" th:text="#{label.team.name}">Team name</label>
+            <input id="teamName" type="text" th:field="*{name}"
+                   th:placeholder="#{team.name.placeholder}"/>
+            <span th:if="${#fields.hasErrors('name')}" th:errorclass="error"
+                  th:errors="*{name}"></span>
+        </p>
+        <button type="submit" th:text="#{team.create.submit}">Create team</button>
+    </form>
 </div>
+
+<p th:if="${message}" th:text="${message}"></p>
 
 <div>
     <h2>My teams</h2>

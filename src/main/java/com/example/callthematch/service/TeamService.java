@@ -4,15 +4,19 @@ import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
+import com.example.callthematch.exception.TeamNameAlreadyExists;
 import com.example.callthematch.exception.TeamNotFound;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Team;
 import com.example.callthematch.model.TeamMember;
+import com.example.callthematch.model.TeamRole;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,10 +36,6 @@ public class TeamService {
         return new PublicRankingDTO(t.getName(), t.calculateTeamScore(), t.getMembers().size());
     }
 
-    private InputTeamDTO toInputDTO(Team t) {
-        return new InputTeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.getScore());
-    }
-
     private Team findTeamById(Long id)
     {
         return teamRepository.findById(id).orElseThrow(() -> new TeamNotFound(id));
@@ -45,6 +45,16 @@ public class TeamService {
         return teamRepository.findAll()
                 .stream()
                 .map(c -> toDTO(c))
+                .toList();
+    }
+
+    public List<TeamDTO> getCurrentUserTeams() {
+        MyUser user = userService.getCurrentUser();
+
+        return teamMemberRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(TeamMember::getTeam)
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -58,15 +68,70 @@ public class TeamService {
     }
 
     public TeamDTO findById(Long id) {
-        return toDTO(findTeamById(id));
+        Team team = findTeamById(id);
+        requireCurrentUserMembership(team);
+        return toDTO(team);
+    }
+
+    public boolean isCurrentUserOwner(Long id) {
+        Team team = findTeamById(id);
+        MyUser user = userService.getCurrentUser();
+        return team.getOwner().getId().equals(user.getId());
+    }
+
+    public void createTeam(InputTeamDTO inputTeamDTO) {
+        if (teamRepository.existsByName(inputTeamDTO.name())) {
+            throw new TeamNameAlreadyExists(inputTeamDTO.name());
+        }
+
+        MyUser owner = userService.getCurrentUser();
+        LocalDateTime createdAt = LocalDateTime.now();
+        Team team = Team.builder()
+                .name(inputTeamDTO.name())
+                .owner(owner)
+                .createdAt(createdAt)
+                .updatedAt(createdAt)
+                .build();
+
+        do {
+            team.generateInviteCode();
+        } while (teamRepository.existsByInviteCode(team.getInviteCode()));
+
+        Team savedTeam = teamRepository.save(team);
+        TeamMember ownerMember = TeamMember.builder()
+                .user(owner)
+                .team(savedTeam)
+                .role(TeamRole.OWNER)
+                .score(0)
+                .joinedAt(createdAt)
+                .build();
+        teamMemberRepository.save(ownerMember);
     }
 
     public void regenerateInviteCode(Long id) {
         Team team = findTeamById(id);
-        team.regenerateInviteCode();
+        requireCurrentUserOwner(team);
+
+        do {
+            team.regenerateInviteCode();
+        } while (teamRepository.existsByInviteCode(team.getInviteCode()));
+
         teamRepository.save(team);
     }
 
+    public void removeMember(Long teamId, Long memberId) {
+        Team team = findTeamById(teamId);
+        requireCurrentUserOwner(team);
+
+        TeamMember teamMember = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
+                .orElseThrow(() -> new AccessDeniedException("Team member not available"));
+
+        if (teamMember.getRole() == TeamRole.OWNER) {
+            throw new AccessDeniedException("The team owner cannot be removed");
+        }
+
+        teamMemberRepository.delete(teamMember);
+    }
 
     public void joinTeamWithInviteCode(String inviteCode) {
         Team team = teamRepository.findByInviteCode(inviteCode)
@@ -81,6 +146,20 @@ public class TeamService {
         TeamMember teamMember = team.addMember(user);
         teamMemberRepository.save(teamMember);
 
+    }
+
+    private void requireCurrentUserMembership(Team team) {
+        MyUser user = userService.getCurrentUser();
+        if (!teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
+            throw new AccessDeniedException("Team detail is only available to members");
+        }
+    }
+
+    private void requireCurrentUserOwner(Team team) {
+        MyUser user = userService.getCurrentUser();
+        if (!team.getOwner().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Only the team owner can manage this team");
+        }
     }
 
 }

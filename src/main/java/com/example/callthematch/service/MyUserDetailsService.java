@@ -28,7 +28,7 @@ public class MyUserDetailsService implements UserDetailsService {
         MyUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: %s".formatted(email)));
 
-        return new User(user.getUserName(),user.getPasswordHash(), convertAuthorities(user.getRole()));
+        return new User(user.getEmail(), user.getPasswordHash(), convertAuthorities(user.getRole()));
     }
 
     private Collection<? extends GrantedAuthority> convertAuthorities(Role role) {

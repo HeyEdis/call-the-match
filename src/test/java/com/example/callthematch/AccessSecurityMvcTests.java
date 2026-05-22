@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -49,11 +53,25 @@ class AccessSecurityMvcTests {
 
     @Test
     void userCanOpenUserRoutesButNotAdminMatchManagement() throws Exception {
-        mockMvc.perform(get("/team/dashboard").with(user("user@example.com").roles("USER")))
+        mockMvc.perform(get("/team/dashboard").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/competition/add").with(user("user@example.com").roles("USER")))
+        mockMvc.perform(get("/competition/add").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void loggedInUserKeepsEmailPrincipalForCurrentUserRoutes() throws Exception {
+        MvcResult login = mockMvc.perform(formLogin("/login")
+                        .userParameter("email")
+                        .user("user1@example.com")
+                        .password("password"))
+                .andExpect(authenticated().withUsername("user1@example.com"))
+                .andReturn();
+
+        mockMvc.perform(get("/team/dashboard")
+                        .session((MockHttpSession) login.getRequest().getSession(false)))
+                .andExpect(status().isOk());
     }
 
     @Test

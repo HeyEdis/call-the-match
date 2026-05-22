@@ -4,15 +4,18 @@ import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
+import com.example.callthematch.exception.TeamNameAlreadyExists;
 import com.example.callthematch.exception.TeamNotFound;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Team;
 import com.example.callthematch.model.TeamMember;
+import com.example.callthematch.model.TeamRole;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,10 +33,6 @@ public class TeamService {
 
     private PublicRankingDTO toPublicRankingDTO(Team t) {
         return new PublicRankingDTO(t.getName(), t.calculateTeamScore(), t.getMembers().size());
-    }
-
-    private InputTeamDTO toInputDTO(Team t) {
-        return new InputTeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.getScore());
     }
 
     private Team findTeamById(Long id)
@@ -69,6 +68,35 @@ public class TeamService {
 
     public TeamDTO findById(Long id) {
         return toDTO(findTeamById(id));
+    }
+
+    public void createTeam(InputTeamDTO inputTeamDTO) {
+        if (teamRepository.existsByName(inputTeamDTO.name())) {
+            throw new TeamNameAlreadyExists(inputTeamDTO.name());
+        }
+
+        MyUser owner = userService.getCurrentUser();
+        LocalDateTime createdAt = LocalDateTime.now();
+        Team team = Team.builder()
+                .name(inputTeamDTO.name())
+                .owner(owner)
+                .createdAt(createdAt)
+                .updatedAt(createdAt)
+                .build();
+
+        do {
+            team.generateInviteCode();
+        } while (teamRepository.existsByInviteCode(team.getInviteCode()));
+
+        Team savedTeam = teamRepository.save(team);
+        TeamMember ownerMember = TeamMember.builder()
+                .user(owner)
+                .team(savedTeam)
+                .role(TeamRole.OWNER)
+                .score(0)
+                .joinedAt(createdAt)
+                .build();
+        teamMemberRepository.save(ownerMember);
     }
 
     public void regenerateInviteCode(Long id) {

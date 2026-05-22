@@ -76,7 +76,7 @@
         "The form boundary keeps team creation decisions in the service layer instead of the Thymeleaf view or controller."
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-created-team-with-owner-membership",
@@ -91,7 +91,7 @@
         "Guest and ADMIN actors cannot create participating teams through this flow."
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "build-invite-code-join-form-validation",
@@ -105,7 +105,7 @@
         "This task prepares the input boundary without moving membership business rules into the controller or view."
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "join-team-from-authenticated-invite-code",
@@ -120,7 +120,7 @@
         "Guest and ADMIN actors remain excluded from the invitecode join path."
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "restrict-team-detail-to-members",

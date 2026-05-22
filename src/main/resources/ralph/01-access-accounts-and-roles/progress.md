@@ -1,0 +1,123 @@
+# Ralph Progress Log: 01-access-accounts-and-roles
+
+Each iteration appends what was done, decisions made, files changed, verification results, and blockers.
+
+## Entries
+
+### 2026-05-22 - Add Email-Based Security Identity
+
+- **Task**: `add-email-based-security-identity` - Add Email-Based Security Identity
+- **What changed**: added email lookup to the user repository, introduced a dedicated Spring Security `UserDetailsService`, added a BCrypt `PasswordEncoder` bean and encoded seeded dev passwords before persistence.
+- **Decisions**: kept this HITL iteration limited to authentication identity plumbing. Route matchers, login UI and current-user team wiring stay in later access tasks.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/repository/UserRepository.java`
+  - `src/main/java/com/example/callthematch/service/SecurityUserDetailsService.java`
+  - `src/main/java/com/example/callthematch/config/SecurityBeansConfig.java`
+  - `src/main/java/com/example/callthematch/config/InitDataConfig.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+- **Verification**:
+  - `.\mvnw.cmd test` did not start Maven because the current wrapper script failed in its embedded PowerShell bootstrap with `Cannot index into a null array`.
+  - A direct local Maven 3.9.14 wrapper-cache binary was used instead: `mvn.cmd test`.
+  - The first sandboxed direct Maven run was blocked while fetching missing dependencies; the approved rerun completed successfully with `BUILD SUCCESS`.
+  - The passing test run started the Spring context and logged the global authentication manager using the `securityUserDetailsService` bean.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
+### 2026-05-22 - Resolve Current User Join And Close Access Tests
+
+- **Tasks**:
+  - `resolve-team-join-from-authenticated-user` - Resolve Team Join From Authenticated User
+  - `add-security-and-mvc-closure-tests` - Add Security And MVC Closure Tests
+- **What changed**: replaced the hardcoded team join user id with a reusable current-user service that resolves the authenticated email from the Spring Security context. Added MockMvc access tests for guest, USER and ADMIN routes, registration form error coverage, a DTO validation test, and a registration service test that verifies encoded password persistence with role USER.
+- **Decisions**: kept the team controller thin by making `TeamService` ask `CurrentUserService` for the authenticated domain user. Used MockMvc request user postprocessors for role coverage because they applied the actor state concretely in the current Spring Boot 4 test setup.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/TeamController.java`
+  - `src/main/java/com/example/callthematch/service/CurrentUserService.java`
+  - `src/main/java/com/example/callthematch/service/TeamService.java`
+  - `src/test/java/com/example/callthematch/AccessSecurityMvcTests.java`
+  - `src/test/java/com/example/callthematch/dto/InputRegistrationDTOValidationTests.java`
+  - `src/test/java/com/example/callthematch/service/UserServiceTests.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because Maven Central access was denied.
+  - The first approved direct Maven run compiled the new code and exposed three test expectation issues: MockMvc redirected guests exactly to `/login`, and request-scoped user postprocessors were needed for explicit USER/ADMIN route checks.
+  - After adjusting those expectations, approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - Final test result: 8 tests run, 0 failures and 0 errors. Route tests cover public access, guest redirect, USER access/ADMIN denial, ADMIN access/user-flow denial, and registration field errors.
+  - Existing Hibernate `create-drop` missing-table DDL warnings and Mockito agent warnings remain noisy during the test run but did not fail the build.
+- **Status**: acceptance criteria verified for both tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Protect Admin Routes And Forbidden Access
+
+- **Task**: `protect-admin-routes-and-forbidden-access` - Protect Admin Routes And Forbidden Access
+- **What changed**: added ADMIN-only match-management matchers for competition add/edit and future result paths, wired Spring Security forbidden handling to `/403`, and added a minimal MVC route that renders the existing `error/403` template.
+- **Decisions**: admin matchers are placed before the public single-segment competition detail matcher so `/competition/add` cannot be swallowed by `/competition/{id}`. Team and prediction paths continue to require role `USER`, which keeps ADMIN out of participation flows while roles remain single-role authorities.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/java/com/example/callthematch/controller/ErrorPageController.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The security config was inspected to confirm ADMIN matchers run before public competition detail, USER-only `/team/**` and `/predictions/**` matchers remain intact, and forbidden access targets `/403`.
+  - Route-specific security tests remain scheduled for the later security closure task.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
+### 2026-05-22 - Protect Public And User Routes
+
+- **Task**: `protect-public-and-user-routes` - Protect Public And User Routes
+- **What changed**: added the first `SecurityFilterChain` route matrix. Public MVC entry points, login/register placeholders, static CSS and error paths remain permitted while `/team/**` and future `/predictions/**` paths require role `USER`.
+- **Decisions**: kept admin match-route restrictions and custom email login UI out of this task because they belong to later Ralph tasks. Default Spring Security form login stays in place until the custom login task.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - A sandboxed direct Maven run was blocked while Maven attempted central access.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The route matrix was inspected after the run: public matchers are explicit and the USER-only matchers reserve both team and prediction paths.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
+### 2026-05-22 - Add Account Entry UI And Registration Validation
+
+- **Tasks**:
+  - `build-custom-email-login-and-logout-ui` - Build Custom Email Login And Logout UI
+  - `make-shared-navigation-role-aware` - Make Shared Navigation Role-Aware
+  - `build-registration-form-with-validation` - Build Registration Form With Validation
+- **What changed**: configured the custom email login page and logout redirect, added Thymeleaf login and registration screens, changed the shared navbar to show guest, USER and ADMIN actions through Spring Security view attributes, and introduced a registration request DTO/controller slice with Jakarta Validation field errors and bundle-backed copy.
+- **Decisions**: this AFK iteration keeps registration at validated form behavior only. Persisting a registered account, encoding its password and assigning default role USER stay in the next planned persistence task.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/java/com/example/callthematch/controller/AccountController.java`
+  - `src/main/java/com/example/callthematch/dto/request/InputRegistrationDTO.java`
+  - `src/main/resources/templates/account/login.html`
+  - `src/main/resources/templates/account/register.html`
+  - `src/main/resources/templates/fragments/navbar.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because network access to Maven Central was denied.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The run compiled the new MVC controller, DTO and templates through Spring context startup. Existing Hibernate `create-drop` missing-table DDL warnings remain noisy but did not fail the run.
+  - Focused security and registration MVC tests remain scheduled for the later closure-test task.
+- **Status**: acceptance criteria verified for these three tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Persist Registered Users As USER
+
+- **Task**: `persist-registered-users-as-user` - Persist Registered Users As USER
+- **What changed**: added a normal user registration service that saves validated registration DTO data as a `User`, encodes the submitted password, assigns role `USER`, and records creation/update timestamps. The account controller now delegates successful registration to that service and redirects to login with bundle-backed success feedback.
+- **Decisions**: kept persistence separate from the existing Spring Security user-details lookup. Email uniqueness and extra account polish were not added because this task only closes the minimal default-USER persistence slice.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/AccountController.java`
+  - `src/main/java/com/example/callthematch/service/UserService.java`
+  - `src/main/resources/templates/account/login.html`
+  - `src/main/resources/templates/account/register.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because Maven Central access was denied.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The implementation was inspected after the run: successful registration reaches `UserService`, the password is encoded before persistence, the stored role is fixed to `Role.USER`, and `AccountController` does not call the repository directly.
+  - Existing Hibernate `create-drop` missing-table DDL warnings remain noisy in the context-load run but did not fail the build.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.

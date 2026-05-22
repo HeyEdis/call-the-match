@@ -1,67 +1,103 @@
+# PRD: Team Management
+
 ## Problem Statement
 
-Users need to create teams, invite friends through invite codes, join teams, and view private team information. The current application has team entities and partial invite-code behavior, but it still lacks authenticated ownership, team creation, private access checks, and owner-only member management.
+Users moeten private teams met vrienden kunnen vormen via invitecodes. De repo bevat al team-, member- en invitecode-bouwstenen, maar de huidige flow toont nog alle teams, gebruikt nog een tijdelijke join-user en mist create-, privacy- en ownerchecks die nodig zijn voor een correct schoolproject.
 
 ## Solution
 
-Build a complete team management flow for authenticated users. A user can create a uniquely named team, receive an invite code, join an existing team with an invite code, view teams they belong to, and see a private team page. Team owners can regenerate invite codes and remove members.
+Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, automatisch eigenaar en lid wordt, invitecodes beheert, via invitecode kan joinen en alleen teams ziet waarvoor hij lid is. De teampagina blijft privaat en toont eigenaar, leden, persoonlijke scores en teamtotaal. Owner-only acties blijven beperkt tot invitecode regenereren en leden verwijderen.
+
+## Current Codebase State
+
+- Team, team member, team role, user relations and invitecode fields exist.
+- Invitecode generation already produces eight characters in the domain model.
+- Team score calculation already sums member scores.
+- A team dashboard, detail page, invitecode regeneration action and join action exist.
+- Dashboard and detail access are not yet limited to the authenticated member.
+- Join currently uses a hardcoded temporary user-id.
+- Team creation and owner-only member removal are not yet visible as complete flows.
+
+## School Requirements
+
+- MVC controllers and Thymeleaf forms/views for team dashboard, create and join actions.
+- Service/repository/JPA separation for membership and invitecode decisions.
+- Spring Security and authorization checks for user-only and member-only flows.
+- DTO validation for team input and clear validation messages.
+- Resource bundle flash/error messages.
+- Exception handling for invalid invitecodes and missing teams.
+- MVC, security and validation tests later.
+- REST/WebClient is not mixed into team implementation.
+
+## Role And Access Decisions
+
+- **Guest**: mag geen teamdashboard, teampagina of invite actie gebruiken.
+- **User**: mag teams maken, joinen, eigen teamdashboard bekijken and member-visible teampagina's openen.
+- **Admin**: gebruikt deze flow niet.
+- **Forbidden**: non-members zien geen private teamdata; non-owners beheren geen invitecode or leden; duplicate membership is blocked.
 
 ## User Stories
 
 1. As a user, I want to create a team, so that I can compete with friends.
-2. As a user, I want my new team to have a unique name, so that teams are easy to identify.
-3. As a user, I want my team to receive an automatic invite code of at least 8 characters, so that others can join.
-4. As a user, I want to become the owner of the team I create, so that I can manage membership.
-5. As a user, I want to join a team by entering an invite code, so that I can participate in a friend's team.
-6. As a user, I want a clear error when an invite code is invalid, so that I know why joining failed.
-7. As a user, I want duplicate joins to be prevented, so that I do not appear twice in the same team.
-8. As a user, I want to see only teams I belong to in my dashboard, so that private team data is not leaked.
-9. As a team member, I want to view the team page, so that I can see team information and scores.
-10. As a team member, I want to see team name and member list, so that I know who is participating.
-11. As a team member, I want the owner to be marked clearly, so that I know who manages the team.
-12. As a team member, I want to see personal scores per member, so that I can compare within the team.
-13. As a team member, I want to see the total team score, so that I know how the team ranks.
-14. As a team owner, I want to regenerate the invite code, so that I can stop old codes from being reused.
-15. As a team owner, I want to remove members, so that I can manage my team.
-16. As a non-owner member, I should not see or use owner-only actions, so that team management stays controlled.
-17. As a non-member, I should not access a private team page, so that team information remains private.
+2. As a user, I want a unique team name, so that teams remain identifiable.
+3. As a user, I want an automatically generated invite code of at least eight characters, so that friends can join.
+4. As a team creator, I want to become owner and member, so that my team is immediately usable.
+5. As a user, I want to join a team with an invite code, so that I can join a friend's group.
+6. As a user, I want an invalid invite code reported clearly, so that I can correct the join attempt.
+7. As a user, I want duplicate joins prevented, so that I appear once in a team.
+8. As a user, I want my dashboard limited to my teams, so that private team data stays private.
+9. As a team member, I want to see the team name, owner and member list, so that I understand the group.
+10. As a team member, I want to see each member score and the team total, so that the competition is visible.
+11. As a team owner, I want to regenerate the invite code, so that old codes can be invalidated.
+12. As a team owner, I want to remove members, so that membership can be managed.
+13. As a non-owner member, I want owner controls hidden and blocked, so that ownership is enforced.
+14. As a non-member, I want private team pages denied, so that data is not leaked.
 
 ## Implementation Decisions
 
-- Use the authenticated user as owner or joining user.
-- Store team ownership separately from membership role, but ensure the creator is also a team member with owner role.
-- Keep invite-code generation in the domain or service layer with uniqueness enforced through the repository.
-- Validate unique team names.
-- Show only teams where the current user is a member.
-- Add membership checks before displaying team pages.
-- Add owner checks before regenerating invite codes or removing members.
-- Use flash messages from resource bundles for join, create, regenerate, remove, and error outcomes.
-- Handle invalid invite codes through a controller advice or form-level error flow.
+- Resolve owner and join actor from the authenticated user, never from a request-provided or temporary user id.
+- Preserve unique team names and unique invitecodes at persistence boundaries.
+- Create the owner membership record when a team is created.
+- Keep invitecode generation in domain/service code and validate generated uniqueness before use.
+- Filter dashboard data by membership.
+- Enforce member checks before showing team detail and private score data.
+- Enforce owner checks before invitecode regeneration and member removal.
+- Use request DTO validation for create/join input where form validation is needed.
+- Use resource-bundle flash and error messages instead of hardcoded controller messages.
+- Keep team score display compatible with later scoring recalculation.
 
 ## Testing Decisions
 
-- Service tests should cover team creation, invite-code generation, joining, duplicate join prevention, and owner membership creation.
-- Controller tests should verify dashboard, team detail, create, join, regenerate, and remove flows.
-- Security tests should verify guests cannot access team pages.
-- Authorization tests should verify non-members cannot view private team pages and non-owners cannot perform owner actions.
-- Validation tests should cover unique team names and required team name input.
+- Verify create, join, duplicate join and invalid invitecode behavior.
+- Verify owner membership is created with the team.
+- Verify guest denial, non-member denial and non-owner denial.
+- Verify team dashboard only exposes current-user memberships.
+- Verify unique team name validation and required team inputs.
+- This PRD contributes to MVC, security and validation test categories.
+- Service tests are useful for membership rules even when final test work is late.
 
-## Out of Scope
+## REST And WebClient Decisions
 
-- Email invitations.
-- Team chat.
-- Team logos or profile customization.
-- Multiple owners per team.
+REST and WebClient are out of scope for this feature implementation. Team privacy remains an MVC and service concern for the passing version.
+
+## Out Of Scope
+
+- Email invitations or mail delivery.
 - Public team detail pages.
+- Team avatars, chat or profile customization.
+- Multiple team owners.
+- Admin team participation.
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, pages 3-4: team creation, invite codes, team page, and owner actions.
-2. Notes in `Project.md`: DRY, validation, redirect flash messages, and exception handling.
-3. Current repository implementation of team model, team service, team controller, and team templates.
-4. School JPA examples in WorkspacesIntelij: service-repository separation and JPA query conventions.
-5. Git repository: https://github.com/HeyEdis/call-the-match.git.
+1. FIFA World Cup 2026 Team Prediction PDF, pages 3 and 4: team creation, teampagina and invitecode actions.
+2. School guidelines: `Slides_Spring&JPA_mySql.pdf`, `Slides_Spring_Web_Flow.pdf`, `Slides_Spring_Web_MVC_i18n.pdf` and security guidance.
+3. Lesson notes: `13-03-26-Validation.md`, `03-04-2026-MySQL.md` and `Project.md`.
+4. Exercise projects identified for JPA, validation and security patterns in the school reference map.
+5. Existing `call-the-match` codebase: current team model, member model, invitecode behavior, team service and team screens.
+6. Git repository URL: `https://github.com/HeyEdis/call-the-match.git`.
+7. User/project decisions from this conversation and local skills: admin exclusion from teams and authenticated current-user lookup.
 
 ## Further Notes
 
-This PRD depends on the access and roles PRD. The temporary hardcoded user id must be removed before this feature can be considered complete.
+Deze PRD hangt direct af van accounts and roles. Private membership checks are more important than expanding the dashboard UI because the existing dashboard currently risks showing too much.

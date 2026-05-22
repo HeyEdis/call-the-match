@@ -20,7 +20,7 @@ public class Prediction {
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private MyUser user;
 
     @ManyToOne
     @JoinColumn(name = "competitionId", nullable = false)

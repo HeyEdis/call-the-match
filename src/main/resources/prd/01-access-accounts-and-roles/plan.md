@@ -1,116 +1,133 @@
-# Plan: Access Accounts And Roles
+# Plan: Access, Accounts And Roles
 
 > Source PRD: `src/main/resources/prd/01-access-accounts-and-roles-prd.md`
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, pages 2-5: guest, user, and admin role requirements.
-2. `24-04-26-Security.md`: custom login, CSRF, principal usage, role display, 403 handling, and registration/login project guidance.
-3. `Project.md`: REST endpoints that must be permitted and project-level exception handling reminders.
-4. WorkspacesIntelij security examples: Spring Security JPA, custom login, password encoding, and security tests.
-5. Git repository: https://github.com/HeyEdis/call-the-match.git.
+1. FIFA World Cup 2026 Team Prediction PDF, pages 2 and 6: roles and security requirements.
+2. School guidelines: `Slides_Spring_Security.pdf` and `Slides_Spring_Security_JDBC.pdf`.
+3. Lesson notes: `24-04-26-Security.md` and `Project.md`.
+4. Exercise projects identified for security patterns: `Spring_Boot_security_JPA`, `Spring_Boot_security_Form`, and `Spring_Boot_security_roles`.
+5. Existing `call-the-match` codebase: current user model, role model, build dependencies, seeded users and team controller state.
+6. Git repository URL: `https://github.com/HeyEdis/call-the-match.git`.
+7. User/project decisions from this conversation and local skills: email login, `USER` registration default, admin separation and real deadline 27 May 2026.
 
 ## Architectural Decisions
 
-- **Deadline**: plan for safe completion by 27 May 2026.
-- **Actors**: guest, user, and admin remain separate.
-- **Admin scope**: admin does not act as a normal user for teams or predictions.
-- **Login identifier**: users log in with email.
-- **Routes**: public routes include `/`, `/home`, `/ranking`, `/competition/{id}`, `/login`, `/register`, static resources, error pages, and public REST GET endpoints.
-- **User routes**: `/team/**`, `/predictions/**`, and private scoreboards.
-- **Admin routes**: match add/edit/result management and match management screens.
-- **Security**: Spring Security with a security filter chain, custom login, logout, CSRF, access denied page, and database-backed user details.
-- **Key models**: `User`, `Role`.
-- **Testing timing**: implement the feature first, then cover with security tests in the project test block.
+Durable decisions that apply across all phases:
+
+- **Routes**: public MVC routes include `/home`, `/ranking`, public competition detail, `/login`, `/register`, static resources and error pages. User-only routes include `/team/**` and later `/predictions/**`. Admin-only routes include match creation, match editing and official result management.
+- **Schema**: `User` remains the authentication anchor with email, encoded password hash and `Role`. User-owned team and prediction actions resolve the authenticated user rather than accepting a hardcoded or caller-chosen user id.
+- **Key models**: `User`, `Role`, a registration request DTO and a current-user/security lookup boundary. Existing `Team` and `TeamMember` flows are the first consumer of authenticated user ownership.
+- **Security**: use email login, a database-backed user details service, role-to-authority mapping, CSRF protection, visible logout, a custom login page and school-style 403 handling. Admin remains separate from normal user team and prediction flows.
+- **Validation/i18n**: registration form input uses Jakarta Validation on a DTO and resource bundle messages. Login/registration/access feedback should not rely on hardcoded controller text where bundle messages belong.
+- **REST/WebClient**: REST implementation is deferred. The security route matrix must leave room for later public REST GET endpoints without making this feature depend on WebClient work.
+- **Testing**: tests close the feature late with required security coverage and relevant MVC behavior for public access, protected access, login/registration boundaries and forbidden actor combinations.
 
 ---
 
-## Phase 1: Security Dependency And Encoded Users
+## Phase 1: Email Authentication Foundation
 
-**User stories**: 3, 4, 6, 12, 14
+**User stories**: `2`, `8`
 
 ### What To Build
 
-Add the required security dependencies and make the existing user model usable for authentication with encoded passwords and email lookup. Seed at least one admin and one user with valid encoded passwords for development and demo.
+Make the existing `User` and `Role` model usable as the identity source for Spring Security. This slice connects JPA-backed email lookup, password encoding and authority mapping so later login and route protection rest on real project data instead of framework defaults.
 
 ### Acceptance Criteria
 
-- [ ] Security dependency is present.
-- [ ] Passwords used by seeded accounts are encoded.
-- [ ] Users can be looked up by email.
-- [ ] User roles map to Spring Security authorities.
-- [ ] Existing application still starts with seed data.
+- [ ] Existing user data can be loaded for authentication by email through the repository/service path used by Spring Security.
+- [ ] Passwords used for authentication are encoded with a school-style password encoder and are not stored or compared as plain text.
+- [ ] Domain roles map consistently to user and admin authorities so later route rules can distinguish both actors.
+- [ ] This slice keeps repository access out of MVC controllers and exposes a reusable authentication boundary for later phases.
 
 ---
 
-## Phase 2: Login Logout And Public Access
+## Phase 2: Public And Protected Route Matrix
 
-**User stories**: 1, 2, 4, 5, 7, 13, 14
+**User stories**: `3`, `4`, `9`, `10`, `11`, `12`
 
 ### What To Build
 
-Add a custom login page, logout behavior, public route access, and 403 handling. Guests must still reach home, ranking, public match detail, login, registration, static resources, error pages, and public REST GET endpoints.
+Define the first complete access matrix in the security filter chain. Public browsing remains open, user flows and admin match-management flows are protected explicitly, and forbidden access gets a school-style MVC path instead of accidental default behavior.
 
 ### Acceptance Criteria
 
-- [ ] Guest can open public pages.
-- [ ] Guest is redirected to login for user-only routes.
-- [ ] Login works with email and password.
-- [ ] Logout is available and works from shared navigation.
-- [ ] Forbidden access renders the custom 403 page.
-- [ ] CSRF is supported in forms.
+- [ ] Guest access remains available for public home, public ranking, public competition detail, login, registration, static resources and error pages.
+- [ ] Team and prediction route groups are user-only and do not become public by accident.
+- [ ] Match-management route groups are admin-only, while normal users cannot mutate official match data.
+- [ ] Admin access does not grant team or prediction participation in the route matrix.
+- [ ] Forbidden MVC access resolves to the chosen school-style 403 behavior and not a raw default error.
+- [ ] The route decision leaves public REST GET endpoints as an explicit later security addition rather than interleaving REST implementation now.
 
 ---
 
-## Phase 3: Registration And Current User
+## Phase 3: Login, Logout And Role-Aware Navigation
 
-**User stories**: 3, 6, 8, 12
+**User stories**: `2`, `6`, `7`
 
 ### What To Build
 
-Implement minimal registration for normal users and expose the authenticated user to controllers and Thymeleaf. Replace temporary user-id usage with the logged-in user.
+Expose the security baseline through the UI. Add the custom login path, logout action and shared Thymeleaf navigation that reflects authentication state and actor role while keeping the public shell usable.
 
 ### Acceptance Criteria
 
-- [ ] Guest can register a user account.
-- [ ] New accounts receive role `USER`.
-- [ ] Registration validates required fields and matching passwords.
-- [ ] Logged-in username or role is visible in navigation.
-- [ ] User-owned actions can resolve the current user without hardcoded ids.
+- [ ] The app provides a custom login screen and the security flow accepts email credentials.
+- [ ] Logout is reachable from shared authenticated navigation and mutating logout behavior respects CSRF/security form expectations.
+- [ ] Shared navigation distinguishes guest, user and admin entry points instead of showing every private and admin action to everyone.
+- [ ] The authenticated account or role context is available to Thymeleaf through a school-style model/security mechanism where the UI needs it.
+- [ ] User-facing login/logout copy and shared labels that belong in bundles are prepared for resource-bundle use.
 
 ---
 
-## Phase 4: Role Boundaries
+## Phase 4: Registration With Default USER Role
 
-**User stories**: 5, 9, 10, 11, 13
+**User stories**: `1`, `5`
 
 ### What To Build
 
-Enforce the final route boundaries: users cannot access admin match management, admins do not use team/prediction flows, and guests remain public-only.
+Add the minimal registration vertical slice. A guest submits validated form data, the service persists a normal account with an encoded password and role `USER`, and the MVC flow returns clear validation and success behavior.
 
 ### Acceptance Criteria
 
-- [ ] Guest cannot access user-only or admin-only flows.
-- [ ] User can access team and prediction routes.
-- [ ] User cannot access admin match management.
-- [ ] Admin can access match management.
-- [ ] Admin is blocked from user team/prediction workflows unless explicitly public.
-- [ ] Navigation only shows relevant actions for the current actor.
+- [ ] Registration has guest-facing MVC and Thymeleaf form behavior backed by a request DTO rather than direct entity binding.
+- [ ] Existing Jakarta Validation annotations cover required registration input and field errors can render beside the form inputs.
+- [ ] Validation messages and user-facing registration feedback use resource bundle keys where school conventions require them.
+- [ ] A successfully registered account is persisted with an encoded password and default role `USER`.
+- [ ] Registration does not create or expose admin privileges and keeps normal user/account concerns separate from authentication lookup concerns.
 
 ---
 
-## Phase 5: Security Test Closure
+## Phase 5: Authenticated Current User For User-Owned Actions
 
-**User stories**: 1-14
+**User stories**: `8`
 
 ### What To Build
 
-Add focused security tests after the main feature behavior is stable.
+Connect the new identity boundary to an existing user-owned action. Replace the temporary join-user assumption in the team path with current-user lookup so the access work immediately proves value for the next team-management feature.
 
 ### Acceptance Criteria
 
-- [ ] Anonymous/public route tests exist.
-- [ ] Anonymous protected route redirect tests exist.
-- [ ] User access and forbidden admin route tests exist.
-- [ ] Admin access and blocked user-flow tests exist.
-- [ ] Login/logout behavior is covered.
+- [ ] User-owned team behavior no longer relies on a hardcoded temporary user id.
+- [ ] The current authenticated user boundary can be reused by later team and prediction features without controllers querying repositories directly.
+- [ ] Guest, user and admin behavior remains explicit for the touched team action: guest cannot use it, user ownership resolves from authentication and admin is not admitted into team participation.
+- [ ] Error and redirect behavior for the touched MVC path remains compatible with later team-management validation and resource-bundle work.
+
+---
+
+## Phase 6: Security Closure Tests
+
+**User stories**: `3`, `4`, `5`, `9`, `10`, `11`, `12`
+
+### What To Build
+
+Close the feature with focused automated verification for the security boundary and the MVC behavior introduced by this plan. Keep this as the late closure block so the route matrix and form surfaces are stable before tests are broadened.
+
+### Acceptance Criteria
+
+- [ ] Required security tests cover guest access to public screens and denial or redirect behavior for protected flows.
+- [ ] Security tests cover user access to user routes, user denial from admin routes and admin access to match-management routes.
+- [ ] Security tests cover that admin is not allowed into team or prediction participation routes for this project.
+- [ ] MVC-oriented tests cover the relevant login/registration form surface or controller behavior introduced by this feature where it is observable without brittle UI assertions.
+- [ ] Validation test coverage for registration documents existing Jakarta annotation behavior if registration validation is introduced in this plan.
+- [ ] The feature no longer relies on `contextLoads` as its only verification evidence.

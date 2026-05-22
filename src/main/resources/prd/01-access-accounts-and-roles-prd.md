@@ -1,67 +1,100 @@
+# PRD: Access, Accounts And Roles
+
 ## Problem Statement
 
-The application needs a clear access model for three actors: guest, user, and admin. At the moment, domain roles exist, but the application does not yet enforce authentication, authorization, login, logout, or a reliable current-user flow. This blocks team membership, private scoreboards, predictions, and admin-only match management.
+De FIFA-opdracht heeft drie actoren met verschillende verantwoordelijkheden: guest, user en admin. De huidige applicatie heeft al een gebruikersentiteit en rollen in het domein, maar beschermt de flows nog niet met login, registratie en autorisatie. Daardoor zijn private teams, prognoses en admin-wedstrijdbeheer nog niet betrouwbaar af te schermen.
 
 ## Solution
 
-Implement account access with Spring Security so guests can only use public screens, users can manage teams and predictions, and admins can manage matches and official results. The login/logout experience must be visible and consistent across screens, and the application must expose the current user's role where needed.
+Implementeer eerst een schoolconforme toegangslaag met Spring Security. Guests blijven publieke informatie zien, geregistreerde users krijgen hun private team- en prognoseflows, en admins beheren enkel wedstrijden en officiele resultaten. De oplossing kiest voor een minimaal veilige basis voor de deadline van 27 May 2026: email-login, duidelijke rolgrenzen, login/logout in de UI en de ingelogde user als bron voor user-owned acties.
+
+## Current Codebase State
+
+- Er bestaat een `User`-domeinmodel met email, password hash en een rolveld.
+- Er bestaat een rol-enum en seeddata bevat zowel admin- als useraccounts.
+- Spring Security dependencies staan al in de build, maar er is nog geen zichtbare securityconfiguratie, user details service, loginflow of registratieflow.
+- Controllers voor teams en wedstrijden bestaan al, maar team join gebruikt nog een tijdelijke hardcoded user-id.
+- De huidige testdekking bevat enkel een context-load test.
+
+## School Requirements
+
+- Spring Security met login, logout, rollen en 403-afhandeling.
+- MVC en Thymeleaf voor login, registratie en gedeelde navigatie.
+- JPA-backed user lookup en service/repository-scheiding.
+- Password encoding; geen plain-text passwords opslaan.
+- CSRF op muterende formulieren zodra security actief is.
+- Resource bundles voor user-facing labels en foutmeldingen waar relevant.
+- Securitytests later in het verplichte testblok.
+- REST GET endpoints moeten later publiek toegelaten kunnen worden zonder deze feature nu met REST te vermengen.
+
+## Role And Access Decisions
+
+- **Guest**: mag publieke home, publieke ranking, publieke wedstrijdinfo, login, registratie, static resources, error pages en publieke REST GET endpoints bezoeken.
+- **User**: mag teambeheer, private scoreboards en prognoses gebruiken.
+- **Admin**: mag wedstrijdbeheer en officiele resultaten beheren.
+- **Forbidden**: admin neemt niet deel aan team- of prognoseflows; guests gebruiken geen private of adminroutes; users gebruiken geen adminroutes.
 
 ## User Stories
 
-1. As a guest, I want to view public World Cup information, so that I can explore the application without an account.
-2. As a guest, I want to view the public top-10 teams, so that I can see the current ranking.
-3. As a guest, I want to register an account, so that I can join teams and submit predictions.
-4. As a guest, I want to log in, so that I can access user-only functionality.
-5. As a guest, I want protected pages to redirect me to login, so that I understand I need an account.
-6. As a user, I want to stay authenticated during my session, so that team and prediction actions are linked to me.
-7. As a user, I want to log out from every screen, so that I can safely end my session.
-8. As a user, I want to see my username or role in the UI, so that I know which account is active.
-9. As a user, I want admin-only pages to be blocked for me, so that I cannot manage matches.
-10. As an admin, I want access to match management screens, so that I can maintain official match data.
-11. As an admin, I want user-only screens to remain available when relevant, so that I can inspect the public and authenticated experience.
-12. As the application, I want to use the authenticated principal instead of temporary user ids, so that data is connected to the real logged-in user.
-13. As the application, I want a custom access denied page, so that forbidden actions are handled cleanly.
-14. As the application, I want static resources and public endpoints to remain accessible, so that pages render correctly before login.
+1. As a guest, I want to register an account, so that I can join the prediction game.
+2. As a guest, I want to log in with my email, so that I can access user functionality.
+3. As a guest, I want public pages to stay accessible, so that the app remains browseable before login.
+4. As a guest, I want protected routes to redirect or deny access clearly, so that the access model is understandable.
+5. As a user, I want newly registered accounts to receive role `USER`, so that registration never grants admin rights.
+6. As a user, I want logout to be visible across screens, so that I can end my session safely.
+7. As a user, I want my active account and role context visible where useful, so that I know which actor flow I am in.
+8. As a user, I want private actions linked to my authenticated identity, so that no temporary user id decides ownership.
+9. As a user, I want admin pages blocked for me, so that I cannot edit official tournament data.
+10. As an admin, I want access to match management, so that I can maintain matches and results.
+11. As an admin, I want team and prediction actions blocked, so that admin remains a separate assignment role.
+12. As the application, I want forbidden access handled with a school-style error page, so that users do not see raw framework errors.
 
 ## Implementation Decisions
 
-- Use Spring Security with a security filter chain.
-- Use form login with a custom login screen and a default post-login redirect.
-- Use logout with a visible logout control in shared navigation.
-- Use database-backed user details through a user details service.
-- Store encoded passwords instead of plain text passwords.
-- Convert the domain role enum to Spring authorities with the `ROLE_` prefix.
-- Keep user account logic separate from security-specific user lookup.
-- Use a global model attribute or advice to expose username and role to Thymeleaf views.
-- Permit public screens, login, registration, static resources, error pages, and REST endpoints that must remain public.
-- Restrict user flows to authenticated users with the user role.
-- Restrict match management and official result management to admins.
-- Replace temporary user ids with the authenticated user in all user-owned actions.
+- Use email as the login identifier.
+- Register normal accounts with role `USER` by default.
+- Keep authentication lookup separate from normal user/domain services.
+- Convert domain roles to Spring Security authorities consistently.
+- Use the authenticated principal/current user lookup for all user-owned actions.
+- Permit public routes explicitly and protect user/admin route groups explicitly.
+- Add a custom login screen and role-aware shared navigation.
+- Keep CSRF enabled and include CSRF fields in mutating Thymeleaf forms.
+- Use a school-style access denied page for forbidden MVC requests.
+- Preserve the strict rule that admin is not a normal prediction user.
 
 ## Testing Decisions
 
-- Security tests should verify external behavior: redirects, allowed pages, forbidden pages, and successful login/logout.
-- Test anonymous access to public pages.
-- Test anonymous users are redirected away from user-only and admin-only pages.
-- Test users can access team and prediction pages but not admin match management.
-- Test admins can access match management.
-- Use the security testing patterns from the school security examples with mocked users and MockMvc.
+- Verify guest access to public screens and login/registration.
+- Verify guests cannot use user or admin flows.
+- Verify users can use user flows but cannot use admin flows.
+- Verify admins can use admin flows but not team/prediction actions.
+- Verify login uses email and registration grants `USER`.
+- This PRD contributes directly to the required security test category and to MVC controller coverage.
+- Follow the local security examples with MockMvc and Spring Security test support.
+- Tests are deferred to the late test block, but route boundaries should be designed to be easy to test.
 
-## Out of Scope
+## REST And WebClient Decisions
 
-- Email verification.
-- Password reset flow.
+REST and WebClient are out of scope for this feature implementation. This PRD only decides that later public REST GET endpoints must be explicitly permitted by the security configuration.
+
+## Out Of Scope
+
+- Password reset and email verification.
 - OAuth or external identity providers.
-- Multi-role users.
-- Account profile management beyond what is required for registration and login.
+- Admin user management screens.
+- Profile editing beyond what the minimum registration flow needs.
+- Multi-role user accounts that blur the user/admin split.
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, pages 2-5: roles and required feature access.
-2. Security notes from `24-04-26-Security.md`: custom login, CSRF, role display, 403 handling, and user details guidance.
-3. School security examples in WorkspacesIntelij: Spring Security JPA patterns, user details service, password encoding, and security tests.
-4. Git repository: https://github.com/HeyEdis/call-the-match.git.
+1. FIFA World Cup 2026 Team Prediction PDF, pages 2 and 6: roles and security requirements.
+2. School guidelines: `Slides_Spring_Security.pdf` and `Slides_Spring_Security_JDBC.pdf`.
+3. Lesson notes: `24-04-26-Security.md` and `Project.md`.
+4. Exercise projects identified for security patterns: `Spring_Boot_security_JPA`, `Spring_Boot_security_Form`, and `Spring_Boot_security_roles`.
+5. Existing `call-the-match` codebase: current user model, role model, build dependencies, seeded users and team controller state.
+6. Git repository URL: `https://github.com/HeyEdis/call-the-match.git`.
+7. User/project decisions from this conversation and local skills: email login, `USER` registration default, admin separation and real deadline 27 May 2026.
 
 ## Further Notes
 
-This is the first implementation priority because team ownership, membership, predictions, and admin match management all depend on reliable authentication and authorization.
+Deze PRD is de eerste implementatieprioriteit. Team ownership, invite joins, private scoreboards and prediction writes become unreliable zolang de huidige tijdelijke user-id nog bestaat.

@@ -20,7 +20,7 @@ public class TeamMember {
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    private User user;
+    private MyUser user;
 
     @ManyToOne
     @JoinColumn(name = "teamId")

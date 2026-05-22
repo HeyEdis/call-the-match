@@ -35,11 +35,8 @@ public class TeamController {
 
     @PostMapping("/join")
     public String joinTeam(@RequestParam String inviteCode, RedirectAttributes ra) {
-        Long temporaryUserId = 1L;
-        teamService.joinTeamWithInviteCode(inviteCode, temporaryUserId);
+        teamService.joinTeamWithInviteCode(inviteCode);
         ra.addFlashAttribute("message", "Team joined");
         return "redirect:/team/dashboard";
     }
-
-
 }

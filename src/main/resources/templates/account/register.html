@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title th:text="#{registration.title}">Register</title>
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
+<main>
+    <h1 th:text="#{registration.title}">Register</h1>
+
+    <form th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
+        <p>
+            <label for="firstName" th:text="#{label.account.firstName}">First name</label>
+            <input id="firstName" type="text" th:field="*{firstName}"/>
+            <span th:if="${#fields.hasErrors('firstName')}" th:errorclass="error"
+                  th:errors="*{firstName}"></span>
+        </p>
+        <p>
+            <label for="lastName" th:text="#{label.account.lastName}">Last name</label>
+            <input id="lastName" type="text" th:field="*{lastName}"/>
+            <span th:if="${#fields.hasErrors('lastName')}" th:errorclass="error"
+                  th:errors="*{lastName}"></span>
+        </p>
+        <p>
+            <label for="userName" th:text="#{label.account.userName}">Username</label>
+            <input id="userName" type="text" th:field="*{userName}"/>
+            <span th:if="${#fields.hasErrors('userName')}" th:errorclass="error"
+                  th:errors="*{userName}"></span>
+        </p>
+        <p>
+            <label for="email" th:text="#{label.account.email}">Email</label>
+            <input id="email" type="email" th:field="*{email}"/>
+            <span th:if="${#fields.hasErrors('email')}" th:errorclass="error"
+                  th:errors="*{email}"></span>
+        </p>
+        <p>
+            <label for="password" th:text="#{label.account.password}">Password</label>
+            <input id="password" type="password" th:field="*{password}" autocomplete="new-password"/>
+            <span th:if="${#fields.hasErrors('password')}" th:errorclass="error"
+                  th:errors="*{password}"></span>
+        </p>
+        <button type="submit" th:text="#{registration.submit}">Register</button>
+    </form>
+</main>
+</body>
+</html>

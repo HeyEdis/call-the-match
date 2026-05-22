@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -26,10 +27,6 @@ import java.util.*;
 @Profile("dev") // laten weten enkel in development
 public class InitDataConfig implements CommandLineRunner {
 
-    private static final int GENERATED_TEAM_COUNT = 10;
-    private static final int MEMBERS_PER_TEAM = 4;
-    private static final int GENERATED_USER_COUNT = GENERATED_TEAM_COUNT * (MEMBERS_PER_TEAM + 1);
-
     private final CompetitionRepository competitionRepository;
     private final CountryRepository countryRepository;
     private final LocationRepository locationRepository;
@@ -39,35 +36,44 @@ public class InitDataConfig implements CommandLineRunner {
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    private static final int GENERATED_TEAM_COUNT = 10;
+    private static final int MEMBERS_PER_TEAM = 4;
+    private static final int GENERATED_USER_COUNT = GENERATED_TEAM_COUNT * (MEMBERS_PER_TEAM + 1);
+    private String defaultPassword;
 
     Faker faker = new Faker(Locale.of("nl", "BE"));
     Random r = new Random();
 
     @Override
     public void run(String... args) throws Exception {
+        defaultPassword = passwordEncoder.encode("password");
 
-        User admin = User.builder()
+        MyUser admin = MyUser.builder()
                 .email("admin@example.com")
                 .firstName("Admin")
                 .lastName("User")
                 .userName("Lord of Lords")
-                .passwordHash("password")
+                .passwordHash(defaultPassword)
+                .email("admin@example.com")
                 .role(Role.ADMIN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        var generatedUsers = new ArrayList<User>();
+        var generatedUsers = new ArrayList<MyUser>();
 
         for (int i = 0; i < GENERATED_USER_COUNT; i++) {
             String username = faker.animal().name().replace(" ", "")
                     + faker.number().numberBetween(1, 999);
-            User user = User.builder()
+            MyUser user = MyUser.builder()
                     .email(faker.internet().emailAddress())
                     .firstName(faker.name().firstName())
                     .lastName(faker.name().lastName())
                     .userName(username)
-                    .passwordHash("password")
+                    .passwordHash(defaultPassword)
+                    .email("user%d@example.com".formatted(i+1))
                     .role(Role.USER)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
@@ -330,7 +336,7 @@ public class InitDataConfig implements CommandLineRunner {
         // ── 11. PREDICTIONS  ──────────────────────────────────────────
         var allCompetitions = competitionRepository.findAll();
         var generatedPredictions = new ArrayList<Prediction>();
-        for (User user : generatedUsers) {
+        for (MyUser user : generatedUsers) {
             for (Competition competition : allCompetitions) {
                 Prediction prediction = Prediction.builder()
                         .user(user)

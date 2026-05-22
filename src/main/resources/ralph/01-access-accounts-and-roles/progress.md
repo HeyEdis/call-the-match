@@ -77,3 +77,23 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The run compiled the new MVC controller, DTO and templates through Spring context startup. Existing Hibernate `create-drop` missing-table DDL warnings remain noisy but did not fail the run.
   - Focused security and registration MVC tests remain scheduled for the later closure-test task.
 - **Status**: acceptance criteria verified for these three tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Persist Registered Users As USER
+
+- **Task**: `persist-registered-users-as-user` - Persist Registered Users As USER
+- **What changed**: added a normal user registration service that saves validated registration DTO data as a `User`, encodes the submitted password, assigns role `USER`, and records creation/update timestamps. The account controller now delegates successful registration to that service and redirects to login with bundle-backed success feedback.
+- **Decisions**: kept persistence separate from the existing Spring Security user-details lookup. Email uniqueness and extra account polish were not added because this task only closes the minimal default-USER persistence slice.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/AccountController.java`
+  - `src/main/java/com/example/callthematch/service/UserService.java`
+  - `src/main/resources/templates/account/login.html`
+  - `src/main/resources/templates/account/register.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because Maven Central access was denied.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The implementation was inspected after the run: successful registration reaches `UserService`, the password is encoded before persistence, the stored role is fixed to `Role.USER`, and `AccountController` does not call the repository directly.
+  - Existing Hibernate `create-drop` missing-table DDL warnings remain noisy in the context-load run but did not fail the build.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.

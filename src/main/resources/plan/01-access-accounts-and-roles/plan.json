@@ -127,7 +127,7 @@
         "The registration implementation keeps MVC controllers thin and keeps normal account persistence separate from the security authentication lookup boundary."
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "resolve-team-join-from-authenticated-user",

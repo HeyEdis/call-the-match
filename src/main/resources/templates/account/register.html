@@ -12,7 +12,6 @@
 
 <main>
     <h1 th:text="#{registration.title}">Register</h1>
-    <p th:if="${registrationValidated}" th:text="#{registration.validated}"></p>
 
     <form th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
         <p>

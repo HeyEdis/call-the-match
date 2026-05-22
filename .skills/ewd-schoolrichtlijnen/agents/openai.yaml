@@ -1,0 +1,3 @@
+﻿display_name: EWD Schoolrichtlijnen
+short_description: Schoolconforme Spring Boot richtlijnen voor call-the-match.
+default_prompt: Gebruik de EWD schoolrichtlijnen voor deze Spring Boot implementatie.

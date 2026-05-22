@@ -13,6 +13,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
                         .requestMatchers(
+                                "/competition/add",
+                                "/competition/edit/**",
+                                "/competition/*/result"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
                                 "/home",
                                 "/ranking",
                                 "/competition",
@@ -27,7 +32,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/team/**", "/predictions/**").hasRole("USER")
                         .anyRequest().permitAll())
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .exceptionHandling(handling -> handling.accessDeniedPage("/403"));
 
         return http.build();
     }

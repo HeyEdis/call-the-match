@@ -75,7 +75,7 @@
         "Forbidden MVC access resolves through the chosen school-style 403 behavior rather than a raw default error."
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "build-custom-email-login-and-logout-ui",

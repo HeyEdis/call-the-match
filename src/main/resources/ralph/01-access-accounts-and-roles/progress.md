@@ -22,6 +22,22 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The passing test run started the Spring context and logged the global authentication manager using the `securityUserDetailsService` bean.
 - **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
 
+### 2026-05-22 - Protect Admin Routes And Forbidden Access
+
+- **Task**: `protect-admin-routes-and-forbidden-access` - Protect Admin Routes And Forbidden Access
+- **What changed**: added ADMIN-only match-management matchers for competition add/edit and future result paths, wired Spring Security forbidden handling to `/403`, and added a minimal MVC route that renders the existing `error/403` template.
+- **Decisions**: admin matchers are placed before the public single-segment competition detail matcher so `/competition/add` cannot be swallowed by `/competition/{id}`. Team and prediction paths continue to require role `USER`, which keeps ADMIN out of participation flows while roles remain single-role authorities.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/java/com/example/callthematch/controller/ErrorPageController.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The security config was inspected to confirm ADMIN matchers run before public competition detail, USER-only `/team/**` and `/predictions/**` matchers remain intact, and forbidden access targets `/403`.
+  - Route-specific security tests remain scheduled for the later security closure task.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
 ### 2026-05-22 - Protect Public And User Routes
 
 - **Task**: `protect-public-and-user-routes` - Protect Public And User Routes

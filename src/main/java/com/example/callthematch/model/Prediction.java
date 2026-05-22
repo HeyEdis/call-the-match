@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "predictions")
+@Table(name = "predictions",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "competitionId"}))
 public class Prediction {
 
     @Id

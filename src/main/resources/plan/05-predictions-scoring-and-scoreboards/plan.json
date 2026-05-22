@@ -52,7 +52,7 @@
         "Resource bundle contains error messages for null and negative score validation failures"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-repository-query",
@@ -64,7 +64,7 @@
         "Application starts without errors with the new constraint"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-service-upsert",
@@ -77,7 +77,7 @@
         "createdAt is set on new predictions"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-controller-form",
@@ -93,7 +93,7 @@
         "Guest is redirected to login, admin gets 403"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "cutoff-enforcement",

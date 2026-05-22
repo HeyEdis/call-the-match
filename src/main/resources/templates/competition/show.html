@@ -44,6 +44,10 @@
       <a th:href="@{/competition/{id}/result(id=${competition.id})}"
          th:text="#{competition.result.link}">Record result</a>
     </p>
+    <p sec:authorize="hasRole('USER')">
+      <a th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
+         th:text="#{prediction.link}">Predict score</a>
+    </p>
   </div>
 </div>
 

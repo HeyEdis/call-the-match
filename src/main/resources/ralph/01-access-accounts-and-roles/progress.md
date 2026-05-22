@@ -21,3 +21,18 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The first sandboxed direct Maven run was blocked while fetching missing dependencies; the approved rerun completed successfully with `BUILD SUCCESS`.
   - The passing test run started the Spring context and logged the global authentication manager using the `securityUserDetailsService` bean.
 - **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
+### 2026-05-22 - Protect Public And User Routes
+
+- **Task**: `protect-public-and-user-routes` - Protect Public And User Routes
+- **What changed**: added the first `SecurityFilterChain` route matrix. Public MVC entry points, login/register placeholders, static CSS and error paths remain permitted while `/team/**` and future `/predictions/**` paths require role `USER`.
+- **Decisions**: kept admin match-route restrictions and custom email login UI out of this task because they belong to later Ralph tasks. Default Spring Security form login stays in place until the custom login task.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - A sandboxed direct Maven run was blocked while Maven attempted central access.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The route matrix was inspected after the run: public matchers are explicit and the USER-only matchers reserve both team and prediction paths.
+- **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.

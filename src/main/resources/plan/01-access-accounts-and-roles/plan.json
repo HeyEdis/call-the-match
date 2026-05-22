@@ -62,7 +62,7 @@
         "The route configuration remains explicit about later public REST GET endpoints without implementing REST or WebClient in this task."
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "protect-admin-routes-and-forbidden-access",

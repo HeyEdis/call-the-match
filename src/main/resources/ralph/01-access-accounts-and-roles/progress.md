@@ -22,6 +22,30 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The passing test run started the Spring context and logged the global authentication manager using the `securityUserDetailsService` bean.
 - **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
 
+### 2026-05-22 - Resolve Current User Join And Close Access Tests
+
+- **Tasks**:
+  - `resolve-team-join-from-authenticated-user` - Resolve Team Join From Authenticated User
+  - `add-security-and-mvc-closure-tests` - Add Security And MVC Closure Tests
+- **What changed**: replaced the hardcoded team join user id with a reusable current-user service that resolves the authenticated email from the Spring Security context. Added MockMvc access tests for guest, USER and ADMIN routes, registration form error coverage, a DTO validation test, and a registration service test that verifies encoded password persistence with role USER.
+- **Decisions**: kept the team controller thin by making `TeamService` ask `CurrentUserService` for the authenticated domain user. Used MockMvc request user postprocessors for role coverage because they applied the actor state concretely in the current Spring Boot 4 test setup.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/TeamController.java`
+  - `src/main/java/com/example/callthematch/service/CurrentUserService.java`
+  - `src/main/java/com/example/callthematch/service/TeamService.java`
+  - `src/test/java/com/example/callthematch/AccessSecurityMvcTests.java`
+  - `src/test/java/com/example/callthematch/dto/InputRegistrationDTOValidationTests.java`
+  - `src/test/java/com/example/callthematch/service/UserServiceTests.java`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because Maven Central access was denied.
+  - The first approved direct Maven run compiled the new code and exposed three test expectation issues: MockMvc redirected guests exactly to `/login`, and request-scoped user postprocessors were needed for explicit USER/ADMIN route checks.
+  - After adjusting those expectations, approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - Final test result: 8 tests run, 0 failures and 0 errors. Route tests cover public access, guest redirect, USER access/ADMIN denial, ADMIN access/user-flow denial, and registration field errors.
+  - Existing Hibernate `create-drop` missing-table DDL warnings and Mockito agent warnings remain noisy during the test run but did not fail the build.
+- **Status**: acceptance criteria verified for both tasks and their `"passes"` flags set to `true`.
+
 ### 2026-05-22 - Protect Admin Routes And Forbidden Access
 
 - **Task**: `protect-admin-routes-and-forbidden-access` - Protect Admin Routes And Forbidden Access

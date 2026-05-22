@@ -140,7 +140,7 @@
         "ADMIN remains excluded from team participation for the touched route."
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-security-and-mvc-closure-tests",
@@ -155,7 +155,7 @@
         "This task does not add REST controller, WebClient or e2e test work to the access feature."
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     }
   ]
 }

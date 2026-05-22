@@ -1,6 +1,7 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
+import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
 import com.example.callthematch.service.StadiumService;
@@ -60,6 +61,13 @@ public class CompetitionController {
         return "competition/add";
     }
 
+    @GetMapping(value = "/{id}/result")
+    public String resultForm(@PathVariable Long id, Model model) {
+        model.addAttribute("competition", competitionService.findById(id));
+        model.addAttribute("inputCompetitionResultDto", competitionService.findInputResultById(id));
+        return "competition/result";
+    }
+
     @PostMapping(value = "/add")
     public String add(@Valid @ModelAttribute("inputCompetitionDto") InputCompetitionDTO inputCompetitionDTO,
                       BindingResult result, Model model,
@@ -104,6 +112,31 @@ public class CompetitionController {
 
         String successMessage =
                 messageSource.getMessage("competition_update_success", new Object[] {competitionId}, locale);
+        ra.addFlashAttribute("successMessage", successMessage);
+
+        return "redirect:/competition/" + competitionId;
+    }
+
+    @PostMapping(value = "/{id}/result")
+    public String updateResult(@PathVariable Long id,
+                               @Valid @ModelAttribute("inputCompetitionResultDto")
+                               InputCompetitionResultDTO inputCompetitionResultDTO,
+                               BindingResult result, Model model,
+                               Locale locale, RedirectAttributes ra) {
+
+        if (result.hasErrors()) {
+            log.error("Validation failed for official result of competition {}: {}", id, result.getAllErrors());
+            String errorMessage = messageSource.getMessage("competition_result_save_fail", null, locale);
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("competition", competitionService.findById(id));
+            return "competition/result";
+        }
+
+        Long competitionId = competitionService.updateResult(id, inputCompetitionResultDTO);
+        log.info("Official result updated successfully for competition {}", competitionId);
+
+        String successMessage =
+                messageSource.getMessage("competition_result_save_success", new Object[] {competitionId}, locale);
         ra.addFlashAttribute("successMessage", successMessage);
 
         return "redirect:/competition/" + competitionId;

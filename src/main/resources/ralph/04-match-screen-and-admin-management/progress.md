@@ -90,3 +90,31 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Maven result: 28 tests run, 0 failures, 0 errors and 0 skipped. Existing Hibernate create-drop missing-table DDL warnings and Mockito dynamic-agent warnings remain in the passing output.
   - Ran `git diff --check`; no whitespace errors were reported.
 - **Status**: acceptance criteria verified for the fixture edit form and persistence tasks and both `"passes"` flags set to `true`.
+
+### 2026-05-22 - Complete Official Result And Mutation Boundary Slice
+
+- **Tasks completed**:
+  - `build-official-result-form-boundary` - Build Official Result Form Boundary
+  - `persist-official-match-results` - Persist Official Match Results
+  - `harden-match-mutation-security-and-errors` - Harden Match Mutation Security And Errors
+- **What changed**: added a dedicated official-result request DTO and admin result form, exposed an admin result link from match detail, saved official score values through the competition service, and aligned the protected result route pattern with the MVC `{id}` route. The existing shared MVC exception advice continues to handle missing competition ids and malformed path ids for competition read and admin mutation paths.
+- **Decisions**: kept official result validation separate from fixture add/edit validation so future fixtures can still keep nullable scores. Carried the user-requested message-bundle review fix into this commit by consolidating duplicate values and updating the affected Thymeleaf keys.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/java/com/example/callthematch/controller/CompetitionController.java`
+  - `src/main/java/com/example/callthematch/dto/request/InputCompetitionResultDTO.java`
+  - `src/main/java/com/example/callthematch/service/CompetitionService.java`
+  - `src/main/resources/templates/competition/result.html`
+  - `src/main/resources/templates/competition/show.html`
+  - `src/main/resources/i18n/messages.properties`
+  - existing Thymeleaf templates touched by duplicate message-key consolidation
+  - `src/main/resources/plan/04-match-screen-and-admin-management/plan.json`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/progress.md`
+- **Verification**:
+  - Inspected `SecurityConfig` to confirm add, edit and result mutation routes are ADMIN-only while competition detail remains public.
+  - Inspected `GlobalExceptionAdvice` and the competition lookup paths to confirm missing competition ids and malformed competition ids still resolve through shared MVC 404 handling.
+  - Ran `.\mvnw.cmd test` successfully.
+  - Maven result: 28 tests run, 0 failures, 0 errors and 0 skipped. Existing Hibernate create-drop missing-table DDL warnings and Mockito dynamic-agent warnings remain in the passing output.
+  - Ran the duplicate message-value scan after the new result keys; no duplicate `messages.properties` values remain.
+  - Ran `git diff --check`; no whitespace errors were reported.
+- **Status**: acceptance criteria verified for the official-result form, official-result persistence and mutation security/error boundary tasks and their `"passes"` flags set to `true`.

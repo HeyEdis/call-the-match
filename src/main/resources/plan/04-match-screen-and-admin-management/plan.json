@@ -176,7 +176,7 @@
         "Fixture create/edit rules and prediction input remain outside the official result form boundary."
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-official-match-results",
@@ -190,7 +190,7 @@
         "The task does not add scoring recalculation or prediction write behavior beyond the official result source data."
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "harden-match-mutation-security-and-errors",
@@ -205,7 +205,7 @@
         "This task stays in MVC security and error handling and does not add REST error-response or WebClient implementation."
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-match-mvc-and-security-closure-tests",

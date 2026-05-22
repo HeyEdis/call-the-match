@@ -1,6 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
+import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.CountryNotFound;
@@ -40,6 +41,10 @@ public class CompetitionService {
                 c.getTime());
     }
 
+    private InputCompetitionResultDTO toInputResultDTO(Competition c) {
+        return new InputCompetitionResultDTO(c.getScoreA(), c.getScoreB());
+    }
+
     private Competition findCompetitionById(Long id)
     {
         return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
@@ -62,6 +67,10 @@ public class CompetitionService {
         return toInputDTO(findCompetitionById(id));
     }
 
+    public InputCompetitionResultDTO findInputResultById(Long id) {
+        return toInputResultDTO(findCompetitionById(id));
+    }
+
     public Long add(InputCompetitionDTO dto) {
         Competition competition = Competition.builder()
                 .teamA(countryRepository.findById(dto.teamA()).orElseThrow(() -> new CountryNotFound(dto.teamA())))
@@ -81,6 +90,14 @@ public class CompetitionService {
         competition.setStadium(stadiumRepository.findById(dto.stadium()).orElseThrow(() -> new StadiumNotFound(dto.stadium())));
         competition.setDate(dto.date());
         competition.setTime(dto.time());
+
+        return competitionRepository.save(competition).getId();
+    }
+
+    public Long updateResult(Long id, InputCompetitionResultDTO dto) {
+        Competition competition = findCompetitionById(id);
+        competition.setScoreA(dto.scoreA());
+        competition.setScoreB(dto.scoreB());
 
         return competitionRepository.save(competition).getId();
     }

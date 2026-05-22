@@ -11,10 +11,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,7 +93,18 @@ class TeamManagementMvcTests {
                         .with(user("user11@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/show"))
-                .andExpect(model().attributeExists("team", "isOwner"));
+                .andExpect(model().attributeExists("team", "isOwner"))
+                .andExpect(content().string(not(containsString(">Actions</th>"))))
+                .andExpect(content().string(not(containsString(">Remove</button>"))));
+    }
+
+    @Test
+    void ownerSeesTeamManagementActions() throws Exception {
+        mockMvc.perform(get("/team/1")
+                        .with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(">Actions</th>")))
+                .andExpect(content().string(containsString(">Remove</button>")));
     }
 
     @Test
@@ -114,6 +128,14 @@ class TeamManagementMvcTests {
     @Test
     void nonOwnerCannotRegenerateInviteCode() throws Exception {
         mockMvc.perform(post("/team/1/invite-code")
+                        .with(user("user11@example.com").roles("USER"))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void nonOwnerCannotRemoveTeamMembers() throws Exception {
+        mockMvc.perform(post("/team/1/members/1/remove")
                         .with(user("user11@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());

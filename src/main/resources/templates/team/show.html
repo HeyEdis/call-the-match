@@ -27,7 +27,7 @@
             <th>Role</th>
             <th>Personal Score</th>
             <th>Active Since</th>
-            <th>Actions</th>
+            <th th:if="${isOwner}">Actions</th>
 
         </tr>
 
@@ -36,8 +36,8 @@
             <td th:text="${member.role}"></td>
             <td th:text="${member.score}"></td>
             <td th:text="${{member.joinedAt}}"></td>
-            <td>
-                <form th:if="${isOwner and member.role.name() != 'OWNER'}"
+            <td th:if="${isOwner}">
+                <form th:if="${member.role.name() != 'OWNER'}"
                       th:action="@{|/team/${team.id}/members/${member.id}/remove|}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" th:text="#{team.member.remove}">Remove</button>

@@ -192,7 +192,7 @@
         "This task does not add REST controller, WebClient or e2e tests to team management."
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-team-validation-and-membership-rule-tests",
@@ -207,7 +207,7 @@
         "The validation and membership rule tests do not broaden into REST controller, WebClient or unrelated scoring recalculation work."
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     }
   ]
 }

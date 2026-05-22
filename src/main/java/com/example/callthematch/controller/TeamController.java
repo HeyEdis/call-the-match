@@ -31,18 +31,10 @@ public class TeamController {
         return teamService.getCurrentUserTeams();
     }
 
-    @ModelAttribute("inputTeamDto")
-    public InputTeamDTO populateInputTeamDto() {
-        return new InputTeamDTO();
-    }
-
-    @ModelAttribute("inputTeamJoinDto")
-    public InputTeamJoinDTO populateInputTeamJoinDto() {
-        return new InputTeamJoinDTO();
-    }
-
     @GetMapping("/dashboard")
-    public String showDashboard() {
+    public String showDashboard(Model model) {
+        model.addAttribute("inputTeamDto", new InputTeamDTO());
+        model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
         return "team/dashboard";
     }
 
@@ -78,6 +70,7 @@ public class TeamController {
             RedirectAttributes redirectAttributes,
             Locale locale) {
         if (result.hasErrors()) {
+            model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
             return "team/dashboard";
         }
 
@@ -86,6 +79,7 @@ public class TeamController {
         } catch (TeamNameAlreadyExists ex) {
             result.rejectValue("name", "team.name.duplicate",
                     messageSource.getMessage("team.name.duplicate", null, locale));
+            model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
             return "team/dashboard";
         }
 
@@ -102,6 +96,7 @@ public class TeamController {
             RedirectAttributes redirectAttributes,
             Locale locale) {
         if (result.hasErrors()) {
+            model.addAttribute("inputTeamDto", new InputTeamDTO());
             return "team/dashboard";
         }
 
@@ -110,6 +105,7 @@ public class TeamController {
         } catch (InviteCodeNotFound ex) {
             result.rejectValue("inviteCode", "team.inviteCode.invalid",
                     messageSource.getMessage("team.inviteCode.invalid", null, locale));
+            model.addAttribute("inputTeamDto", new InputTeamDTO());
             return "team/dashboard";
         }
 

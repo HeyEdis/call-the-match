@@ -55,6 +55,28 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Existing Hibernate missing-table DDL warnings and Mockito agent warnings remain noisy in the passing build output.
 - **Status**: acceptance criteria verified for these four tasks and their `"passes"` flags set to `true`.
 
+### 2026-05-22 - Close Team Management Tests
+
+- **Tasks**:
+  - `add-team-mvc-and-security-closure-tests` - Add Team MVC And Security Closure Tests
+  - `add-team-validation-and-membership-rule-tests` - Add Team Validation And Membership Rule Tests
+- **What changed**: added focused MVC coverage for the current-user dashboard model, create/join validation feedback, create redirect, invalid invitecode feedback, private team detail access and guest/admin/non-member/non-owner denial. Added Jakarta Validator coverage for the team create and invitecode DTOs plus service-focused tests for authenticated owner membership creation, generated invitecode uniqueness checks, duplicate name rejection, duplicate join prevention and unknown invitecode handling.
+- **Decisions**: kept the closure at MVC, validation and service boundaries instead of adding REST, WebClient or e2e work. The new valid-create MVC assertion exposed that controller-level form `@ModelAttribute` factories prebuilt empty immutable record DTOs before POST binding; the form DTOs are now added on dashboard and opposite-form error paths so constructor binding handles submitted create/join values while the repeated `teamList` model attribute remains controller-scoped.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/TeamController.java`
+  - `src/test/java/com/example/callthematch/TeamManagementMvcTests.java`
+  - `src/test/java/com/example/callthematch/dto/InputTeamDTOValidationTests.java`
+  - `src/test/java/com/example/callthematch/service/TeamServiceTests.java`
+  - `src/main/resources/plan/03-team-management/plan.json`
+  - `src/main/resources/ralph/03-team-management/progress.md`
+- **Verification**:
+  - `.\mvnw.cmd test` did not start Maven because the wrapper PowerShell startup path failed with `Cannot index into a null array`.
+  - The first approved direct Maven 3.9.14 run reached the new MVC tests and exposed the valid-create DTO binding failure caused by the controller form factories.
+  - Approved direct local Maven 3.9.14 rerun completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - Final test result: 25 tests run, 0 failures and 0 errors.
+  - Existing Hibernate missing-table DDL warnings and Mockito dynamic-agent warnings remain noisy in the passing build output.
+- **Status**: acceptance criteria verified for both closure-test tasks and their `"passes"` flags set to `true`.
+
 ### 2026-05-22 - Protect Team Detail And Owner Actions
 
 - **Tasks**:

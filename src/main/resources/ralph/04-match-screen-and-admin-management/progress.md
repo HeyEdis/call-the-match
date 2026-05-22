@@ -21,3 +21,50 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Approved focused direct Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd -Dtest=PublicBrowseMvcTests test`.
   - Focused test result: 3 tests run, 0 failures and 0 errors. Existing Hibernate missing-table DDL and Mockito dynamic-agent warnings remain noisy in the passing output.
 - **Status**: acceptance criteria verified for this public detail baseline and `"passes"` set to `true`.
+
+### 2026-05-22 - Attempt Admin Add Match Validation Slice
+
+- **Tasks attempted**:
+  - `fix-admin-add-match-form-binding` - Fix Admin Add Match Form Binding
+  - `complete-admin-add-match-validation-and-persistence` - Complete Admin Add Match Validation And Persistence
+  - `add-fixture-cross-field-validator` - Add Fixture Cross-Field Validator
+  - `reject-stadium-time-conflicts` - Reject Stadium Time Conflicts
+  - `add-stadium-checksum-custom-annotation` - Add Stadium Checksum Custom Annotation
+- **What changed**: replaced the half-bound add-match form path with a request DTO form model, corrected Team A/Team B/Stadium field and error binding, bound select ids on the request DTO and resolved their entities inside `CompetitionService`, removed official score input from fixture creation, kept competition persistence in the service, added fixture validator advice for different-country/date-period/stadium-time rules and added the assignment-required stadium-code checksum custom annotation using the `stadiumCode % 97` rule from the local FIFA assignment PDF.
+- **Decisions**: kept official scores out of fixture creation because the result flow is a later task and `Competition` scores are nullable. Used the school validator-class pattern through `@ControllerAdvice` plus `@InitBinder` for cross-field and repository-backed fixture rules, and kept checksum validation as a separate Jakarta custom annotation on `InputCompetitionDTO`.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/CompetitionController.java`
+  - `src/main/java/com/example/callthematch/dto/request/InputCompetitionDTO.java`
+  - `src/main/java/com/example/callthematch/service/CompetitionService.java`
+  - `src/main/java/com/example/callthematch/repository/CompetitionRepository.java`
+  - `src/main/java/com/example/callthematch/advice/CompetitionValidatorAdvice.java`
+  - `src/main/java/com/example/callthematch/validator/CompetitionValidator.java`
+  - `src/main/java/com/example/callthematch/validator/ValidStadiumChecksum.java`
+  - `src/main/java/com/example/callthematch/validator/StadiumChecksumValidator.java`
+  - `src/main/resources/templates/competition/add.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/progress.md`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/TODO.md`
+- **Verification**:
+  - Extracted the local FIFA assignment PDF page 4 to confirm the checksum rule is the remainder of the four-digit stadium code divided by 97.
+  - `.\mvnw.cmd test` did not start Maven because the wrapper PowerShell path failed with `Cannot index into a null array`.
+  - The required direct Maven verification fallback was not approved in this run, so compilation and MVC behavior for this add slice could not be confirmed automatically.
+  - Ran `git diff --check` and a source usage scan to catch whitespace problems and old `InputCompetitionDTO` score accessor use; no old DTO score accessor use remained.
+- **Blocker**: direct Maven verification must run successfully before these five acceptance-criteria flags can safely be changed to `true`.
+- **Status**: implementation attempted, but all five `"passes"` flags stay `false` until Maven verification succeeds.
+
+### 2026-05-22 - Complete Admin Add Match Validation Slice
+
+- **Tasks completed**:
+  - `fix-admin-add-match-form-binding` - Fix Admin Add Match Form Binding
+  - `complete-admin-add-match-validation-and-persistence` - Complete Admin Add Match Validation And Persistence
+  - `add-fixture-cross-field-validator` - Add Fixture Cross-Field Validator
+  - `reject-stadium-time-conflicts` - Reject Stadium Time Conflicts
+  - `add-stadium-checksum-custom-annotation` - Add Stadium Checksum Custom Annotation
+- **What changed**: closed the five add-fixture tasks after review-driven adjustments. Fixture select controls bind id fields on the DTO and service code resolves persisted countries and stadiums, invalid form posts reload backend-backed select options explicitly, successful saves log and report the saved competition id, fixture cross-field checks remain in the school-style validator advice path, and checksum feedback stays a separate custom Jakarta constraint.
+- **Decisions**: removed the local form-data helper and entity converters after comparing the school examples and project guidelines. Fixed-value validation message data now flows through message arguments or annotation attributes instead of being embedded in `messages.properties`.
+- **Verification**:
+  - Checked school validator examples under `WorkspacesIntelij` before keeping `@ControllerAdvice`, `@InitBinder` and `binder.addValidators(...)`.
+  - Ran `.\mvnw.cmd test` successfully.
+  - Maven result: 28 tests run, 0 failures, 0 errors and 0 skipped. Existing Hibernate create-drop missing-table DDL warnings and Mockito dynamic-agent warnings remain in the passing output.
+- **Status**: acceptance criteria verified for the five add-fixture tasks and their `"passes"` flags set to `true`.

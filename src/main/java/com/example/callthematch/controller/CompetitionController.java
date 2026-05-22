@@ -1,10 +1,6 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
-import com.example.callthematch.dto.response.CountryDTO;
-import com.example.callthematch.model.Competition;
-import com.example.callthematch.model.Country;
-import com.example.callthematch.model.Stadium;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
 import com.example.callthematch.service.StadiumService;
@@ -16,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,15 +52,15 @@ public class CompetitionController {
     @GetMapping(value = "/add")
     public String addForm(Model model) {
 
-        Competition competition = new Competition();
         model.addAttribute("stadiums", stadiumService.getAllStadiums());
         model.addAttribute("countries", countryService.getAllCountries());
-        model.addAttribute("inputCompetitionDto", competition);
+        model.addAttribute("inputCompetitionDto", new InputCompetitionDTO());
         return "competition/add";
     }
 
     @PostMapping(value = "/add")
-    public String add(@Valid InputCompetitionDTO inputCompetitionDTO, BindingResult result, Model model,
+    public String add(@Valid @ModelAttribute("inputCompetitionDto") InputCompetitionDTO inputCompetitionDTO,
+                      BindingResult result, Model model,
                       Locale locale, RedirectAttributes ra) {
 
         if (result.hasErrors()){
@@ -75,18 +72,11 @@ public class CompetitionController {
             return "competition/add";
         }
 
-        //Country teamA = countryService.findById(inputCompetitionDTO.teamA().getId());
-        //Country teamB = countryService.findById(inputCompetitionDTO.teamA().getId());
-        //Stadium stadium = stadiumService.findById(inputCompetitionDTO.stadium().getId());
-
-        //Competition competition = inputCompetitionDTO
-
-
-        competitionService.add(inputCompetitionDTO);
-        log.info("Competition added successfully with id {}", inputCompetitionDTO.id());
+        Long competitionId = competitionService.add(inputCompetitionDTO);
+        log.info("Competition added successfully with id {}", competitionId);
 
         String successMessage =
-                messageSource.getMessage("competition_save_success", new Object[] {inputCompetitionDTO.id()}, locale);
+                messageSource.getMessage("competition_save_success", new Object[] {competitionId}, locale);
         ra.addFlashAttribute("successMessage", successMessage);
 
         return "redirect:/home";

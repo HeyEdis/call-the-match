@@ -3,73 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Add New Competition</title>
+<title th:text="#{competition.add.title}">Add New Competition</title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
-<h1>Add new match</h1>
-<p>Configure stadium logistics and match details. Precision is required for the stadium checksum validation system.</p>
+<h1 th:text="#{competition.add.heading}">Add new match</h1>
+<p th:text="#{competition.add.summary}">Configure stadium logistics and match details.</p>
 
 <div>
-    <form th:object="${inputCompetitionDto}" method="post">
+    <form th:action="@{/competition/add}" th:object="${inputCompetitionDto}" method="post">
 
         <!-- <p th:if="${#fields.hasErrors()}" class="error" th:text="#{contact_save_fail}"></p>  OR -->
         <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
 
         <p>
             <label th:text="#{label_competition_teamA}"></label>
-            <select th:field="*{teamB}">
+            <select th:field="*{teamA}">
+                <option value="" th:text="#{competition.country.select}">Select a country</option>
                 <option th:each="country : ${countries}" th:value="${country.id}"
                         th:text="${country.name}"></option>
             </select>
             <span
                 th:if="${#fields.hasErrors('teamA')}" th:errorclass="error"
-                th:errors="*{country.name}">
+                th:errors="*{teamA}">
             </span>
         </p>
 
         <p>
             <label th:text="#{label_competition_teamB}"></label>
             <select th:field="*{teamB}">
+                <option value="" th:text="#{competition.country.select}">Select a country</option>
                 <option th:each="country : ${countries}" th:value="${country.id}"
                         th:text="${country.name}"></option>
             </select>
             <span
                 th:if="${#fields.hasErrors('teamB')}" th:errorclass="error"
-                th:errors="*{country.name}">
+                th:errors="*{teamB}">
             </span>
         </p>
 
         <p>
             <label th:text="#{label_competition_stadium}"></label>
             <select th:field="*{stadium}">
+                <option value="" th:text="#{competition.stadium.select}">Select a stadium</option>
                 <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
-                        th:text="${stadium.name}"></option>
+                        th:text="|${stadium.name} - ${stadium.location.city} - ${stadium.code}|"></option>
             </select>
             <span
                 th:if="${#fields.hasErrors('stadium')}" th:errorclass="error"
-                th:errors="*{stadium.name}">
+                th:errors="*{stadium}">
             </span>
         </p>
 
         <p>
-            <label th:text="#{label_competition_scoreA}"></label> <input
-                type="number" th:field="*{scoreA}" min="0" />
+            <label th:text="#{label_competition_stadiumCode}"></label>
+            <input type="number" th:field="*{stadiumCode}" min="0" max="9999" />
             <span
-                th:if="${#fields.hasErrors('scoreA')}" th:errorclass="error"
-                th:errors="*{scoreA}">
+                th:if="${#fields.hasErrors('stadiumCode')}" th:errorclass="error"
+                th:errors="*{stadiumCode}">
             </span>
         </p>
 
         <p>
-            <label th:text="#{label_competition_scoreB}"></label>
-            <input
-                type="number" th:field="*{scoreB}" min="0" />
+            <label th:text="#{label_competition_checksum}"></label>
+            <input type="number" th:field="*{checksum}" min="0" max="96" />
             <span
-                th:if="${#fields.hasErrors('scoreB')}" th:errorclass="error"
-                th:errors="*{scoreB}">
+                th:if="${#fields.hasErrors('checksum')}" th:errorclass="error"
+                th:errors="*{checksum}">
             </span>
         </p>
 
@@ -93,8 +95,8 @@
             </span>
         </p>
 
-        <button type="submit">Save</button>
-        <button type="reset">Reset</button>
+        <button type="submit" th:text="#{competition.add.submit}">Save</button>
+        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
 
     </form>
 </div>

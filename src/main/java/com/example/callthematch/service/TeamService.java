@@ -4,9 +4,9 @@ import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.response.TeamDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNotFound;
+import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Team;
 import com.example.callthematch.model.TeamMember;
-import com.example.callthematch.model.User;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +67,7 @@ public class TeamService {
         Team team = teamRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new InviteCodeNotFound(inviteCode));
 
-        User user = currentUserService.getCurrentUser();
+        MyUser user = currentUserService.getCurrentUser();
 
         if (teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
             return;

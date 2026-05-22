@@ -1,6 +1,6 @@
 package com.example.callthematch.service;
 
-import com.example.callthematch.model.User;
+import com.example.callthematch.model.MyUser;
 import com.example.callthematch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +16,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        MyUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()

@@ -39,6 +39,4 @@ public class TeamController {
         ra.addFlashAttribute("message", "Team joined");
         return "redirect:/team/dashboard";
     }
-
-
 }

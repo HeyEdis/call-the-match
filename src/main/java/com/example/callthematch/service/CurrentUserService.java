@@ -1,6 +1,6 @@
 package com.example.callthematch.service;
 
-import com.example.callthematch.model.User;
+import com.example.callthematch.model.MyUser;
 import com.example.callthematch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,7 +13,7 @@ public class CurrentUserService {
 
     private final UserRepository userRepository;
 
-    public User getCurrentUser() {
+    public MyUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return userRepository.findByEmail(authentication.getName())

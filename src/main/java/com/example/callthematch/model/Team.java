@@ -6,7 +6,6 @@ import lombok.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 @Getter
@@ -29,7 +28,7 @@ public class Team {
 
     @ManyToOne
     @JoinColumn(name = "ownerId")
-    private User owner;
+    private MyUser owner;
 
     @OneToMany(mappedBy = "team")
     private Set<TeamMember> members = new HashSet<>();
@@ -79,7 +78,7 @@ public class Team {
         return sb.toString();
     }
 
-    public TeamMember addMember(User user){
+    public TeamMember addMember(MyUser user){
         return TeamMember.builder()
                 .user(user)
                 .team(this)

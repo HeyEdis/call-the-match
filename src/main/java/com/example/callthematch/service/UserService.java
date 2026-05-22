@@ -1,8 +1,8 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputRegistrationDTO;
+import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Role;
-import com.example.callthematch.model.User;
 import com.example.callthematch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +20,7 @@ public class UserService {
     public void register(InputRegistrationDTO dto) {
         LocalDateTime registeredAt = LocalDateTime.now();
 
-        User user = User.builder()
+        MyUser user = MyUser.builder()
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
                 .userName(dto.userName())

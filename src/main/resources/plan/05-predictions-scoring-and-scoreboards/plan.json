@@ -111,13 +111,12 @@
     },
     {
       "id": "scoring-constants-bundle",
-      "title": "Scoring Constants In Resource Bundle",
-      "description": "Add scoring constants to src/main/resources/i18n/messages.properties: scoring.exactScore=5, scoring.correctOutcome=2, scoring.uniqueExactBonus=3, scoring.uniqueOutcomeBonus=1. These will be read by ScoringService.",
+      "title": "Scoring Constants In Model",
+      "description": "Add fixed scoring constants in a model-folder constants class: exact score=5, correct outcome=2, unique exact bonus=3, unique outcome bonus=1. Keep fixed numeric values out of messages.properties.",
       "acceptance_criteria": [
-        "messages.properties contains scoring.exactScore=5",
-        "messages.properties contains scoring.correctOutcome=2",
-        "messages.properties contains scoring.uniqueExactBonus=3",
-        "messages.properties contains scoring.uniqueOutcomeBonus=1"
+        "Model folder contains fixed scoring constants",
+        "messages.properties does not store fixed scoring values",
+        "ScoringService can use the score constants"
       ],
       "priority": 6,
       "passes": true
@@ -125,9 +124,9 @@
     {
       "id": "scoring-service",
       "title": "Scoring Service Implementation",
-      "description": "Create ScoringService in the service package. Load scoring constants from the resource bundle (via @Value with property placeholders or MessageSource). Implement calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB, List<Prediction> teamPredictions) that: awards exactScore points for exact match; awards correctOutcome points for correct winner/draw without exact match; awards 0 otherwise. Then compute unique bonuses: if only one prediction in teamPredictions has that exact score, add uniqueExactBonus; if only one has that outcome, add uniqueOutcomeBonus. Return total points.",
+      "description": "Create ScoringService in the service package. Read fixed scoring constants from the model constants class. Implement calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB, List<Prediction> teamPredictions) that: awards exactScore points for exact match; awards correctOutcome points for correct winner/draw without exact match; awards 0 otherwise. Then compute unique bonuses: if only one prediction in teamPredictions has that exact score, add uniqueExactBonus; if only one has that outcome, add uniqueOutcomeBonus. Return total points.",
       "acceptance_criteria": [
-        "ScoringService exists and reads constants from resource bundle",
+        "ScoringService exists and reads constants from the model constants class",
         "Exact-score match awards 5 points",
         "Correct outcome only awards 2 points",
         "Wrong prediction awards 0 points",

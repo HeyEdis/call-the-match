@@ -25,3 +25,9 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: prediction controller/service/form/messages, `PredictionCutoffPassed`, `ScoringService`, prediction/scoring tests and this Ralph state. Also included the pending review cleanup that moved repeated competition model data into `@ModelAttribute` and removed unused save return values.
 - Verification: `.\mvnw.cmd '-Dtest=PredictionMvcTests,PredictionServiceTests,ScoringServiceTests' test` passed after cutoff and scoring coverage was added.
 - Blockers/TODOs: result recalculation decision added to `TODO.md`.
+
+### 2026-05-23 - Scoring constant review correction
+
+- Review result: moved fixed scoring values out of `messages.properties` into `model/ScoringPoints`.
+- Source decision: FIFA assignment page 5 says X/Y/B/C are mentioned in resource bundles, while page 6 says resource bundles contain no fixed values. Applied the review instruction and the stricter fixed-value rule from page 6.
+- Follow-up state: updated the feature PRD, plan and plan.json wording so later Ralph iterations do not re-add numeric score values to the message bundle.

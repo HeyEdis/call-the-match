@@ -1,29 +1,24 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.model.Prediction;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
+import com.example.callthematch.model.ScoringPoints;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 
 @Service
-@RequiredArgsConstructor
 public class ScoringService {
-
-    private final MessageSource messageSource;
 
     public int calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB,
                                List<Prediction> teamPredictions) {
         if (isExactScore(prediction, officialScoreA, officialScoreB)) {
-            return score("scoring.exactScore")
+            return ScoringPoints.EXACT_SCORE
                     + uniqueExactBonus(prediction, teamPredictions)
                     + uniqueOutcomeBonus(prediction, teamPredictions);
         }
 
         if (hasCorrectOutcome(prediction, officialScoreA, officialScoreB)) {
-            return score("scoring.correctOutcome")
+            return ScoringPoints.CORRECT_OUTCOME
                     + uniqueOutcomeBonus(prediction, teamPredictions);
         }
 
@@ -34,7 +29,7 @@ public class ScoringService {
         long sameExactScore = teamPredictions.stream()
                 .filter(teamPrediction -> hasSamePredictionScore(teamPrediction, prediction))
                 .count();
-        return sameExactScore == 1 ? score("scoring.uniqueExactBonus") : 0;
+        return sameExactScore == 1 ? ScoringPoints.UNIQUE_EXACT_BONUS : 0;
     }
 
     private int uniqueOutcomeBonus(Prediction prediction, List<Prediction> teamPredictions) {
@@ -42,7 +37,7 @@ public class ScoringService {
                 .filter(teamPrediction -> outcome(teamPrediction.getPredictedScoreA(), teamPrediction.getPredictedScoreB())
                         == outcome(prediction.getPredictedScoreA(), prediction.getPredictedScoreB()))
                 .count();
-        return sameOutcome == 1 ? score("scoring.uniqueOutcomeBonus") : 0;
+        return sameOutcome == 1 ? ScoringPoints.UNIQUE_OUTCOME_BONUS : 0;
     }
 
     private boolean isExactScore(Prediction prediction, Integer officialScoreA, Integer officialScoreB) {
@@ -69,10 +64,6 @@ public class ScoringService {
             return MatchOutcome.TEAM_B_WIN;
         }
         return MatchOutcome.DRAW;
-    }
-
-    private int score(String code) {
-        return Integer.parseInt(messageSource.getMessage(code, null, Locale.getDefault()));
     }
 
     private enum MatchOutcome {

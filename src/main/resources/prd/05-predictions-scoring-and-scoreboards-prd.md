@@ -23,7 +23,7 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Service/repository/JPA layering for prediction storage and score recalculation.
 - Spring Security for user-only predictions and member-only scoreboards.
 - Jakarta Validation for prediction score input.
-- Resource bundles for scoring constants and user-facing errors/messages.
+- Resource bundles for user-facing errors/messages; fixed scoring values remain code constants.
 - Error behavior for missing matches or forbidden private scoreboard access.
 - MVC, security and validation tests later; scoring deserves focused service tests.
 - REST/WebClient remains late unless reused read-only later.
@@ -47,7 +47,7 @@ Maak een user-only prediction flow with one current prediction per user and matc
 8. As the application, I want correct outcome predictions rewarded, so that winner or draw insight matters.
 9. As the application, I want unique exact-score bonuses within a team, so that unique precision earns extra points.
 10. As the application, I want unique outcome bonuses within a team, so that unique match insight earns extra points.
-11. As the application, I want score constants loaded from resource bundles, so that the assignment rule is satisfied.
+11. As the application, I want fixed score constants kept out of resource bundles, so that bundles do not store fixed values.
 12. As a team member, I want a private scoreboard sorted by member score, so that team standing is clear.
 13. As a team member, I want member totals and team total visible, so that public and private scores connect.
 14. As a guest, I want private scoreboards blocked, so that team data stays private.
@@ -62,7 +62,7 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Treat official result save as the recalculation trigger.
 - Use a dedicated scoring service with a small testable interface.
 - Use scoring constants `exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3` and `uniqueOutcomeBonus=1`.
-- Store those constants in resource bundles as required.
+- Store those constants in a model constants class; do not store fixed score values in resource bundles.
 - Calculate unique bonuses per team, not globally.
 - Keep pending matches without official results at zero or unscored state as defined by the service boundary.
 - Recalculate affected prediction points, member totals and team totals consistently when a result changes.
@@ -92,7 +92,7 @@ REST and WebClient are out of scope for the current feature implementation. A la
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, page 5 and page 6: prognoses, score calculation, private scoreboard, public ranking and resource bundle constants.
+1. FIFA World Cup 2026 Team Prediction PDF, page 5 and page 6: prognoses, score calculation, private scoreboard, public ranking and the conflicting resource-bundle note resolved by keeping fixed values out of bundles.
 2. School guidelines: MVC/JPA, validation, security and testing guidance from the EWD Richtlijnen folder.
 3. Lesson notes: `13-03-26-Validation.md`, `Project.md` and `08-05-26-REST.md` for late REST boundaries and JSON loop caution.
 4. Exercise projects identified for service/repository, validation and security patterns in the school reference map.

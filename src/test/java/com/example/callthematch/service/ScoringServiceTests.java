@@ -2,16 +2,13 @@ package com.example.callthematch.service;
 
 import com.example.callthematch.model.Prediction;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.StaticMessageSource;
-
 import java.util.List;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ScoringServiceTests {
 
-    private final ScoringService scoringService = new ScoringService(messageSource());
+    private final ScoringService scoringService = new ScoringService();
 
     @Test
     void exactScoreAddsExactAndUniqueBonuses() {
@@ -51,14 +48,5 @@ class ScoringServiceTests {
                 .predictedScoreA(scoreA)
                 .predictedScoreB(scoreB)
                 .build();
-    }
-
-    private StaticMessageSource messageSource() {
-        StaticMessageSource messageSource = new StaticMessageSource();
-        messageSource.addMessage("scoring.exactScore", Locale.getDefault(), "5");
-        messageSource.addMessage("scoring.correctOutcome", Locale.getDefault(), "2");
-        messageSource.addMessage("scoring.uniqueExactBonus", Locale.getDefault(), "3");
-        messageSource.addMessage("scoring.uniqueOutcomeBonus", Locale.getDefault(), "1");
-        return messageSource;
     }
 }

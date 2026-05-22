@@ -1,8 +1,8 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputRegistrationDTO;
+import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Role;
-import com.example.callthematch.model.User;
 import com.example.callthematch.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,11 +33,11 @@ class UserServiceTests {
                 "ada@example.com",
                 "team-secret"));
 
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<MyUser> userCaptor = ArgumentCaptor.forClass(MyUser.class);
         verify(userRepository).save(userCaptor.capture());
         verify(passwordEncoder).encode("team-secret");
 
-        User registeredUser = userCaptor.getValue();
+        MyUser registeredUser = userCaptor.getValue();
         assertThat(registeredUser.getEmail()).isEqualTo("ada@example.com");
         assertThat(registeredUser.getPasswordHash()).isEqualTo("encoded-password");
         assertThat(registeredUser.getRole()).isEqualTo(Role.USER);

@@ -38,23 +38,25 @@ public class InitDataConfig implements CommandLineRunner {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
     private static final int GENERATED_TEAM_COUNT = 10;
     private static final int MEMBERS_PER_TEAM = 4;
     private static final int GENERATED_USER_COUNT = GENERATED_TEAM_COUNT * (MEMBERS_PER_TEAM + 1);
-    private final String DEFAULT_PASSWORD = passwordEncoder.encode("password");
+    private String defaultPassword;
 
     Faker faker = new Faker(Locale.of("nl", "BE"));
     Random r = new Random();
 
     @Override
     public void run(String... args) throws Exception {
+        defaultPassword = passwordEncoder.encode("password");
 
         MyUser admin = MyUser.builder()
                 .email("admin@example.com")
                 .firstName("Admin")
                 .lastName("User")
                 .userName("Lord of Lords")
-                .passwordHash(DEFAULT_PASSWORD)
+                .passwordHash(defaultPassword)
                 .email("admin@example.com")
                 .role(Role.ADMIN)
                 .createdAt(LocalDateTime.now())
@@ -71,8 +73,8 @@ public class InitDataConfig implements CommandLineRunner {
                     .firstName(faker.name().firstName())
                     .lastName(faker.name().lastName())
                     .userName(username)
-                    .passwordHash(DEFAULT_PASSWORD)
-                    .email("user@example.com")
+                    .passwordHash(defaultPassword)
+                    .email("user%d@example.com".formatted(i+1))
                     .role(Role.USER)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())

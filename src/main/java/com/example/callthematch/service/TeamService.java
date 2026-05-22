@@ -21,7 +21,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
-    private final CurrentUserService currentUserService;
+    private final UserService userService;
 
     private TeamDTO toDTO(Team t) {
         return new TeamDTO(t.getId(),t.getName(),t.getOwner(),t.getMembers(),t.getInviteCode(),t.calculateTeamScore());
@@ -67,7 +67,7 @@ public class TeamService {
         Team team = teamRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new InviteCodeNotFound(inviteCode));
 
-        MyUser user = currentUserService.getCurrentUser();
+        MyUser user = userService.getCurrentUser();
 
         if (teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
             return;

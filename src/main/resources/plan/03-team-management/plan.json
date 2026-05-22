@@ -135,7 +135,7 @@
         "Guest and ADMIN behavior stays explicit: guests are stopped at team-route security and admins are not admitted into team participation."
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "protect-team-detail-error-paths",
@@ -149,7 +149,7 @@
         "This task stays on MVC error handling and does not add REST error-response or WebClient work."
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "make-invite-code-regeneration-owner-only",
@@ -163,7 +163,7 @@
         "The owner decision is enforced in service/repository behavior and not only by hiding a Thymeleaf control."
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-owner-member-removal",
@@ -177,7 +177,7 @@
         "Guest and ADMIN actors remain outside owner team-management actions."
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-team-mvc-and-security-closure-tests",

@@ -13,6 +13,7 @@ import com.example.callthematch.model.TeamRole;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -67,7 +68,15 @@ public class TeamService {
     }
 
     public TeamDTO findById(Long id) {
-        return toDTO(findTeamById(id));
+        Team team = findTeamById(id);
+        requireCurrentUserMembership(team);
+        return toDTO(team);
+    }
+
+    public boolean isCurrentUserOwner(Long id) {
+        Team team = findTeamById(id);
+        MyUser user = userService.getCurrentUser();
+        return team.getOwner().getId().equals(user.getId());
     }
 
     public void createTeam(InputTeamDTO inputTeamDTO) {
@@ -101,10 +110,28 @@ public class TeamService {
 
     public void regenerateInviteCode(Long id) {
         Team team = findTeamById(id);
-        team.regenerateInviteCode();
+        requireCurrentUserOwner(team);
+
+        do {
+            team.regenerateInviteCode();
+        } while (teamRepository.existsByInviteCode(team.getInviteCode()));
+
         teamRepository.save(team);
     }
 
+    public void removeMember(Long teamId, Long memberId) {
+        Team team = findTeamById(teamId);
+        requireCurrentUserOwner(team);
+
+        TeamMember teamMember = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
+                .orElseThrow(() -> new AccessDeniedException("Team member not available"));
+
+        if (teamMember.getRole() == TeamRole.OWNER) {
+            throw new AccessDeniedException("The team owner cannot be removed");
+        }
+
+        teamMemberRepository.delete(teamMember);
+    }
 
     public void joinTeamWithInviteCode(String inviteCode) {
         Team team = teamRepository.findByInviteCode(inviteCode)
@@ -119,6 +146,20 @@ public class TeamService {
         TeamMember teamMember = team.addMember(user);
         teamMemberRepository.save(teamMember);
 
+    }
+
+    private void requireCurrentUserMembership(Team team) {
+        MyUser user = userService.getCurrentUser();
+        if (!teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
+            throw new AccessDeniedException("Team detail is only available to members");
+        }
+    }
+
+    private void requireCurrentUserOwner(Team team) {
+        MyUser user = userService.getCurrentUser();
+        if (!team.getOwner().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Only the team owner can manage this team");
+        }
     }
 
 }

@@ -54,3 +54,32 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - The existing Spring Security route matrix still excludes guests and ADMIN actors from all `/team/**` create and join paths.
   - Existing Hibernate missing-table DDL warnings and Mockito agent warnings remain noisy in the passing build output.
 - **Status**: acceptance criteria verified for these four tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Protect Team Detail And Owner Actions
+
+- **Tasks**:
+  - `restrict-team-detail-to-members` - Restrict Team Detail To Members
+  - `protect-team-detail-error-paths` - Protect Team Detail Error Paths
+  - `make-invite-code-regeneration-owner-only` - Make Invite Code Regeneration Owner-Only
+  - `add-owner-member-removal` - Add Owner Member Removal
+- **What changed**: made private team detail require a persisted membership before the DTO reaches Thymeleaf; reused the existing shared MVC advice for missing and malformed team detail paths; enforced owner checks for invitecode regeneration and member removal in `TeamService`; made regenerated invitecodes uniqueness-aware; added CSRF-protected owner forms for regeneration and member removal; and moved owner-action button/flash text into the message bundle.
+- **Decisions**: member and owner checks live in the service boundary and use Spring `AccessDeniedException` so the existing MVC 403 advice stays the public response. The team detail view receives an `isOwner` model flag only for rendering owner controls; forged mutations still reach service checks. The current owner membership cannot be removed by the removal action.
+- **School-pattern correction carried in**: the pending `TeamController` dashboard correction now uses controller `@ModelAttribute` methods for repeated dashboard model attributes, following the local security exercise pattern, instead of the earlier ad hoc private dashboard model helper.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/TeamController.java`
+  - `src/main/java/com/example/callthematch/repository/TeamMemberRepository.java`
+  - `src/main/java/com/example/callthematch/service/TeamService.java`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/templates/team/show.html`
+  - `src/main/resources/plan/03-team-management/plan.json`
+  - `src/main/resources/ralph/03-team-management/progress.md`
+- **Verification**:
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - Final test result: 11 tests run, 0 failures and 0 errors.
+  - The detail service path was inspected to confirm `findById` now resolves the team and then requires current-user membership before mapping private member rows and scores to `TeamDTO`.
+  - The shared `GlobalExceptionAdvice` was inspected to confirm `TeamNotFound` and `MethodArgumentTypeMismatchException` still map through the existing MVC 404 view while `AccessDeniedException` maps through the MVC 403 view.
+  - The owner mutation paths were inspected to confirm they resolve the current user from `UserService`, enforce owner checks before persistence, keep invitecode regeneration uniqueness-aware and block owner-member removal.
+  - The team detail template was inspected to confirm non-owner control hiding, CSRF fields and bundle-backed owner action text.
+  - Focused MVC/security assertions for team detail and owner-action denial remain the later team closure-test task.
+  - Existing Hibernate missing-table DDL warnings and Mockito agent warnings remain noisy in the passing build output.
+- **Status**: acceptance criteria verified for these four tasks and their `"passes"` flags set to `true`.

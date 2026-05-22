@@ -37,7 +37,11 @@
             <td th:text="${member.score}"></td>
             <td th:text="${{member.joinedAt}}"></td>
             <td>
-                    <button>Remove</button>
+                <form th:if="${isOwner and member.role.name() != 'OWNER'}"
+                      th:action="@{|/team/${team.id}/members/${member.id}/remove|}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" th:text="#{team.member.remove}">Remove</button>
+                </form>
             </td>
         </tr>
     </table>
@@ -47,8 +51,9 @@
     <h2>Recruit Members</h2>
     <span>PRIVATE INVITE CODE</span>
     <p th:text="${team.inviteCode}"></p>
-    <form th:action="@{|/team/${team.id}/invite-code|}" method="post">
-        <button type="submit">Regenerate Code</button>
+    <form th:if="${isOwner}" th:action="@{|/team/${team.id}/invite-code|}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" th:text="#{team.inviteCode.regenerate}">Regenerate Code</button>
     </form>
     <p th:if="${message}" th:text="${message}"></p>
 </div>

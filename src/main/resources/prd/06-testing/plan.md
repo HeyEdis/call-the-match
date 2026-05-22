@@ -4,11 +4,17 @@
 
 ## Sources
 
-1. Existing `call-the-match` codebase – bestaande testklassen als referentiepatroon.
-2. School guidelines uit `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen` – verplichte testcategorieën.
-3. Exercise projects uit `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij` – testpatronen.
-4. Git repository: https://github.com/HeyEdis/call-the-match.git.
-5. User decisions uit huidige conversatie.
+1. Existing `call-the-match` codebase: existing controllers, validators, security configuration and test classes that the test block must cover.
+2. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_Flow_JUnit.pdf`: school JUnit and MockMvc guidance for Spring MVC controller tests.
+3. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_MultipleRow.pdf`: controller, path-variable, not-found and MVC test patterns.
+4. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Security_JDBC.pdf`: form login, role access and Spring Security test expectations.
+5. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\webservices_REST.pdf`: REST controller behavior and JSON test expectations.
+6. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Multirow\Spring_Boot_list_crud-opl\src\test\java\com\example\spring_boot_list_crudopl\controller\ContactControllerTest.java`: MVC MockMvc example for status, view, model and error assertions.
+7. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Security\Spring_Boot_security_JPA\src\test\java\com\example\spring_boot_security_jpa\controller\SecurityTest.java`: role-aware security test example.
+8. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_ErrorMessages\Spring_Boot_i18n_Product2`: validator, i18n error-message and MVC validation examples.
+9. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\test\java\com\example\spring_boot_rest_fruit_start\controller\FruitRestControllerTest.java`: primary REST MockMvc and `jsonPath` test example.
+10. Git repository: https://github.com/HeyEdis/call-the-match.git.
+11. User decisions from this conversation: custom annotations may arrive later but their required validation coverage remains in scope.
 
 ## Architectural Decisions
 

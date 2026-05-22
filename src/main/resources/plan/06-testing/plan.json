@@ -11,6 +11,38 @@
     {
       "url": "src/main/resources/prd/06-testing/plan.md",
       "description": "Testing plan with phased breakdown"
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_Flow_JUnit.pdf",
+      "description": "School JUnit and MockMvc guideline slides for Spring MVC controller tests."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_MultipleRow.pdf",
+      "description": "School multiple-row MVC guideline slides with controller, path-variable and not-found test patterns."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Security_JDBC.pdf",
+      "description": "School security guideline slides for form login, role access and security test expectations."
+    },
+    {
+      "url": "local://Richtlijnen/webservices_REST.pdf",
+      "description": "School REST guideline slides for REST controller behavior and JSON-focused tests."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Multirow/Spring_Boot_list_crud-opl/src/test/java/com/example/spring_boot_list_crudopl/controller/ContactControllerTest.java",
+      "description": "Exercise MVC controller test example for status, view, model and error-path assertions."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Security/Spring_Boot_security_JPA/src/test/java/com/example/spring_boot_security_jpa/controller/SecurityTest.java",
+      "description": "Exercise security test example for protected routes and role-aware access."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_ErrorMessages/Spring_Boot_i18n_Product2",
+      "description": "Exercise workspace for validator, i18n error-message and MVC validation test patterns."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/test/java/com/example/spring_boot_rest_fruit_start/controller/FruitRestControllerTest.java",
+      "description": "Primary exercise REST controller test example with MockMvc, jsonPath and REST error assertions."
     }
   ],
   "tasks": [

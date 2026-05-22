@@ -7,6 +7,42 @@
     {
       "url": "src/main/resources/prd/07-rest-and-webclient-prd.md",
       "description": "PRD for REST Controllers & Reactive WebClient"
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project"
+    },
+    {
+      "url": "local://Richtlijnen/webservices_REST.pdf",
+      "description": "School REST and WebClient guideline slides for REST controllers, REST advice, WebClient and REST tests."
+    },
+    {
+      "url": "local://Richtlijnen/Oneindige_lus_vermijden.pdf",
+      "description": "School JSON serialization guidance for avoiding infinite loops in REST responses."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/main/java/com/example/spring_boot_rest_fruit_start/controller/FruitRestController.java",
+      "description": "Primary exercise REST controller shape for list and detail GET endpoints."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/main/java/com/example/spring_boot_rest_fruit_start/advice/FruitErrorAdvice.java",
+      "description": "Primary exercise REST error-advice pattern for typed not-found JSON responses."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/main/java/com/example/spring_boot_rest_fruit_start/dto/response/ErrorResponse.java",
+      "description": "Primary exercise ErrorResponse record shape for REST error JSON."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/main/java/com/example/spring_boot_rest_fruit_start/client/ClientRunner.java",
+      "description": "Primary exercise runner shape for the WebClient demo client."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/main/java/com/example/spring_boot_rest_fruit_start/client/RestClientDemo.java",
+      "description": "Primary exercise WebClient demo shape for REST consumption and not-found handling."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/test/java/com/example/spring_boot_rest_fruit_start/controller/FruitRestControllerTest.java",
+      "description": "Primary exercise REST controller test pattern with MockMvc, jsonPath and error-response assertions."
     }
   ],
   "tasks": [

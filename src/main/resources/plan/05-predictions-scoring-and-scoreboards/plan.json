@@ -11,6 +11,34 @@
     {
       "url": "src/main/resources/prd/05-predictions-scoring-and-scoreboards/plan.md",
       "description": "Approved feature plan with phased vertical slices"
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring&JPA_mySql.pdf",
+      "description": "School JPA and MySQL guideline slides for repository/service boundaries and persisted prediction, member and team score updates."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_Flow.pdf",
+      "description": "School web-flow guideline slides for MVC form DTOs, @Valid handling and BindingResult flow in the prediction form."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_MVC_i18n.pdf",
+      "description": "School MVC and i18n guideline slides for resource-bundle validation messages and Thymeleaf form error rendering."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Security.pdf",
+      "description": "School security guideline slides for role-restricted MVC routes and authenticated-user behavior in prediction and scoreboard flows."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_SpringAndJPA",
+      "description": "Exercise workspace for school-style JPA repository and service-layer patterns used by scoring persistence and recalculation."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation",
+      "description": "Validation exercise workspace for DTO-backed Spring MVC forms and server-side form error handling."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Security/Spring_Boot_security_JPA",
+      "description": "Security exercise workspace for role-aware Spring MVC access patterns used by user-only prediction and scoreboard routes."
     }
   ],
   "tasks": [

@@ -4,13 +4,18 @@
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, page 5 and page 6: prognoses, score calculation, private scoreboard, public ranking and resource bundle constants.
-2. School guidelines: MVC/JPA, validation, security and testing guidance from the EWD Richtlijnen folder.
-3. Lesson notes: `13-03-26-Validation.md`, `Project.md` and `08-05-26-REST.md` for late REST boundaries and JSON loop caution.
-4. Exercise projects identified for service/repository, validation and security patterns in the school reference map.
-5. Existing `call-the-match` codebase: current prediction model, seeded predictions, member scores, team total calculation and public ranking foundation.
-6. Git repository: https://github.com/HeyEdis/call-the-match.git
-7. User/project decisions from this conversation and local skills: fixed score constants, admin exclusion from predictions and late test/REST blocks.
+1. FIFA World Cup 2026 Team Prediction PDF, pages 5-6: prognoses, score calculation, private scoreboard, public ranking and resource-bundle score constants.
+2. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring&JPA_mySql.pdf`: repository, entity and service boundaries for persisted prediction and score updates.
+3. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_Flow.pdf`: MVC form DTOs, `@Valid`, `BindingResult` and server-side validation flow.
+4. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_MVC_i18n.pdf`: Thymeleaf form errors, validation messages and resource bundles.
+5. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Security.pdf`: authenticated and role-restricted MVC behavior for user-only flows.
+6. Lesson notes `13-03-26-Validation.md`, `Project.md` and `08-05-26-REST.md`: validation reminders and the late REST/JSON-loop boundary.
+7. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_SpringAndJPA`: school-style JPA repository and service-layer patterns.
+8. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Spring\Spring_validatie\Spring_Boot_Validation`: DTO-backed MVC validation example.
+9. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Security\Spring_Boot_security_JPA`: role-aware Spring Security example.
+10. Existing `call-the-match` codebase: current prediction model, seeded predictions, member scores, team total calculation and public ranking foundation.
+11. Git repository: https://github.com/HeyEdis/call-the-match.git
+12. User/project decisions from this conversation and local skills: fixed score constants, admin exclusion from predictions and late test/REST blocks.
 
 ## Architectural Decisions
 

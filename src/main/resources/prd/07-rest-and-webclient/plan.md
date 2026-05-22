@@ -4,11 +4,17 @@
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF (wedstrijd- en stadioncontext).
-2. School guidelines uit `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen` (REST + WebClient vereiste).
-3. Bestaande `call-the-match` codebase (Competition, Stadium entities en repositories).
-4. User beslissing: scope beperkt tot twee GET endpoints + Spring WebClient consumer, demo via HTTPie.
-5. Git repository: https://github.com/HeyEdis/call-the-match.git.
+1. FIFA World Cup 2026 Team Prediction PDF: match and stadium context for the public REST data.
+2. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\webservices_REST.pdf`: REST controllers, REST advice, ErrorResponse, WebClient and REST tests.
+3. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Oneindige_lus_vermijden.pdf`: JSON serialization guidance for avoiding entity relationship loops.
+4. Lesson notes `08-05-26-REST.md` and `Project.md`: project-specific REST, WebClient and JSON-loop reminders.
+5. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\main\java\com\example\spring_boot_rest_fruit_start\controller\FruitRestController.java`: primary REST controller shape for GET endpoints.
+6. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\main\java\com\example\spring_boot_rest_fruit_start\advice\FruitErrorAdvice.java` and `dto\response\ErrorResponse.java`: REST error-response pattern.
+7. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\main\java\com\example\spring_boot_rest_fruit_start\client\ClientRunner.java` and `client\RestClientDemo.java`: WebClient demo structure.
+8. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\test\java\com\example\spring_boot_rest_fruit_start\controller\FruitRestControllerTest.java`: REST controller test pattern with MockMvc and JSON assertions.
+9. Existing `call-the-match` codebase: `Competition`, `Stadium`, repositories and security configuration reused by the REST slice.
+10. User decision: scope remains limited to two public GET endpoints plus a Spring WebClient consumer.
+11. Git repository: https://github.com/HeyEdis/call-the-match.git.
 
 ## Architectural Decisions
 

@@ -118,3 +118,24 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Ran the duplicate message-value scan after the new result keys; no duplicate `messages.properties` values remain.
   - Ran `git diff --check`; no whitespace errors were reported.
 - **Status**: acceptance criteria verified for the official-result form, official-result persistence and mutation security/error boundary tasks and their `"passes"` flags set to `true`.
+
+### 2026-05-22 - Close Match MVC Security And Validation Tests
+
+- **Tasks completed**:
+  - `add-match-mvc-and-security-closure-tests` - Add Match MVC And Security Closure Tests
+  - `add-match-validation-closure-tests` - Add Match Validation Closure Tests
+- **What changed**: added match-management MVC coverage for admin add, edit and result forms plus invalid submissions and admin not-found/type-mismatch paths. Extended security coverage so guests and USER actors cannot submit match writes while ADMIN actors can open match-management forms. Added focused validation coverage for fixture annotations, official result score annotations, the checksum custom annotation and the repository-backed competition validator rules.
+- **Decisions**: kept MVC closure focused on observable invalid-submission outcomes because persistence behavior already lives behind the form flow and this school test slice needs model, view, binding and security evidence. Included the pending redirect review fix by replacing competition redirect string concatenation with the existing path-variable redirect style.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/controller/CompetitionController.java`
+  - `src/test/java/com/example/callthematch/AccessSecurityMvcTests.java`
+  - `src/test/java/com/example/callthematch/MatchManagementMvcTests.java`
+  - `src/test/java/com/example/callthematch/dto/InputCompetitionDTOValidationTests.java`
+  - `src/test/java/com/example/callthematch/validator/CompetitionValidatorTests.java`
+  - `src/main/resources/plan/04-match-screen-and-admin-management/plan.json`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/progress.md`
+- **Verification**:
+  - Ran `.\mvnw.cmd test` successfully after adding the closure tests.
+  - Maven result: 37 tests run, 0 failures, 0 errors and 0 skipped.
+  - Ran `git diff --check`; no whitespace errors were reported.
+- **Status**: acceptance criteria verified for the two match closure test tasks and both `"passes"` flags set to `true`.

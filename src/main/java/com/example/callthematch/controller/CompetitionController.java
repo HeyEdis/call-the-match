@@ -114,7 +114,7 @@ public class CompetitionController {
                 messageSource.getMessage("competition_update_success", new Object[] {competitionId}, locale);
         ra.addFlashAttribute("successMessage", successMessage);
 
-        return "redirect:/competition/" + competitionId;
+        return "redirect:/competition/{id}";
     }
 
     @PostMapping(value = "/{id}/result")
@@ -139,6 +139,6 @@ public class CompetitionController {
                 messageSource.getMessage("competition_result_save_success", new Object[] {competitionId}, locale);
         ra.addFlashAttribute("successMessage", successMessage);
 
-        return "redirect:/competition/" + competitionId;
+        return "redirect:/competition/{id}";
     }
 }

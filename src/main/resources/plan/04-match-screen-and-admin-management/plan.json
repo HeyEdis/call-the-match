@@ -220,7 +220,7 @@
         "This task does not add REST controller, WebClient or e2e tests to the MVC admin match feature."
       ],
       "priority": 12,
-      "passes": false
+      "passes": true
     },
     {
       "id": "add-match-validation-closure-tests",
@@ -235,7 +235,7 @@
         "Validation closure stays outside REST controller, WebClient and prediction-write test scope."
       ],
       "priority": 13,
-      "passes": false
+      "passes": true
     }
   ]
 }

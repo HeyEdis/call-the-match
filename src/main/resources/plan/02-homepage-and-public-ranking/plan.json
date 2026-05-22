@@ -1,0 +1,132 @@
+{
+  "sources": [
+    {
+      "url": "local://FIFA_World_Cup_2026_-_Team_Prediction.pdf#pages=3,5",
+      "description": "FIFA World Cup 2026 Team Prediction PDF pages 3 and 5: homepage and public top-10 requirements."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Boot.pdf",
+      "description": "School Spring Boot guideline slides for the MVC project baseline."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_MVC_i18n.pdf",
+      "description": "School MVC and i18n guideline slides for Thymeleaf pages and resource bundles."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Exceptions.pdf",
+      "description": "School exception-handling guideline slides for MVC error behavior."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_MultipleRow.pdf",
+      "description": "School guideline slides for rendering multiple persisted rows in MVC screens."
+    },
+    {
+      "url": "local://Notes/03-04-2026-ErrorMessageEnI18n.md",
+      "description": "Lesson notes for error messages and i18n conventions."
+    },
+    {
+      "url": "local://Notes/Project.md",
+      "description": "Project notes and reminders carried into the public MVC feature."
+    },
+    {
+      "url": "local://WorkspacesIntelij/mvc-i18n-exception-exercises",
+      "description": "Exercise projects identified in the school reference map for MVC, i18n and exception patterns."
+    },
+    {
+      "url": "local://call-the-match",
+      "description": "Existing call-the-match home, competition, ranking, message bundle and error-template codebase state."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    },
+    {
+      "url": "local://conversation/homepage-and-public-ranking",
+      "description": "User and project decisions carried into this plan: guest public access and safe passing before polish."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "tighten-public-home-schedule-data",
+      "title": "Tighten Public Home Schedule Data",
+      "description": "Make the existing home flow a reliable public schedule slice. Keep MVC controllers thin while shaping competition rows through the service/repository path, sort public fixtures in natural date-and-time order, and keep unplayed matches from rendering fake official scores.",
+      "acceptance_criteria": [
+        "Guests can open the public home schedule through MVC without entering private team, prediction or admin mutation flows.",
+        "Home schedule rows are backed by persisted competition data through the service layer and include countries, date, time, stadium and location context for Thymeleaf rendering.",
+        "Public home competitions are ordered chronologically by date and time rather than arbitrary repository order.",
+        "The home view only renders official score output when result values are available so unplayed matches stay visibly honest."
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "complete-public-match-detail-surface",
+      "title": "Complete Public Match Detail Surface",
+      "description": "Complete the public match-detail surface before adding error plumbing. Keep `/competition/{id}` guest-readable through the MVC/service/repository boundary, render only public fixture and official result context for the selected match, and remove private or admin-only detail content from the public screen.",
+      "acceptance_criteria": [
+        "Guests can open a public competition detail page for an existing match through `/competition/{id}`.",
+        "The detail screen receives its selected competition data through the controller-to-service boundary rather than direct view or controller repository access.",
+        "The public detail screen shows fixture context and official result values only where they belong for the selected competition.",
+        "Guest-facing competition detail does not expose private prediction content or public admin mutation controls."
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "handle-public-match-detail-errors",
+      "title": "Handle Public Match Detail Errors",
+      "description": "Add school-style MVC error behavior for public match detail browsing. Handle missing competition ids and malformed path variables through shared controller advice and existing error-page direction so public browse failures do not surface raw framework errors.",
+      "acceptance_criteria": [
+        "A missing public competition id maps to friendly MVC not-found behavior using the existing error-page direction.",
+        "An invalid public match detail path variable is handled as type mismatch behavior rather than a raw framework error.",
+        "Shared MVC error handling is used for the public detail error cases instead of scattering error logic through Thymeleaf views.",
+        "The task stays on MVC error handling and does not add REST error response or WebClient work."
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "harden-public-top-ten-ranking-summary",
+      "title": "Harden Public Top-10 Ranking Summary",
+      "description": "Make the ranking route a dependable public summary slice. Keep ranking data in the service/repository flow, order teams by their score source, limit output to the top 10, and render only the assignment-required summary columns in Thymeleaf.",
+      "acceptance_criteria": [
+        "Guests can open the public ranking and receive ranking rows backed by real team data from the service and repository path.",
+        "Public ranking contains at most 10 teams sorted from highest to lowest total team score.",
+        "Each public ranking row exposes team name, total score and member count from backend team data.",
+        "The public ranking does not expose invite codes, private member score breakdowns or user-owned team workflow actions.",
+        "Ranking score ordering is driven from the team score boundary rather than duplicated ranking calculations inside Thymeleaf."
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "finish-public-navigation-and-i18n-screen",
+      "title": "Finish Public Navigation And i18n Screen",
+      "description": "Round out the public shell for home, ranking and match detail. Keep public links discoverable for guests, preserve role-aware links into user/admin work, and move the selected full public screen copy and labels into the resource bundle with the project date-format direction.",
+      "acceptance_criteria": [
+        "Guest navigation reaches public home, public ranking, login and registration without exposing private or admin-only mutation actions.",
+        "Authenticated USER navigation still leads toward team and prediction flows while ADMIN navigation still exposes match-management entry points only.",
+        "At least one public screen has its visible title, explanatory copy and table or field labels backed by keys in `src/main/resources/i18n/messages.properties`.",
+        "Public date presentation for the selected i18n screen follows the project message/date-format direction where it applies.",
+        "Navigation and public screen updates remain compatible with the access-and-roles route boundaries already in the project."
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "add-public-mvc-and-security-closure-tests",
+      "title": "Add Public MVC And Security Closure Tests",
+      "description": "Close the public homepage and ranking feature with focused school-required verification. Add MVC model/view and error assertions for home, ranking and public match detail together with security checks that keep these screens guest-readable without mixing REST or e2e work into this feature.",
+      "acceptance_criteria": [
+        "MVC controller tests verify home returns the public schedule view and expected competition model data.",
+        "MVC controller tests verify ranking behavior is limited to top-10 score order and renders the public summary contract required by the view.",
+        "MVC tests cover successful public match detail plus friendly not-found or type-mismatch behavior for invalid public detail URLs.",
+        "Security tests verify guests can access public home, ranking and competition detail routes.",
+        "Tests use status, view, model and error assertions instead of brittle pixel-level checks.",
+        "This task does not add REST controller, WebClient or e2e test work to the public MVC feature."
+      ],
+      "priority": 6,
+      "passes": false
+    }
+  ]
+}

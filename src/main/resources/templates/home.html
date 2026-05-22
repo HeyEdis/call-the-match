@@ -35,7 +35,9 @@
         <td th:text="${competition.teamB.name}"></td>
         <td th:text="${competition.stadium.name}"></td>
         <td th:text="${competition.stadium.location.city}"></td>
-        <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+        <td th:if="${competition.scoreA != null and competition.scoreB != null}"
+            th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+        <td th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</td>
         <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
       </tr>
     </table>

@@ -88,7 +88,7 @@
         "Login and logout user-facing copy that belongs in resource bundles is prepared through bundle-backed keys."
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "make-shared-navigation-role-aware",
@@ -101,7 +101,7 @@
         "Authenticated account or role context is available to Thymeleaf for the shared navigation without repository calls from the view."
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "build-registration-form-with-validation",
@@ -114,7 +114,7 @@
         "Registration labels, validation messages and user-facing feedback that belong in messages are backed by resource bundle keys."
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "persist-registered-users-as-user",

@@ -52,3 +52,28 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
   - The route matrix was inspected after the run: public matchers are explicit and the USER-only matchers reserve both team and prediction paths.
 - **Status**: acceptance criteria verified for this task and `"passes"` set to `true`.
+
+### 2026-05-22 - Add Account Entry UI And Registration Validation
+
+- **Tasks**:
+  - `build-custom-email-login-and-logout-ui` - Build Custom Email Login And Logout UI
+  - `make-shared-navigation-role-aware` - Make Shared Navigation Role-Aware
+  - `build-registration-form-with-validation` - Build Registration Form With Validation
+- **What changed**: configured the custom email login page and logout redirect, added Thymeleaf login and registration screens, changed the shared navbar to show guest, USER and ADMIN actions through Spring Security view attributes, and introduced a registration request DTO/controller slice with Jakarta Validation field errors and bundle-backed copy.
+- **Decisions**: this AFK iteration keeps registration at validated form behavior only. Persisting a registered account, encoding its password and assigning default role USER stay in the next planned persistence task.
+- **Files changed**:
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/java/com/example/callthematch/controller/AccountController.java`
+  - `src/main/java/com/example/callthematch/dto/request/InputRegistrationDTO.java`
+  - `src/main/resources/templates/account/login.html`
+  - `src/main/resources/templates/account/register.html`
+  - `src/main/resources/templates/fragments/navbar.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/main/resources/plan/01-access-accounts-and-roles/plan.json`
+  - `src/main/resources/ralph/01-access-accounts-and-roles/progress.md`
+- **Verification**:
+  - The first sandboxed direct Maven run could not resolve the Spring Boot parent because network access to Maven Central was denied.
+  - Approved direct local Maven 3.9.14 run completed with `BUILD SUCCESS`: `mvn.cmd test`.
+  - The run compiled the new MVC controller, DTO and templates through Spring context startup. Existing Hibernate `create-drop` missing-table DDL warnings remain noisy but did not fail the run.
+  - Focused security and registration MVC tests remain scheduled for the later closure-test task.
+- **Status**: acceptance criteria verified for these three tasks and their `"passes"` flags set to `true`.

@@ -2,7 +2,6 @@ package com.example.callthematch.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -32,7 +31,13 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/team/**", "/predictions/**").hasRole("USER")
                         .anyRequest().permitAll())
-                .formLogin(Customizer.withDefaults())
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .usernameParameter("email")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll())
                 .exceptionHandling(handling -> handling.accessDeniedPage("/403"));
 
         return http.build();

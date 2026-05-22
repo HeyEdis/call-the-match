@@ -2,6 +2,7 @@ package com.example.callthematch.validator;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.repository.CompetitionRepository;
+import com.example.callthematch.repository.StadiumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -17,6 +18,7 @@ public class CompetitionValidator implements Validator {
     private static final LocalDate LAST_MATCH_DATE = LocalDate.of(2026, 6, 6);
 
     private final CompetitionRepository competitionRepository;
+    private final StadiumRepository stadiumRepository;
 
     @Override
     public boolean supports(Class<?> klass) {
@@ -41,6 +43,12 @@ public class CompetitionValidator implements Validator {
         if (input.stadium() != null && input.date() != null && input.time() != null
                 && hasStadiumTimeConflict(input)) {
             errors.rejectValue("time", "competition.stadium.time.conflict");
+        }
+
+        if (input.stadium() != null && input.stadiumCode() != null) {
+            stadiumRepository.findById(input.stadium())
+                    .filter(stadium -> !input.stadiumCode().equals(stadium.getCode()))
+                    .ifPresent(stadium -> errors.rejectValue("stadiumCode", "competition.stadiumCode.selected"));
         }
     }
 

@@ -45,14 +45,15 @@
             <select th:field="*{stadium}">
                 <option value="" th:text="#{competition.stadium.select}">Select a stadium</option>
                 <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
-                        th:text="|${stadium.name} - ${stadium.location.city} - ${stadium.code}|"></option>
+                        th:attr="data-code=${stadium.code}"
+                        th:text="|${stadium.location.city} - ${stadium.name}|"></option>
             </select>
             <span th:if="${#fields.hasErrors('stadium')}" th:errorclass="error" th:errors="*{stadium}"></span>
         </p>
 
         <p>
             <label th:text="#{label_competition_stadiumCode}"></label>
-            <input type="number" th:field="*{stadiumCode}" min="0" max="9999"/>
+            <input type="number" th:field="*{stadiumCode}" min="0" max="9999" readonly/>
             <span th:if="${#fields.hasErrors('stadiumCode')}" th:errorclass="error" th:errors="*{stadiumCode}"></span>
         </p>
 
@@ -78,6 +79,8 @@
         <button type="reset" th:text="#{competition.add.reset}">Reset</button>
     </form>
 </div>
+
+<script th:src="@{/js/matchStadiumChecksum.js}"></script>
 
 </body>
 </html>

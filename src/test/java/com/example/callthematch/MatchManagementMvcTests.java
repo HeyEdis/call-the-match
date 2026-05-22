@@ -6,10 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -26,7 +29,12 @@ class MatchManagementMvcTests {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
-                .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDto"));
+                .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDto"))
+                .andExpect(content().string(containsString("data-code=\"1001\"")))
+                .andExpect(content().string(containsString("readonly")))
+                .andExpect(content().string(containsString("/js/matchStadiumChecksum.js")))
+                .andExpect(content().string(containsString("New York - MetLife Stadium")))
+                .andExpect(content().string(not(containsString("MetLife Stadium - New York - 1001"))));
 
         mockMvc.perform(get("/competition/edit/3").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())

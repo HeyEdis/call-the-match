@@ -1,13 +1,16 @@
 package com.example.callthematch.validator;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
+import com.example.callthematch.model.Stadium;
 import com.example.callthematch.repository.CompetitionRepository;
+import com.example.callthematch.repository.StadiumRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -16,7 +19,8 @@ import static org.mockito.Mockito.when;
 class CompetitionValidatorTests {
 
     private final CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
-    private final CompetitionValidator competitionValidator = new CompetitionValidator(competitionRepository);
+    private final StadiumRepository stadiumRepository = mock(StadiumRepository.class);
+    private final CompetitionValidator competitionValidator = new CompetitionValidator(competitionRepository, stadiumRepository);
 
     @Test
     void fixtureRejectsSameCountryAndDateOutsideProjectPeriod() {
@@ -36,6 +40,17 @@ class CompetitionValidatorTests {
         Errors errors = validate(input);
 
         assertThat(errors.hasFieldErrors("time")).isTrue();
+    }
+
+    @Test
+    void fixtureRejectsCodeThatDoesNotBelongToSelectedStadium() {
+        InputCompetitionDTO input = fixture(null, 1L, 2L, LocalDate.of(2026, 5, 20));
+        when(stadiumRepository.findById(1L))
+                .thenReturn(Optional.of(Stadium.builder().code(1010).build()));
+
+        Errors errors = validate(input);
+
+        assertThat(errors.hasFieldErrors("stadiumCode")).isTrue();
     }
 
     private Errors validate(InputCompetitionDTO input) {

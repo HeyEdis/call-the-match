@@ -103,3 +103,16 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 **Verification:** 5 tests, 0 failures.
 
 **passes:** true
+
+### 2026-05-23 – rest-controller-tests
+
+**Task:** REST Controller Tests
+
+**What changed:**
+- Moved `RestControllerTests` from root package `com.example.callthematch` to `com.example.callthematch.restcontroller`
+- Updated package declaration accordingly
+- Deleted old file at root
+
+**Verification:** `.\mvnw.cmd test` → BUILD SUCCESS, 86 tests, 0 failures.
+
+**passes:** true

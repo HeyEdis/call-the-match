@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.restcontroller;
 
 import com.example.callthematch.controller.CompetitionRestController;
 import com.example.callthematch.controller.StadiumRestController;
@@ -141,3 +141,4 @@ class RestControllerTests {
         Mockito.verify(stadiumService).findCapacityById(999L);
     }
 }
+

@@ -147,7 +147,7 @@
         "Test class is in src/test/java/com/example/callthematch/restcontroller/ package"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     }
   ]
 }

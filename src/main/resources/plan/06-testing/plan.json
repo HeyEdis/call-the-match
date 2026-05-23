@@ -55,7 +55,7 @@
         "mvn test passes fully after reorganization"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "account-controller-tests",

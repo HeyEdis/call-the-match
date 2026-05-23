@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MatchManagementMvcTests {
+class CompetitionControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -87,3 +87,4 @@ class MatchManagementMvcTests {
                 .andExpect(view().name("error/404"));
     }
 }
+

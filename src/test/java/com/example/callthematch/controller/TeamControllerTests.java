@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.response.TeamDTO;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TeamManagementMvcTests {
+class TeamControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -157,3 +157,4 @@ class TeamManagementMvcTests {
                 .andExpect(status().isForbidden());
     }
 }
+

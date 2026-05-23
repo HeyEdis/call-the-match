@@ -1,4 +1,4 @@
-package com.example.callthematch.dto;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputRegistrationDTO;
 import jakarta.validation.Validation;
@@ -20,3 +20,4 @@ class InputRegistrationDTOValidationTests {
                 .contains("firstName", "lastName", "userName", "email", "password");
     }
 }
+

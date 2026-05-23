@@ -1,4 +1,4 @@
-package com.example.callthematch.dto;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
@@ -26,3 +26,4 @@ class InputTeamDTOValidationTests {
                 .contains("inviteCode");
     }
 }
+

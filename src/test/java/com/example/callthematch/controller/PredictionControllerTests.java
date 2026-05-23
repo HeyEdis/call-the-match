@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.controller;
 
 import com.example.callthematch.model.Prediction;
 import com.example.callthematch.repository.CompetitionRepository;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PredictionMvcTests {
+class PredictionControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -125,3 +125,4 @@ class PredictionMvcTests {
                 .andExpect(model().attributeExists("errorMessage"));
     }
 }
+

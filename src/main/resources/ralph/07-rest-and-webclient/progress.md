@@ -47,3 +47,17 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
 - Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
 - Result: all acceptance criteria for this task are verified; `passes` set to `true`.
+
+### 2026-05-23 - webclient-consumer-service
+
+- Task: `webclient-consumer-service` - Spring WebClient Consumer Service.
+- Changed: added `spring-boot-starter-webflux`, a `WebClient` bean with base URL `http://localhost:8080`, and an injectable `MatchWebClientService`.
+- Decisions: kept this as a Spring service so the WebClient consumer is injectable and callable from the application context; exposed reactive return types directly with `Flux<MatchRestDTO>` for matches and `Mono<StadiumCapacityDTO>` for stadium capacity.
+- Files changed:
+  - `pom.xml`
+  - `src/main/java/com/example/callthematch/config/WebClientConfig.java`
+  - `src/main/java/com/example/callthematch/service/MatchWebClientService.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.

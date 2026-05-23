@@ -73,7 +73,7 @@
         "Endpoint is accessible without authentication for guest, user, and admin"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "webclient-consumer-service",

@@ -1,6 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.response.CompetitionDTO;
+import com.example.callthematch.dto.response.StadiumCapacityDTO;
 import com.example.callthematch.dto.response.StadiumDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.StadiumNotFound;
@@ -22,6 +23,10 @@ public class StadiumService {
         return new StadiumDTO(s.getId(), s.getLocation(),s.getName(),s.getCode(),s.getCapacity());
     }
 
+    private StadiumCapacityDTO toCapacityDTO(Stadium s) {
+        return new StadiumCapacityDTO(s.getId(), s.getName(), s.getCapacity());
+    }
+
     private Stadium findStadiumById(Long id)
     {
         return stadiumRepository.findById(id).orElseThrow(() -> new StadiumNotFound(id));
@@ -29,6 +34,10 @@ public class StadiumService {
 
     public StadiumDTO findById(Long id) {
         return toDTO(findStadiumById(id));
+    }
+
+    public StadiumCapacityDTO findCapacityById(Long id) {
+        return toCapacityDTO(findStadiumById(id));
     }
 
     public List<StadiumDTO> getAllStadiums() {

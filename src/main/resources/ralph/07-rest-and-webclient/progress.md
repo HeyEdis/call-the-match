@@ -61,3 +61,16 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
 - Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
 - Result: all acceptance criteria for this task are verified; `passes` set to `true`.
+
+### 2026-05-23 - WebClient client package refactor
+
+- Task: review/refactor feedback for the WebClient consumer.
+- Changed: moved the WebClient consumer shape from Spring config/service files to a `client` package like the REST fruit exercise.
+- Decisions: used `ClientRunner` plus `RestClient` instead of `RestClientDemo`, keeping the exercise-style manual demo flow while avoiding "Demo" in the class name.
+- Files changed:
+  - `src/main/java/com/example/callthematch/client/ClientRunner.java`
+  - `src/main/java/com/example/callthematch/client/RestClient.java`
+  - `src/main/java/com/example/callthematch/config/WebClientConfig.java`
+  - `src/main/java/com/example/callthematch/service/MatchWebClientService.java`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.

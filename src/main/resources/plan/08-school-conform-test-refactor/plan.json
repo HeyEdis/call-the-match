@@ -1,0 +1,215 @@
+{
+  "sources": [
+    {
+      "url": "src/test/java/com/example/callthematch",
+      "description": "Existing call-the-match test suite to refactor toward school-conform style."
+    },
+    {
+      "url": "src/main/resources/prd/08-school-conform-test-refactor-prd.md",
+      "description": "PRD for making all tests fully school-conform."
+    },
+    {
+      "url": "src/main/resources/prd/08-school-conform-test-refactor/plan.md",
+      "description": "Approved Markdown implementation plan for the school-conform test refactor."
+    },
+    {
+      "url": "src/main/resources/prd/06-testing-prd.md",
+      "description": "Existing testing PRD with required test categories."
+    },
+    {
+      "url": "src/main/resources/prd/06-testing/plan.md",
+      "description": "Existing testing plan and current test coverage context."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/SKILL.md",
+      "description": "Project guidelines for HOGENT EWD school conventions."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/testing.md",
+      "description": "Local testing guideline reference for MVC, REST, security and validation tests."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Multirow/Spring_Boot_list_crud-opl",
+      "description": "Primary school controller test reference: @WebMvcTest, @MockitoBean, service stubbing and verification."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Security",
+      "description": "School security test references: @WithMockUser, @WithAnonymousUser, formLogin, logout and role access assertions."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST",
+      "description": "School REST test references: @WebMvcTest, jsonPath, mocked services, error JSON and service verification."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie",
+      "description": "School validation test references: Jakarta Validator, BeanPropertyBindingResult, controller validation tests and builders."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "mvc-test-baseline-slice-setup",
+      "title": "MVC Test Baseline And Shared Slice Setup",
+      "description": "Define the school-conform MVC controller test shape before converting individual controllers. Establish reusable patterns for @WebMvcTest, @MockitoBean, mocked service responses, form DTO submission, expected service calls, invalid-path verify(..., never()) checks, imported validators/advice, and any intentionally retained integration tests. This task should not change application behavior.",
+      "acceptance_criteria": [
+        "A short checklist or notes section exists in the plan/progress log describing the target MVC test shape",
+        "The target shape explicitly follows the Multirow ContactControllerTest pattern: @WebMvcTest, @MockitoBean, when(...), verify(...), verify(..., never()), status/view/model/redirect assertions",
+        "Decisions are recorded for when .param(...) is acceptable and when flashAttr(...) should be preferred",
+        "Decisions are recorded for what may remain as full integration coverage, if anything",
+        "No application behavior is changed in this task"
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "account-public-browse-controller-tests",
+      "title": "Account And Public Browse Controller Tests",
+      "description": "Convert the simplest MVC controller tests first: account registration/login and public browsing. Use focused @WebMvcTest slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home, ranking and public competition detail.",
+      "acceptance_criteria": [
+        "AccountControllerTests uses school-style MVC slice testing where practical",
+        "Register GET asserts status, view name and inputRegistrationDto model attribute",
+        "Login GET asserts status and view name",
+        "Valid registration submits a DTO/form request and verifies the registration service is called",
+        "Invalid registration returns the register view with field errors and verifies the registration service is not called",
+        "Missing CSRF on registration remains tested",
+        "PublicBrowseControllerTests uses focused MVC slice testing where practical",
+        "Home, ranking, public competition detail, not-found and type-mismatch behavior remain covered",
+        ".\\mvnw.cmd -Dtest=AccountControllerTests,PublicBrowseControllerTests test passes"
+      ],
+      "priority": 2,
+      "passes": true
+    },
+    {
+      "id": "competition-controller-tests-school-style",
+      "title": "Competition Controller Tests",
+      "description": "Refactor CompetitionControllerTests for school-style controller coverage. Keep all current behavior around public match detail, admin add/edit/result forms, validation errors, redirects or error views and user-forbidden admin routes, but move away from broad context dependence where possible.",
+      "acceptance_criteria": [
+        "CompetitionControllerTests uses @WebMvcTest with mocked controller dependencies where practical",
+        "Public competition list/detail behavior remains covered with status, view and model assertions",
+        "Admin add, edit and result GET flows expose the expected model attributes",
+        "Valid admin add/edit/result POST flows verify expected service calls and redirects where applicable",
+        "Invalid admin add/edit/result POST flows return the correct view with field errors and verify write services are not called",
+        "Not-found and type-mismatch paths remain covered",
+        "USER access to admin competition routes remains forbidden",
+        ".\\mvnw.cmd -Dtest=CompetitionControllerTests test passes"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "team-controller-tests-school-style",
+      "title": "Team Controller Tests",
+      "description": "Refactor TeamControllerTests to use mocked services and focused controller assertions. Preserve dashboard, create, join, detail, scoreboard, owner-only actions, duplicate/invalid flows and guest/user/admin boundaries.",
+      "acceptance_criteria": [
+        "TeamControllerTests uses @WebMvcTest with mocked controller dependencies where practical",
+        "Dashboard test asserts status, view and model attributes for team list and form DTOs",
+        "Valid create verifies service call and redirect",
+        "Invalid create returns dashboard view with field errors and verifies create service is not called",
+        "Duplicate team-name flow remains covered",
+        "Valid join verifies service call and redirect",
+        "Invalid or unknown invite-code flow returns dashboard view and field errors or error model as appropriate",
+        "Detail and scoreboard tests cover member versus non-member access",
+        "Owner-only actions cover allowed owner behavior and forbidden non-owner behavior",
+        "Guest and admin restrictions for team routes remain explicit",
+        ".\\mvnw.cmd -Dtest=TeamControllerTests test passes"
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "prediction-controller-tests-school-style",
+      "title": "Prediction Controller Tests",
+      "description": "Refactor PredictionControllerTests so they no longer prepare data through repositories. Replace repository setup with mocked service responses and explicit service verification, while preserving list, form, submit, cutoff, admin-forbidden, guest redirect and non-member access behavior.",
+      "acceptance_criteria": [
+        "PredictionControllerTests uses @WebMvcTest with mocked controller dependencies where practical",
+        "Direct repository injection and repository setup are removed from the controller test",
+        "Prediction list asserts status, view and model attributes from mocked service data",
+        "Prediction form asserts status, view, competition model data and prefilled input DTO where applicable",
+        "Invalid prediction submit returns the form view with field errors and verifies save service is not called",
+        "Valid prediction submit verifies save service call and redirect",
+        "Closed/cutoff prediction behavior remains covered",
+        "Guest and admin access restrictions remain explicit",
+        "Non-member private scoreboard access remains covered in the appropriate controller or security test",
+        ".\\mvnw.cmd -Dtest=PredictionControllerTests test passes"
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "security-tests-school-style-cleanup",
+      "title": "Security Tests School-Style Cleanup",
+      "description": "Refactor AccessSecurityTests for readability and closer alignment with EWDJ_Security. Keep full security wiring if needed, but express access cases with small focused tests, @WithMockUser, @WithAnonymousUser, formLogin, logout and CSRF checks.",
+      "acceptance_criteria": [
+        "Security tests still cover guest public routes",
+        "Security tests still cover guest redirect to login for protected user/admin routes",
+        "USER access to team and prediction routes remains covered",
+        "USER forbidden access to admin match-management routes remains covered",
+        "ADMIN access to match-management routes remains covered",
+        "ADMIN forbidden access to team, prediction and private scoreboard routes remains covered",
+        "Correct email/password form login authenticates",
+        "Incorrect credentials redirect to /login?error",
+        "Logout redirects to /login?logout",
+        "POST without CSRF returns 403",
+        "Larger grouped tests are split where it improves traceability",
+        ".\\mvnw.cmd -Dtest=AccessSecurityTests test passes"
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "rest-get-test-scope-verification",
+      "title": "REST GET Test Scope Verification",
+      "description": "Keep REST tests scoped to the currently implemented public GET endpoints. Verify they remain aligned with EWDJ_REST: @WebMvcTest, mocked service dependencies, jsonPath, Mockito.when, Mockito.verify, list/detail success cases and error JSON with status, message and timestamp. REST mutation tests are explicitly out of scope because the project currently exposes only GET REST endpoints.",
+      "acceptance_criteria": [
+        "CompetitionRestControllerTests keeps @WebMvcTest, mocked dependencies, jsonPath and Mockito.verify",
+        "GET /api/matches?date=... success returns a JSON array with expected fields",
+        "GET /api/matches?date=... with no matches returns an empty JSON array",
+        "Invalid date returns 400 error JSON with status, message and timestamp",
+        "StadiumRestControllerTests keeps @WebMvcTest, mocked dependencies, jsonPath and Mockito.verify",
+        "GET /api/stadiums/{id}/capacity success returns expected JSON",
+        "Missing stadium returns 404 error JSON with status, message and timestamp",
+        "Plan/progress text does not claim POST/PUT/DELETE REST coverage for this GET-only API",
+        ".\\mvnw.cmd -Dtest=CompetitionRestControllerTests,StadiumRestControllerTests test passes"
+      ],
+      "priority": 7,
+      "passes": true
+    },
+    {
+      "id": "validation-test-cleanup",
+      "title": "Validation Test Cleanup",
+      "description": "Clean up validation tests to match Spring_validatie: DTO annotation tests without Spring context, parameterized invalid cases where useful, optional builder helpers where they reduce noise, validator class tests with BeanPropertyBindingResult and direct custom ConstraintValidator tests.",
+      "acceptance_criteria": [
+        "DTO validation tests use jakarta.validation.Validator without loading Spring context",
+        "Each DTO validation test has at least one positive and one negative case",
+        "Repeated invalid cases are parameterized where this improves readability",
+        "Duplicate InputTeamJoinDTO coverage is removed from InputTeamDTOValidationTests because InputTeamJoinDTOValidationTests exists",
+        "InputTeamJoinDTOValidationTests remains present and covers blank and valid invite codes",
+        "CompetitionValidatorTests keeps BeanPropertyBindingResult and direct validator invocation",
+        "StadiumChecksumValidatorTests remains direct and Spring-context-free with valid, invalid and null-safe cases",
+        ".\\mvnw.cmd -Dtest=*ValidationTests,CompetitionValidatorTests,StadiumChecksumValidatorTests test passes"
+      ],
+      "priority": 8,
+      "passes": true
+    },
+    {
+      "id": "final-verification-and-plan-alignment",
+      "title": "Final Verification And Plan Alignment",
+      "description": "Run the final verification pass and align plan/progress artifacts with what is actually implemented. The final suite should be easy to defend: each required school category should point to a concrete local exercise-project style.",
+      "acceptance_criteria": [
+        "All targeted controller tests pass",
+        "Security tests pass",
+        "REST GET tests pass",
+        "Validation tests pass",
+        "Full suite passes with .\\mvnw.cmd test",
+        "Plan/progress artifacts do not claim REST mutation coverage",
+        "Any intentionally retained full integration test is clearly justified",
+        "The final test suite can be summarized by category: MVC, security, REST GET, DTO validation, custom annotation validator, Spring validator class and extra service tests"
+      ],
+      "priority": 9,
+      "passes": false
+    }
+  ]
+}

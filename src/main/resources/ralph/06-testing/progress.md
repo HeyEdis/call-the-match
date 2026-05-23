@@ -30,6 +30,26 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 
 **passes:** true
 
+### 2026-05-23 - AFK audit validation-tests-supplement
+
+**Task:** Validatie Tests - Aanvullingen Bestaande Annotaties
+
+**What changed:**
+- Audited the validation tests against `project-guidelines`, the testing PRD/plan, and the school-style validation requirement that each DTO has both negative and positive Jakarta `Validator` coverage without Spring context.
+- Added `validFixtureProducesNoViolations` to `InputCompetitionDTOValidationTests` so `InputCompetitionDTO` has an explicit full positive case (`0` violations), instead of only proving the checksum field does not fail.
+- Marked `validation-tests-supplement` as passing in `plan.json` after targeted verification.
+
+**Decisions:** Kept the existing `jakarta.validation.Validator` style because it matches the school requirement for DTO annotation validation without Spring context.
+
+**Files changed:**
+- `src/test/java/com/example/callthematch/validation/InputCompetitionDTOValidationTests.java`
+- `src/main/resources/plan/06-testing/plan.json`
+- `src/main/resources/ralph/06-testing/progress.md`
+
+**Verification:** `.\mvnw.cmd -Dtest="InputRegistrationDTOValidationTests,InputTeamDTOValidationTests,InputTeamJoinDTOValidationTests,InputCompetitionDTOValidationTests,InputPredictionDTOValidationTests,CompetitionValidatorTests,StadiumChecksumValidatorTests" test` -> BUILD SUCCESS, 25 tests, 0 failures. `.\mvnw.cmd test` -> BUILD SUCCESS, 87 tests, 0 failures.
+
+**passes:** true
+
 ### 2026-05-23 – account-controller-tests
 
 **Task:** MVC Controller Tests – AccountController (nieuw)

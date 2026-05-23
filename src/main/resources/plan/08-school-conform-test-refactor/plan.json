@@ -117,7 +117,7 @@
         ".\\mvnw.cmd -Dtest=TeamControllerTests test passes"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-controller-tests-school-style",

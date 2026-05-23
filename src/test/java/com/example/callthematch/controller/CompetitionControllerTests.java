@@ -80,8 +80,9 @@ class CompetitionControllerTests {
     @Test
     void publicCompetitionListAndDetailAreAccessibleToGuest() throws Exception {
         List<CompetitionDTO> competitions = List.of(competitionDto(1L));
+        CompetitionDTO competition = competitionDto(1L);
         when(competitionService.getAllCompetitions()).thenReturn(competitions);
-        when(competitionService.findById(1L)).thenReturn(competitionDto(1L));
+        when(competitionService.findById(1L)).thenReturn(competition);
 
         mockMvc.perform(get("/competition"))
                 .andExpect(status().isOk())
@@ -91,10 +92,25 @@ class CompetitionControllerTests {
         mockMvc.perform(get("/competition/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/show"))
-                .andExpect(model().attributeExists("competition"));
+                .andExpect(model().attribute("competition", competition));
 
         verify(competitionService).getAllCompetitions();
         verify(competitionService).findById(1L);
+    }
+
+    @Test
+    void publicCompetitionDetailKeepsFriendlyNotFoundAndTypeMismatchErrors() throws Exception {
+        when(competitionService.findById(999999L)).thenThrow(new CompetitionNotFound(999999L));
+
+        mockMvc.perform(get("/competition/999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error/404"));
+
+        mockMvc.perform(get("/competition/not-a-number"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error/404"));
+
+        verify(competitionService).findById(999999L);
     }
 
     @Test

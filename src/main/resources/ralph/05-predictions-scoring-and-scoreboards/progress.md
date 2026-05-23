@@ -58,3 +58,13 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: `TeamController`, `TeamService`, `TeamMemberRepository`, `SecurityConfig`, `TeamScoreboardDTO`, `TeamMemberScoreDTO`, `templates/team/scoreboard.html`, `templates/team/show.html`, `messages.properties`, `TeamManagementMvcTests`, `AccessSecurityMvcTests`, `plan.json`, `progress.md`.
 - Verification: `.\mvnw.cmd '-Dtest=TeamManagementMvcTests,AccessSecurityMvcTests' test` passed. `.\mvnw.cmd test` passed with 52 tests.
 - Blockers/TODOs: none.
+
+### 2026-05-23 - Test closure for predictions and scoring
+
+- `scoring-service-tests` - Expanded scoring unit tests with explicit exact-score-only, draw outcome and duplicate-prediction no-bonus cases. Existing tests already covered wrong outcome, correct outcome, unique exact bonus, unique outcome bonus and cutoff rejection through `PredictionServiceTests`.
+- `prediction-mvc-tests` - Added explicit prediction route guest/admin security coverage and a non-member scoreboard 403 check to the prediction MVC test class.
+- `prediction-validation-tests` - Split prediction DTO validation into separate null, negative and valid-value tests for both score fields.
+- Decisions: Kept the tests in the existing test classes instead of creating duplicates, because the codebase already had focused classes for scoring, prediction MVC and DTO validation.
+- Files changed: `ScoringServiceTests`, `PredictionMvcTests`, `InputPredictionDTOValidationTests`, `plan.json`, `progress.md`.
+- Verification: `.\mvnw.cmd '-Dtest=ScoringServiceTests,PredictionMvcTests,InputPredictionDTOValidationTests' test` passed with 18 tests. `.\mvnw.cmd test` passed with 61 tests.
+- Blockers/TODOs: none.

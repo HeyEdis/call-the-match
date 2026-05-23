@@ -19,6 +19,14 @@ class ScoringServiceTests {
     }
 
     @Test
+    void exactScoreWithoutUniqueBonusesEarnsExactScorePoints() {
+        Prediction exact = prediction(2, 1);
+
+        assertThat(scoringService.calculatePoints(exact, 2, 1, List.of(exact, prediction(2, 1))))
+                .isEqualTo(5);
+    }
+
+    @Test
     void correctOutcomeWithoutExactScoreAddsOutcomePoints() {
         Prediction correctOutcome = prediction(3, 1);
 
@@ -41,6 +49,23 @@ class ScoringServiceTests {
 
         assertThat(scoringService.calculatePoints(draw, 0, 0, List.of(draw, prediction(2, 1))))
                 .isEqualTo(3);
+    }
+
+    @Test
+    void drawScenarioScoresCorrectOutcome() {
+        Prediction draw = prediction(2, 2);
+
+        assertThat(scoringService.calculatePoints(draw, 1, 1, List.of(draw, prediction(3, 3))))
+                .isEqualTo(2);
+    }
+
+    @Test
+    void noUniqueBonusWhenMultipleMembersShareSamePrediction() {
+        Prediction first = prediction(2, 1);
+        Prediction second = prediction(2, 1);
+
+        assertThat(scoringService.calculatePoints(first, 2, 1, List.of(first, second)))
+                .isEqualTo(5);
     }
 
     private Prediction prediction(int scoreA, int scoreB) {

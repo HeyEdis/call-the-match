@@ -198,7 +198,7 @@
         "Test: cutoff enforcement rejects late predictions"
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-mvc-tests",
@@ -212,7 +212,7 @@
         "Security test: non-member cannot access scoreboard (403)"
       ],
       "priority": 12,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-validation-tests",
@@ -226,7 +226,7 @@
         "Test: valid non-negative values pass validation"
       ],
       "priority": 13,
-      "passes": false
+      "passes": true
     }
   ]
 }

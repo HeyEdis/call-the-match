@@ -74,6 +74,22 @@ class PredictionMvcTests {
     }
 
     @Test
+    void guestAndAdminCannotAccessPredictionRoutes() throws Exception {
+        mockMvc.perform(get("/predictions/3"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(get("/predictions/3").with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void nonMemberCannotAccessScoreboard() throws Exception {
+        mockMvc.perform(get("/team/1/scoreboard").with(user("user2@example.com").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void invalidPredictionReturnsFieldErrorsAndValidPredictionRedirects() throws Exception {
         mockMvc.perform(post("/predictions/5")
                         .with(user("user1@example.com").roles("USER"))

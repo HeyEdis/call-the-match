@@ -149,3 +149,32 @@ Files changed:
 Verification:
 
 - `.\mvnw.cmd "-Dtest=CompetitionControllerTests" test` passed: 6 tests, 0 failures, 0 errors.
+
+### team-controller-tests-school-style - Team Controller Tests
+
+What changed:
+
+- Converted `TeamControllerTests` from full `@SpringBootTest` coverage to a focused `@WebMvcTest(TeamController.class)` slice.
+- Mocked `TeamService` and verified service calls for dashboard, create, join, detail, scoreboard, invite-code regeneration, and member removal flows.
+- Kept security filters enabled with the project `SecurityConfig` and Spring Boot 4 servlet security auto-configuration.
+- Covered dashboard model attributes for the user's teams and form DTOs.
+- Covered valid create/join redirects and invalid create/join form errors with `verify(..., never())` on validation failures.
+- Added duplicate team-name and unknown invite-code field-error coverage.
+- Preserved member/non-member detail and scoreboard access behavior through mocked service success and `AccessDeniedException` paths.
+- Preserved owner and non-owner management behavior for invite-code regeneration and member removal.
+- Preserved guest redirect and admin-forbidden team route checks.
+
+Decisions:
+
+- Used local fixture helpers that build real `TeamDTO`, `TeamScoreboardDTO`, `TeamMember`, `Team`, and `MyUser` objects for Thymeleaf rendering.
+- Added a mocked `CompetitionValidator` because the MVC slice loads the global `CompetitionValidatorAdvice`; this keeps unrelated validator dependencies out of the team controller test.
+
+Files changed:
+
+- `src/test/java/com/example/callthematch/controller/TeamControllerTests.java`
+- `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
+- `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
+
+Verification:
+
+- `.\mvnw.cmd "-Dtest=TeamControllerTests" test` passed: 13 tests, 0 failures, 0 errors.

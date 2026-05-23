@@ -136,7 +136,7 @@
         ".\\mvnw.cmd -Dtest=PredictionControllerTests test passes"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-tests-school-style-cleanup",

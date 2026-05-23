@@ -178,3 +178,39 @@ Files changed:
 Verification:
 
 - `.\mvnw.cmd "-Dtest=TeamControllerTests" test` passed: 13 tests, 0 failures, 0 errors.
+
+### prediction-controller-tests-school-style - Prediction Controller Tests
+
+What changed:
+
+- Converted `PredictionControllerTests` from full `@SpringBootTest` coverage with repository setup to a focused `@WebMvcTest(PredictionController.class)` slice.
+- Removed direct `CompetitionRepository`, `PredictionRepository`, and `UserRepository` usage from the controller test.
+- Mocked `PredictionService` and verified list, form, valid save, invalid save, and cutoff save interactions.
+- Kept guest redirect and admin-forbidden prediction route coverage with security filters enabled.
+- Moved reusable prediction DTO/overview fixtures into the `com.example.callthematch.support` test package.
+- Reused shared competition fixture data from the `support` package for prediction form rendering.
+
+Decisions:
+
+- Non-member private scoreboard behavior remains covered by `TeamControllerTests`, which is the more appropriate controller slice for `/team/{id}/scoreboard`.
+- Added a mocked `CompetitionValidator` because the MVC slice loads the global `CompetitionValidatorAdvice`; this keeps unrelated competition validation dependencies out of the prediction controller test.
+- Kept `.param(...)` for prediction POSTs because these tests exercise request parameter binding and validation errors on the form DTO.
+
+Files changed:
+
+- `src/test/java/com/example/callthematch/controller/PredictionControllerTests.java`
+- `src/test/java/com/example/callthematch/support/TestPredictions.java`
+- `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
+- `src/main/resources/ralph/08-school-conform-test-refactor/TODO.md`
+- `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
+
+Verification:
+
+- `.\mvnw.cmd "-Dtest=PredictionControllerTests" test` passed: 6 tests, 0 failures, 0 errors.
+- `.\mvnw.cmd "-Dtest=CompetitionControllerTests,PublicBrowseControllerTests,TeamControllerTests,PredictionControllerTests" test` passed: 28 tests, 0 failures, 0 errors.
+
+Review cleanup:
+
+- Moved repeated competition, team, and prediction controller-test fixtures into `src/test/java/com/example/callthematch/support`.
+- Updated the affected controller tests to use the shared support fixtures instead of duplicating local object creation.
+- Removed completed competition, team, and prediction controller items from `TODO.md`; remaining Ralph TODOs now focus on security cleanup and final verification.

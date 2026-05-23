@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -68,10 +69,11 @@ class TeamControllerTests {
 
     @Test
     void validCreateRedirectsToDashboard() throws Exception {
+        String uniqueName = "Team-" + UUID.randomUUID().toString().substring(0, 8);
         mockMvc.perform(post("/team/create")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .param("name", "MVC Team Test"))
+                        .param("name", uniqueName))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/dashboard"));
     }

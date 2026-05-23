@@ -25,6 +25,26 @@ class CompetitionControllerTests {
     private MockMvc mockMvc;
 
     @Test
+    void publicCompetitionListAndDetailAreAccessibleToGuest() throws Exception {
+        mockMvc.perform(get("/home"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("home"))
+                .andExpect(model().attributeExists("competitionList"));
+
+        mockMvc.perform(get("/competition/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("competition/show"))
+                .andExpect(model().attributeExists("competition"));
+    }
+
+    @Test
+    void userIsForbidenOnAdminCompetitionAddRoute() throws Exception {
+        mockMvc.perform(get("/competition/add")
+                        .with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void adminAddEditAndResultFormsExposeSchoolMvcModels() throws Exception {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())

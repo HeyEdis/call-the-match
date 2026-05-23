@@ -47,3 +47,31 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 **Verification:** `.\mvnw.cmd -Dtest=AccountControllerTests test` → BUILD SUCCESS, 5 tests, 0 failures.
 
 **passes:** true
+
+### 2026-05-23 – mvc-controller-tests-supplement
+
+**Task:** MVC Controller Tests – Aanvullingen
+
+**What changed:**
+- `CompetitionControllerTests`: added `publicCompetitionListAndDetailAreAccessibleToGuest` (GET /home list + GET /competition/1 detail) and `userIsForbidenOnAdminCompetitionAddRoute` (USER → 403 on GET /competition/add)
+- `TeamControllerTests`: fixed `validCreateRedirectsToDashboard` to use `UUID`-based unique team name to avoid duplicate constraint on repeated test runs
+- `PredictionControllerTests`: already covered all required scenarios — no changes needed
+
+**Verification:** `.\mvnw.cmd -Dtest="CompetitionControllerTests,TeamControllerTests,PredictionControllerTests" test` → BUILD SUCCESS, 22 tests, 0 failures.
+
+**passes:** true
+
+### 2026-05-23 – security-tests-extend
+
+**Task:** Security Tests – Uitbreiden
+
+**What changed:**
+- `AccessSecurityTests`: added 3 new tests:
+  - `incorrectCredentialsRedirectToLoginError` – formLogin wrong password → unauthenticated + redirect /login?error
+  - `logoutRedirectsToLoginLogout` – POST /logout → 302 redirect /login?logout
+  - `postWithoutCsrfReturnsForbidden` – POST /team/create no CSRF → 403
+- Added `logout` and `unauthenticated` imports; added `redirectedUrlPattern` import
+
+**Verification:** `.\mvnw.cmd -Dtest="AccessSecurityTests" test` → BUILD SUCCESS, 10 tests, 0 failures.
+
+**passes:** true

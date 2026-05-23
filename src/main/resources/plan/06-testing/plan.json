@@ -83,7 +83,7 @@
         "All tests pass with mvn test"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-tests-extend",
@@ -102,7 +102,7 @@
         "POST without CSRF token returns 403"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "validation-tests-supplement",

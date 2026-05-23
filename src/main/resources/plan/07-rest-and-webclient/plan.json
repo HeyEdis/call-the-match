@@ -60,7 +60,7 @@
         "Endpoint is accessible without authentication for guest, user, and admin"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "stadium-capacity-rest-endpoint",
@@ -73,7 +73,7 @@
         "Endpoint is accessible without authentication for guest, user, and admin"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "webclient-consumer-service",
@@ -87,7 +87,7 @@
         "The WebClient consumer service is injectable and callable as proof of the WebClient requirement"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "rest-controller-tests",
@@ -102,7 +102,7 @@
         "Tests use MockMvc with mocked service/repository layers"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -24,6 +24,7 @@ public class SecurityConfig {
                                 "/login**",
                                 "/register**",
                                 "/css/**",
+                                "/api/**",
                                 "/error/**"
                         ).permitAll()
                         .requestMatchers("/predictions/**", "/team/*/scoreboard", "/team/**").hasRole("USER")

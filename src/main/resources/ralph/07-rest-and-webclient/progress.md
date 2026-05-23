@@ -1,0 +1,90 @@
+# Ralph Progress Log: 07-rest-and-webclient
+
+Each iteration appends what was done, decisions made, files changed, verification results, and blockers.
+
+## Entries
+
+### 2026-05-23 - matches-rest-endpoint
+
+- Task: `matches-rest-endpoint` - Matches REST GET Endpoint.
+- Changed: added `CompetitionRepository.findByDate(LocalDate date)`, `MatchRestDTO`, `CompetitionRestController`, REST bad-request advice, and `/api/**` public security access.
+- Decisions: used REST response DTOs to avoid JPA JSON graph loops; followed the project-guidelines REST reference and fruit exercise error-response shape with `ErrorResponse(status, message, timestamp)`.
+- Files changed:
+  - `src/main/java/com/example/callthematch/repository/CompetitionRepository.java`
+  - `src/main/java/com/example/callthematch/dto/response/MatchRestDTO.java`
+  - `src/main/java/com/example/callthematch/dto/response/ErrorResponse.java`
+  - `src/main/java/com/example/callthematch/service/CompetitionService.java`
+  - `src/main/java/com/example/callthematch/controller/CompetitionRestController.java`
+  - `src/main/java/com/example/callthematch/advice/RestErrorAdvice.java`
+  - `src/main/java/com/example/callthematch/config/SecurityConfig.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+- Verification: `.\mvnw.cmd test` passed twice after implementation and after aligning the error response with project guidelines. Final run: 61 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.
+
+### 2026-05-23 - review comment on REST date parsing
+
+- Task: review feedback for `matches-rest-endpoint`.
+- Changed: removed `@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)` from `CompetitionRestController` and reused the existing project `DateFormatter` for the `date` query parameter.
+- Decisions: the REST guidelines and exercise projects prefer local formatter/utility patterns over introducing a new controller annotation here. The endpoint contract remains `GET /api/matches?date=yyyy-MM-dd`.
+- Files changed:
+  - `src/main/java/com/example/callthematch/controller/CompetitionRestController.java`
+  - `src/main/java/com/example/callthematch/advice/RestErrorAdvice.java`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd -DskipTests compile` passed. A later `.\mvnw.cmd test` attempt failed during application startup because the local MySQL schema was missing `users`; this was after earlier full test runs had passed and is unrelated to the date parsing compile path.
+
+### 2026-05-23 - stadium-capacity-rest-endpoint
+
+- Task: `stadium-capacity-rest-endpoint` - Stadium Capacity REST GET Endpoint.
+- Changed: added `StadiumCapacityDTO`, `StadiumRestController`, `StadiumService.findCapacityById(Long id)`, and REST 404 handling for `StadiumNotFound`.
+- Decisions: used a dedicated `/api/stadiums` REST controller and the same school-style `ErrorResponse(status, message, timestamp)` used by the existing REST advice.
+- Files changed:
+  - `src/main/java/com/example/callthematch/dto/response/StadiumCapacityDTO.java`
+  - `src/main/java/com/example/callthematch/controller/StadiumRestController.java`
+  - `src/main/java/com/example/callthematch/service/StadiumService.java`
+  - `src/main/java/com/example/callthematch/exception/StadiumNotFound.java`
+  - `src/main/java/com/example/callthematch/advice/RestErrorAdvice.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.
+
+### 2026-05-23 - webclient-consumer-service
+
+- Task: `webclient-consumer-service` - Spring WebClient Consumer Service.
+- Changed: added `spring-boot-starter-webflux`, a `WebClient` bean with base URL `http://localhost:8080`, and an injectable `MatchWebClientService`.
+- Decisions: kept this as a Spring service so the WebClient consumer is injectable and callable from the application context; exposed reactive return types directly with `Flux<MatchRestDTO>` for matches and `Mono<StadiumCapacityDTO>` for stadium capacity.
+- Files changed:
+  - `pom.xml`
+  - `src/main/java/com/example/callthematch/config/WebClientConfig.java`
+  - `src/main/java/com/example/callthematch/service/MatchWebClientService.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.
+
+### 2026-05-23 - WebClient client package refactor
+
+- Task: review/refactor feedback for the WebClient consumer.
+- Changed: moved the WebClient consumer shape from Spring config/service files to a `client` package like the REST fruit exercise.
+- Decisions: used `ClientRunner` plus `RestClient` instead of `RestClientDemo`, keeping the exercise-style manual demo flow while avoiding "Demo" in the class name.
+- Files changed:
+  - `src/main/java/com/example/callthematch/client/ClientRunner.java`
+  - `src/main/java/com/example/callthematch/client/RestClient.java`
+  - `src/main/java/com/example/callthematch/config/WebClientConfig.java`
+  - `src/main/java/com/example/callthematch/service/MatchWebClientService.java`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
+
+### 2026-05-23 - rest-controller-tests
+
+- Task: `rest-controller-tests` - REST Controller Tests.
+- Changed: added `RestControllerTests` with `@WebMvcTest` coverage for both REST controllers.
+- Decisions: used Spring Boot 4's `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest` package; imported `RestErrorAdvice` and excluded MVC error advices so REST errors assert JSON instead of HTML error pages.
+- Files changed:
+  - `src/test/java/com/example/callthematch/RestControllerTests.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification:
+  - `.\mvnw.cmd -Dtest=RestControllerTests test` passed with 5 tests, 0 failures, 0 errors.
+  - `.\mvnw.cmd test` passed with 66 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.

@@ -74,3 +74,17 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - `src/main/java/com/example/callthematch/service/MatchWebClientService.java`
   - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
 - Verification: `.\mvnw.cmd test` passed with 61 tests, 0 failures, 0 errors.
+
+### 2026-05-23 - rest-controller-tests
+
+- Task: `rest-controller-tests` - REST Controller Tests.
+- Changed: added `RestControllerTests` with `@WebMvcTest` coverage for both REST controllers.
+- Decisions: used Spring Boot 4's `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest` package; imported `RestErrorAdvice` and excluded MVC error advices so REST errors assert JSON instead of HTML error pages.
+- Files changed:
+  - `src/test/java/com/example/callthematch/RestControllerTests.java`
+  - `src/main/resources/plan/07-rest-and-webclient/plan.json`
+  - `src/main/resources/ralph/07-rest-and-webclient/progress.md`
+- Verification:
+  - `.\mvnw.cmd -Dtest=RestControllerTests test` passed with 5 tests, 0 failures, 0 errors.
+  - `.\mvnw.cmd test` passed with 66 tests, 0 failures, 0 errors.
+- Result: all acceptance criteria for this task are verified; `passes` set to `true`.

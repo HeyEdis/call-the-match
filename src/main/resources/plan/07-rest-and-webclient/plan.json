@@ -102,7 +102,7 @@
         "Tests use MockMvc with mocked service/repository layers"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     }
   ]
 }

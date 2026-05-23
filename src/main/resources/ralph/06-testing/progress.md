@@ -29,3 +29,21 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 **Verification:** `.\mvnw.cmd test` → BUILD SUCCESS, 66 tests run, 0 failures.
 
 **passes:** true
+
+### 2026-05-23 – account-controller-tests
+
+**Task:** MVC Controller Tests – AccountController (nieuw)
+
+**What changed:**
+- Created `src/test/java/com/example/callthematch/controller/AccountControllerTests.java`
+
+**Tests added:**
+- `getRegisterReturnsFormWithModel` – GET /register → 200, view `account/register`, model has `inputRegistrationDto`
+- `getLoginReturnsLoginView` – GET /login → 200, view `account/login`
+- `postRegisterWithValidDataRedirectsToLogin` – POST /register valid params → 302 redirect to /login
+- `postRegisterWithInvalidDataReturnsRegisterViewWithFieldErrors` – POST /register blank/invalid → 200, view `account/register`, field errors
+- `postRegisterWithoutCsrfTokenReturnsForbidden` – POST /register no CSRF → 403
+
+**Verification:** `.\mvnw.cmd -Dtest=AccountControllerTests test` → BUILD SUCCESS, 5 tests, 0 failures.
+
+**passes:** true

@@ -70,7 +70,7 @@
         "Test class is in src/test/java/com/example/callthematch/controller/ package"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "mvc-controller-tests-supplement",

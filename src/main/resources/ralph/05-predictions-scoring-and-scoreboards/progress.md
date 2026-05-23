@@ -38,3 +38,13 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Recalculation guidance for Ralph: when an official result is saved, update each prediction's base points, then recalculate each affected `TeamMember.score` per team using `ScoringService` with that team's member predictions so unique bonuses are computed within the team context.
 - Rejected for required implementation: adding `bonusPoints` to `Prediction`, because the same prediction can have different unique bonuses in different teams.
 - Deferred optional feature: Option C, a `TeamPredictionScore` detail entity for per-team/per-match base and bonus detail. Handoff saved outside the workspace at `C:\Users\Armour\AppData\Local\Temp\call-the-match-option-c-team-prediction-score-handoff.md`.
+
+### 2026-05-23 - Official result recalculation
+
+- `result-triggers-recalculation` - Added automatic score recalculation after admin saves an official competition result.
+- What changed: `CompetitionService.updateResult(...)` now saves the official result and calls `TeamMemberService.recalculateScoresAfterResult(...)`. The recalculation updates each prediction's base `pointsEarned`, recalculates affected team-member totals with team-specific unique bonuses, and saves affected team totals.
+- Decisions: Kept `Prediction.pointsEarned` as base points only; unique bonuses are applied only while recalculating each member score inside that team context. Recalculated member totals from all completed predictions so changing an old result remains idempotent.
+- Review correction: moved recalculation into the existing `TeamMemberService` layer, removed the separate recalculation service file, and moved `MatchOutcome` out of `ScoringService` into the model folder.
+- Files changed: `CompetitionService`, `TeamMemberService`, `ScoringService`, `MatchOutcome`, `PredictionRepository`, `TeamMemberRepository`, `TeamMemberServiceTests`, `plan.json`, `progress.md`, `TODO.md`.
+- Verification: `.\mvnw.cmd '-Dtest=TeamMemberServiceTests,ScoringServiceTests,PredictionServiceTests' test` passed. `.\mvnw.cmd test` passed with 50 tests.
+- Blockers/TODOs: none for the required Option A recalculation task. Optional per-team/per-match score detail remains deferred in `TODO.md`.

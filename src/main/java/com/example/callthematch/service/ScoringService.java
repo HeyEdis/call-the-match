@@ -1,5 +1,6 @@
 package com.example.callthematch.service;
 
+import com.example.callthematch.model.MatchOutcome;
 import com.example.callthematch.model.Prediction;
 import com.example.callthematch.model.ScoringPoints;
 import org.springframework.stereotype.Service;
@@ -11,17 +12,29 @@ public class ScoringService {
 
     public int calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB,
                                List<Prediction> teamPredictions) {
+        int basePoints = calculateBasePoints(prediction, officialScoreA, officialScoreB);
+
+        if (basePoints == 0) {
+            return 0;
+        }
+
         if (isExactScore(prediction, officialScoreA, officialScoreB)) {
-            return ScoringPoints.EXACT_SCORE
+            return basePoints
                     + uniqueExactBonus(prediction, teamPredictions)
                     + uniqueOutcomeBonus(prediction, teamPredictions);
         }
 
-        if (hasCorrectOutcome(prediction, officialScoreA, officialScoreB)) {
-            return ScoringPoints.CORRECT_OUTCOME
-                    + uniqueOutcomeBonus(prediction, teamPredictions);
+        return basePoints + uniqueOutcomeBonus(prediction, teamPredictions);
+    }
+
+    public int calculateBasePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB) {
+        if (isExactScore(prediction, officialScoreA, officialScoreB)) {
+            return ScoringPoints.EXACT_SCORE;
         }
 
+        if (hasCorrectOutcome(prediction, officialScoreA, officialScoreB)) {
+            return ScoringPoints.CORRECT_OUTCOME;
+        }
         return 0;
     }
 
@@ -66,9 +79,4 @@ public class ScoringService {
         return MatchOutcome.DRAW;
     }
 
-    private enum MatchOutcome {
-        TEAM_A_WIN,
-        TEAM_B_WIN,
-        DRAW
-    }
 }

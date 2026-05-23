@@ -151,7 +151,7 @@
         "Public ranking reflects updated team totals"
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "private-scoreboard-page",

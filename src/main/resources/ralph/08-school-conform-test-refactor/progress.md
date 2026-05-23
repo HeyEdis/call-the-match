@@ -119,3 +119,33 @@ Reason:
 Verification:
 
 - Full regression check after the safe tasks: `.\mvnw.cmd test` passed: 85 tests, 0 failures, 0 errors.
+
+### competition-controller-tests-school-style - Competition Controller Tests
+
+What changed:
+
+- Converted `CompetitionControllerTests` from a full `@SpringBootTest` test to a focused `@WebMvcTest(CompetitionController.class)` slice.
+- Imported the project `SecurityConfig`, Boot 4 servlet security auto-configuration, and `CompetitionValidatorAdvice` so admin/user access and the DTO validator binder remain active in the slice.
+- Mocked `CompetitionService`, `CountryService`, `StadiumService`, and `CompetitionValidator`.
+- Preserved public competition list/detail coverage with status, view, model, and service verification.
+- Preserved USER-forbidden access to the admin add route.
+- Covered admin add, edit, and result GET forms with expected model attributes and the stadium checksum UI assertions.
+- Added valid admin add, edit, and result POST coverage with redirect assertions and service verification.
+- Kept invalid admin add, edit, and result POST coverage with field-error assertions and `verify(..., never())` checks for write services.
+- Kept not-found and type-mismatch error-page coverage.
+
+Decisions:
+
+- Used local DTO/model fixtures instead of database seed data.
+- Configured the mocked `CompetitionValidator` to support `InputCompetitionDTO`, matching Spring's validator contract in the `@InitBinder` slice.
+- Kept security filters enabled in this MVC slice because the task explicitly requires USER-forbidden admin route coverage.
+
+Files changed:
+
+- `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`
+- `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
+- `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
+
+Verification:
+
+- `.\mvnw.cmd "-Dtest=CompetitionControllerTests" test` passed: 6 tests, 0 failures, 0 errors.

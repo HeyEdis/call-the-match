@@ -49,7 +49,7 @@ class CompetitionRestControllerTests {
     private DateFormatter dateFormatter;
 
     @Test
-    void testGetMatchesByDate_returnsMatches() throws Exception {
+    void getMatchesByDateReturnsMatchList() throws Exception {
         Mockito.when(dateFormatter.parse(eq("2026-05-20"), any(Locale.class))).thenReturn(MATCH_DATE);
         Mockito.when(competitionService.findRestMatchesByDate(MATCH_DATE)).thenReturn(List.of(
                 new MatchRestDTO(
@@ -80,7 +80,7 @@ class CompetitionRestControllerTests {
     }
 
     @Test
-    void testGetMatchesByDate_returnsEmptyList() throws Exception {
+    void getMatchesByDateReturnsEmptyListWhenNoMatchesFound() throws Exception {
         Mockito.when(dateFormatter.parse(eq("2026-05-20"), any(Locale.class))).thenReturn(MATCH_DATE);
         Mockito.when(competitionService.findRestMatchesByDate(MATCH_DATE)).thenReturn(List.of());
 
@@ -94,7 +94,7 @@ class CompetitionRestControllerTests {
     }
 
     @Test
-    void testGetMatchesByDate_invalidDateReturnsBadRequest() throws Exception {
+    void getMatchesByDateReturnsBadRequestForInvalidDate() throws Exception {
         Mockito.when(dateFormatter.parse(eq("invalid"), any(Locale.class)))
                 .thenThrow(new DateTimeParseException("Invalid date", "invalid", 0));
 

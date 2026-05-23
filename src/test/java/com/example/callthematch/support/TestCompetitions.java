@@ -18,16 +18,19 @@ public final class TestCompetitions {
     }
 
     public static InputCompetitionDTO inputCompetitionDto(Long id) {
+        return inputCompetitionDto(id, 1L, 2L, LocalDate.of(2026, 5, 20));
+    }
+
+    public static InputCompetitionDTO inputCompetitionDto(Long id, Long teamA, Long teamB, LocalDate date) {
         return new InputCompetitionDTO(
                 id,
-                1L,
-                2L,
+                teamA,
+                teamB,
                 1L,
                 1001,
                 31,
-                LocalDate.of(2026, 5, 20),
-                LocalTime.of(18, 0)
-        );
+                date,
+                LocalTime.NOON);
     }
 
     public static CompetitionDTO competitionDto(Long id) {

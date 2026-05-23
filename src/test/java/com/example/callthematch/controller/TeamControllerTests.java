@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -71,16 +70,16 @@ class TeamControllerTests {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void dashboardShowsOnlyCurrentUsersTeamsAndFormModels() throws Exception {
-        MvcResult result = mockMvc.perform(get("/team/dashboard")
+        List<TeamDTO> teams = List.of(teamDto());
+        when(teamService.getCurrentUserTeams()).thenReturn(teams);
+
+        mockMvc.perform(get("/team/dashboard")
                         .with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
                 .andExpect(model().attributeExists("teamList", "inputTeamDto", "inputTeamJoinDto"))
-                .andReturn();
-
-        List<TeamDTO> teams = (List<TeamDTO>) result.getModelAndView().getModel().get("teamList");
+                .andExpect(model().attribute("teamList", teams));
 
         assertThat(teams).hasSize(1);
         assertThat(teams).allSatisfy(team ->
@@ -89,7 +88,7 @@ class TeamControllerTests {
     }
 
     @Test
-    void createAndJoinValidationReturnDashboardErrorsAndDoNotCallServices() throws Exception {
+    void invalidCreateSubmissionReturnsDashboardFieldErrorAndDoesNotCallService() throws Exception {
         mockMvc.perform(post("/team/create")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
@@ -98,6 +97,11 @@ class TeamControllerTests {
                 .andExpect(view().name("team/dashboard"))
                 .andExpect(model().attributeHasFieldErrors("inputTeamDto", "name"));
 
+        verify(teamService, never()).createTeam(any(InputTeamDTO.class));
+    }
+
+    @Test
+    void invalidJoinSubmissionReturnsDashboardFieldErrorAndDoesNotCallService() throws Exception {
         mockMvc.perform(post("/team/join")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
@@ -106,7 +110,6 @@ class TeamControllerTests {
                 .andExpect(view().name("team/dashboard"))
                 .andExpect(model().attributeHasFieldErrors("inputTeamJoinDto", "inviteCode"));
 
-        verify(teamService, never()).createTeam(any(InputTeamDTO.class));
         verify(teamService, never()).joinTeamWithInviteCode(any());
     }
 
@@ -223,11 +226,14 @@ class TeamControllerTests {
     }
 
     @Test
-    void guestAndAdminStayOutsideTeamRoutes() throws Exception {
+    void guestIsRedirectedToLoginOnTeamRoutes() throws Exception {
         mockMvc.perform(get("/team/dashboard"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
+    }
 
+    @Test
+    void adminIsForbiddenOnTeamRoutes() throws Exception {
         mockMvc.perform(get("/team/dashboard")
                         .with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
@@ -236,25 +242,29 @@ class TeamControllerTests {
     @Test
     void nonMemberCannotReadPrivateTeamDetail() throws Exception {
         when(teamService.findById(1L)).thenThrow(new AccessDeniedException("Team detail is only available to members"));
-        when(teamService.findScoreboardById(1L))
-                .thenThrow(new AccessDeniedException("Team scoreboard is only available to members"));
 
         mockMvc.perform(get("/team/1")
                         .with(user("user2@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
 
+        verify(teamService).findById(1L);
+    }
+
+    @Test
+    void nonMemberCannotReadPrivateTeamScoreboard() throws Exception {
+        when(teamService.findScoreboardById(1L))
+                .thenThrow(new AccessDeniedException("Team scoreboard is only available to members"));
+
         mockMvc.perform(get("/team/1/scoreboard")
                         .with(user("user2@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).findById(1L);
         verify(teamService).findScoreboardById(1L);
     }
 
     @Test
-    void ownerCanRegenerateInviteCodeAndRemoveTeamMembers() throws Exception {
+    void ownerCanRegenerateInviteCode() throws Exception {
         doNothing().when(teamService).regenerateInviteCode(1L);
-        doNothing().when(teamService).removeMember(1L, 2L);
 
         mockMvc.perform(post("/team/1/invite-code")
                         .with(user("user1@example.com").roles("USER"))
@@ -262,34 +272,45 @@ class TeamControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/1"));
 
+        verify(teamService).regenerateInviteCode(1L);
+    }
+
+    @Test
+    void ownerCanRemoveTeamMember() throws Exception {
+        doNothing().when(teamService).removeMember(1L, 2L);
+
         mockMvc.perform(post("/team/1/members/2/remove")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/1"));
 
-        verify(teamService).regenerateInviteCode(1L);
         verify(teamService).removeMember(1L, 2L);
     }
 
     @Test
-    void nonOwnerCannotRegenerateInviteCodeOrRemoveTeamMembers() throws Exception {
+    void nonOwnerCannotRegenerateInviteCode() throws Exception {
         doThrow(new AccessDeniedException("Only the team owner can manage this team"))
                 .when(teamService).regenerateInviteCode(1L);
-        doThrow(new AccessDeniedException("Only the team owner can manage this team"))
-                .when(teamService).removeMember(1L, 2L);
 
         mockMvc.perform(post("/team/1/invite-code")
                         .with(user("user11@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
 
+        verify(teamService).regenerateInviteCode(1L);
+    }
+
+    @Test
+    void nonOwnerCannotRemoveTeamMember() throws Exception {
+        doThrow(new AccessDeniedException("Only the team owner can manage this team"))
+                .when(teamService).removeMember(1L, 2L);
+
         mockMvc.perform(post("/team/1/members/2/remove")
                         .with(user("user11@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).regenerateInviteCode(1L);
         verify(teamService).removeMember(1L, 2L);
     }
 

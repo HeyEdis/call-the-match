@@ -32,7 +32,7 @@ class HomeControllerTests {
     private CompetitionValidator competitionValidator;
 
     @Test
-    void homeShowsPublicScheduleModel() throws Exception {
+    void homePageLoadsWithCompetitionList() throws Exception {
         List<CompetitionDTO> competitions = List.of(competitionDto(1L));
         when(competitionService.getAllCompetitions()).thenReturn(competitions);
 

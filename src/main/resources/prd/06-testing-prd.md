@@ -2,40 +2,48 @@
 
 ## Problem Statement
 
-Het HOGENT EWD-project vereist unit tests in meerdere categorieën om te slagen voor de verdediging. De schoolrichtlijnen eisen tests voor MVC controllers, REST controllers, security, bestaande validatie-annotaties, custom annotatie(s) en validator-klasse(n). Momenteel bestaan er al enkele tests maar de dekking is onvolledig en custom validatie-annotaties/validators ontbreken nog in de codebase (worden later toegevoegd).
+Het HOGENT EWD-project vereist unit tests in meerdere categorieën om te slagen voor de verdediging. De schoolrichtlijnen eisen tests voor MVC controllers, REST controllers, security, bestaande validatie-annotaties, custom annotatie(s) en validator-klasse(n). Er bestaan al veel tests maar ze staan in de verkeerde mappenstructuur (root package en `dto/`, `service/`, `validator/` submappen) in plaats van de school-conforme structuur (`controller/`, `security/`, `validation/`, `restcontroller/`). Daarnaast is de dekking onvolledig en ontbreken custom validatie-annotaties/validators in de codebase.
 
 ## Solution
 
-Schrijf een complete testsuite verdeeld over vier duidelijke categorieën:
+Reorganiseer de bestaande testsuite naar de juiste mappenstructuur en vul ontbrekende dekking aan. De aanpak is:
 
-1. **MVC Controller tests** – `@SpringBootTest` + `@AutoConfigureMockMvc` tests voor alle MVC-controllers.
-2. **REST Controller tests** – `@WebMvcTest` of `@SpringBootTest` + MockMvc tests voor REST endpoints (zodra REST controllers bestaan).
-3. **Security tests** – Verificatie van toegangsbeslissingen per rol (guest, user, admin) inclusief form-login flow.
-4. **Validatie tests** – Bestaande annotaties (`@NotBlank`, `@Email`, `@Size`, etc.), custom annotatie(s) en validator-klasse(n).
+1. **Verplaats bestaande tests** naar de juiste packages volgens schoolconventie.
+2. **MVC Controller tests** – Hernoem/verplaats bestaande MVC tests naar `controller/` package en vul aan waar nodig.
+3. **REST Controller tests** – `@WebMvcTest` of `@SpringBootTest` + MockMvc tests voor REST endpoints (zodra REST controllers bestaan).
+4. **Security tests** – Verplaats `AccessSecurityMvcTests` naar `security/` package en breid uit.
+5. **Validatie tests** – Verplaats DTO-validatietests van `dto/` naar `validation/` en verplaats `CompetitionValidatorTests` van `validator/` naar `validation/`.
 
-Safe passing first: focus op correctheid en brede dekking van de verplichte categorieën boven geavanceerde edge cases.
+Safe passing first: focus op correctheid, juiste structuur en brede dekking van de verplichte categorieën boven geavanceerde edge cases.
 
 ## Current Codebase State
 
-### Bestaande tests
+### Bestaande tests (HUIDIGE locatie → GEWENSTE locatie)
 
-| Testklasse | Categorie | Status |
-|---|---|---|
-| `AccessSecurityMvcTests` | Security + MVC | Bestaat, dekt guest/user/admin access en form-login |
-| `PublicBrowseMvcTests` | MVC | Bestaat, dekt home/ranking/competition detail |
-| `TeamManagementMvcTests` | MVC + Security | Bestaat, dekt team CRUD, access, owner-checks |
-| `InputRegistrationDTOValidationTests` | Validatie (bestaande annotaties) | Bestaat, minimaal |
-| `InputTeamDTOValidationTests` | Validatie (bestaande annotaties) | Bestaat |
-| `TeamServiceTests` | Service unit | Bestaat |
-| `UserServiceTests` | Service unit | Bestaat |
+| Testklasse | Huidige locatie | Categorie | Gewenste locatie |
+|---|---|---|---|
+| `AccessSecurityMvcTests` | root package | Security | `security/AccessSecurityTests` |
+| `PublicBrowseMvcTests` | root package | MVC | `controller/HomeControllerTests` of `controller/PublicBrowseControllerTests` |
+| `TeamManagementMvcTests` | root package | MVC + Security | `controller/TeamControllerTests` |
+| `MatchManagementMvcTests` | root package | MVC | `controller/CompetitionControllerTests` |
+| `PredictionMvcTests` | root package | MVC | `controller/PredictionControllerTests` |
+| `InputRegistrationDTOValidationTests` | `dto/` | Validatie (bestaande annotaties) | `validation/InputRegistrationDTOValidationTests` |
+| `InputTeamDTOValidationTests` | `dto/` | Validatie (bestaande annotaties) | `validation/InputTeamDTOValidationTests` |
+| `InputCompetitionDTOValidationTests` | `dto/` | Validatie (bestaande annotaties) | `validation/InputCompetitionDTOValidationTests` |
+| `InputPredictionDTOValidationTests` | `dto/` | Validatie (bestaande annotaties) | `validation/InputPredictionDTOValidationTests` |
+| `CompetitionValidatorTests` | `validator/` | Validatie (validator klasse) | `validation/CompetitionValidatorTests` |
+| `TeamServiceTests` | `service/` | Service unit (geen schoolcategorie) | `service/` (mag blijven) |
+| `UserServiceTests` | `service/` | Service unit (geen schoolcategorie) | `service/` (mag blijven) |
+| `PredictionServiceTests` | `service/` | Service unit (geen schoolcategorie) | `service/` (mag blijven) |
+| `ScoringServiceTests` | `service/` | Service unit (geen schoolcategorie) | `service/` (mag blijven) |
+| `TeamMemberServiceTests` | `service/` | Service unit (geen schoolcategorie) | `service/` (mag blijven) |
 
 ### Ontbreekt
 
 - REST controller tests (REST controllers bestaan nog niet).
 - Custom annotatie tests (custom annotaties en validators bestaan nog niet).
-- Validator-klasse tests (validators bestaan nog niet).
-- Uitgebreidere validatie tests voor `InputCompetitionDTO` en toekomstige DTOs.
-- Competitie/match MVC controller tests voor admin-flows.
+- Tests in de juiste mappenstructuur (`controller/`, `security/`, `validation/`, `restcontroller/`).
+- Eventuele uitbreiding van MVC controller tests voor AccountController (register/login flows).
 
 ## School Requirements
 
@@ -66,11 +74,25 @@ Niet direct van toepassing op deze PRD. Tests verifiëren de bestaande access-re
 
 ## Implementation Decisions
 
+### Reorganisatie bestaande tests
+
+De eerste prioriteit is het verplaatsen van bestaande tests naar de juiste mappenstructuur. Dit betekent:
+
+- Verplaats testklassen naar het juiste subpackage (`controller/`, `security/`, `validation/`).
+- Pas de `package` declaratie bovenaan de bestanden aan.
+- Hernoem klassen waar nodig om het naampatroon `{Feature}ControllerTests`, `{Feature}SecurityTests`, `{Dto}ValidationTests` te volgen.
+- Verwijder de oude bestanden na succesvolle verplaatsing.
+- Service tests (`service/`) hoeven NIET verplaatst te worden – die zijn geen schoolcategorie maar mogen blijven.
+
 ### MVC Controller Tests
 
 - Gebruik `@SpringBootTest` + `@AutoConfigureMockMvc` (integration style, zoals de bestaande tests).
+- Verplaats `PublicBrowseMvcTests` → `controller/` (eventueel splitsen in HomeControllerTests en RankingControllerTests).
+- Verplaats `TeamManagementMvcTests` → `controller/TeamControllerTests`.
+- Verplaats `MatchManagementMvcTests` → `controller/CompetitionControllerTests`.
+- Verplaats `PredictionMvcTests` → `controller/PredictionControllerTests`.
+- Voeg `controller/AccountControllerTests` toe (nieuw, voor register/login flows).
 - Test per controller: happy path, validatie-fouten terugkeer naar view, redirect na succes, model-attributen.
-- Controllers te dekken: `HomeController`, `RankingController`, `AccountController`, `TeamController`, `CompetitionController` (admin flows).
 - Gebruik `.with(user(...).roles(...))` en `.with(csrf())` voor authenticated requests.
 
 ### REST Controller Tests
@@ -82,7 +104,8 @@ Niet direct van toepassing op deze PRD. Tests verifiëren de bestaande access-re
 
 ### Security Tests
 
-- Bestaande `AccessSecurityMvcTests` uitbreiden met:
+- Verplaats `AccessSecurityMvcTests` → `security/AccessSecurityTests`.
+- Uitbreiden met:
   - Alle admin-routes (add/edit/result).
   - Alle user-routes incl. predictions.
   - CSRF-verificatie op POST endpoints.
@@ -91,9 +114,15 @@ Niet direct van toepassing op deze PRD. Tests verifiëren de bestaande access-re
 
 ### Validatie – Bestaande Annotaties
 
+- Verplaats alle tests uit `dto/` naar `validation/` package:
+  - `dto/InputRegistrationDTOValidationTests` → `validation/InputRegistrationDTOValidationTests`
+  - `dto/InputTeamDTOValidationTests` → `validation/InputTeamDTOValidationTests`
+  - `dto/InputCompetitionDTOValidationTests` → `validation/InputCompetitionDTOValidationTests`
+  - `dto/InputPredictionDTOValidationTests` → `validation/InputPredictionDTOValidationTests`
+- Verplaats `validator/CompetitionValidatorTests` → `validation/CompetitionValidatorTests`.
 - Voor elke request-DTO een testklasse met `jakarta.validation.Validator`.
 - Test zowel ongeldige als geldige input.
-- DTOs te dekken: `InputRegistrationDTO`, `InputTeamDTO`, `InputTeamJoinDTO`, `InputCompetitionDTO`, en toekomstige prediction/match DTOs.
+- Vul aan waar nodig: `InputTeamJoinDTO` en eventuele future DTOs.
 
 ### Validatie – Custom Annotatie(s)
 
@@ -118,14 +147,15 @@ Test-aanpak:
 
 ### Structuur en naamgeving
 
-Testklassen plaatsen in `src/test/java/com/example/callthematch/`:
+Testklassen verplaatsen/aanmaken in `src/test/java/com/example/callthematch/`:
 
-| Categorie | Pakket/Locatie | Naampatroon |
-|---|---|---|
-| MVC controllers | `controller/` | `{Feature}ControllerTests` |
-| REST controllers | `restcontroller/` | `Rest{Feature}Tests` |
-| Security | `security/` | `{Feature}SecurityTests` |
-| Validatie (bestaande + custom + validator) | `validation/` | `{DtoOrValidator}ValidationTests` |
+| Categorie | Pakket/Locatie | Naampatroon | Actie |
+|---|---|---|---|
+| MVC controllers | `controller/` | `{Feature}ControllerTests` | Verplaats bestaande + nieuwe AccountController |
+| REST controllers | `restcontroller/` | `Rest{Feature}Tests` | Nieuw (zodra REST bestaat) |
+| Security | `security/` | `{Feature}SecurityTests` | Verplaats AccessSecurityMvcTests |
+| Validatie (bestaande + custom + validator) | `validation/` | `{DtoOrValidator}ValidationTests` | Verplaats uit dto/ en validator/ |
+| Service (geen schoolcategorie) | `service/` | `{Service}Tests` | Blijft op huidige locatie |
 
 ### Dependencies
 

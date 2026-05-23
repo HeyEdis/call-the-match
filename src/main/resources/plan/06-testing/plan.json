@@ -6,11 +6,11 @@
     },
     {
       "url": "src/main/resources/prd/06-testing-prd.md",
-      "description": "Testing PRD with all required test categories"
+      "description": "Testing PRD with reorganization and required test categories"
     },
     {
       "url": "src/main/resources/prd/06-testing/plan.md",
-      "description": "Testing plan with phased breakdown"
+      "description": "Testing plan with reorganization-first phased breakdown"
     },
     {
       "url": "local://Richtlijnen/Slides_Spring_Web_Flow_JUnit.pdf",
@@ -37,135 +37,90 @@
       "description": "Exercise security test example for protected routes and role-aware access."
     },
     {
-      "url": "local://WorkspacesIntelij/EWDJ_ErrorMessages/Spring_Boot_i18n_Product2",
-      "description": "Exercise workspace for validator, i18n error-message and MVC validation test patterns."
-    },
-    {
       "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/test/java/com/example/spring_boot_rest_fruit_start/controller/FruitRestControllerTest.java",
       "description": "Primary exercise REST controller test example with MockMvc, jsonPath and REST error assertions."
     }
   ],
   "tasks": [
     {
-      "id": "account-controller-tests",
-      "title": "MVC Controller Tests – AccountController",
-      "description": "Create src/test/java/com/example/callthematch/controller/AccountControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /register (status 200, view account/register, model has inputRegistrationDto), GET /login (status 200, view account/login), POST /register with valid data (redirect to login or success route), POST /register with invalid data (returns view account/register with field errors on firstName, lastName, userName, email, password), and POST /register without CSRF token (403). Use .with(csrf()) for POST requests and SecurityMockMvcRequestPostProcessors where needed.",
+      "id": "reorganize-tests-to-packages",
+      "title": "Reorganisatie – Verplaats Bestaande Tests Naar Juiste Packages",
+      "description": "Move all existing test classes to the school-conform package structure. No new test logic – only move files, update package declarations, and rename where needed. Moves: AccessSecurityMvcTests → security/AccessSecurityTests, PublicBrowseMvcTests → controller/PublicBrowseControllerTests, TeamManagementMvcTests → controller/TeamControllerTests, MatchManagementMvcTests → controller/CompetitionControllerTests, PredictionMvcTests → controller/PredictionControllerTests, dto/InputRegistrationDTOValidationTests → validation/InputRegistrationDTOValidationTests, dto/InputTeamDTOValidationTests → validation/InputTeamDTOValidationTests, dto/InputCompetitionDTOValidationTests → validation/InputCompetitionDTOValidationTests, dto/InputPredictionDTOValidationTests → validation/InputPredictionDTOValidationTests, validator/CompetitionValidatorTests → validation/CompetitionValidatorTests. Delete old files after move. service/ tests remain untouched. CallTheMatchApplicationTests stays in root package.",
       "acceptance_criteria": [
-        "GET /register returns status 200 with view name account/register and model attribute inputRegistrationDto",
-        "GET /login returns status 200 with view name account/login",
-        "POST /register with valid params redirects to login or success page",
-        "POST /register with blank/invalid params returns view account/register with field errors on firstName, lastName, userName, email, password",
-        "POST /register without CSRF token returns 403",
-        "Test class is in src/test/java/com/example/callthematch/controller/ package"
+        "All moved tests compile and pass after relocation",
+        "Package declarations are updated correctly in each moved file",
+        "Old files in root package and dto/validator/ subpackages are deleted",
+        "service/ tests remain untouched at their current location",
+        "CallTheMatchApplicationTests remains in root package",
+        "mvn test passes fully after reorganization"
       ],
       "priority": 1,
       "passes": false
     },
     {
-      "id": "competition-controller-tests",
-      "title": "MVC Controller Tests – CompetitionController",
-      "description": "Create src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /competition (status 200, view competition/list, model has competitionList), GET /competition/1 (status 200, view competition/show, model has competition), GET /competition/999999 (status 404, view error/404), GET /competition/add as ADMIN (status 200, view competition/add, model has stadiums, countries, inputCompetitionDto), POST /competition/add as ADMIN with valid data (redirect to /home), POST /competition/add as ADMIN with invalid data (returns view competition/add with error), GET /competition/add as USER (403). Use .with(user(...).roles(...)) and .with(csrf()).",
+      "id": "account-controller-tests",
+      "title": "MVC Controller Tests – AccountController (nieuw)",
+      "description": "Create src/test/java/com/example/callthematch/controller/AccountControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /register (status 200, view account/register, model has inputRegistrationDto), GET /login (status 200, view account/login), POST /register with valid data (redirect to login), POST /register with invalid data (returns view account/register with field errors), POST /register without CSRF token (403).",
       "acceptance_criteria": [
-        "GET /competition returns status 200 with view competition/list and model attribute competitionList",
-        "GET /competition/1 returns status 200 with view competition/show and model attribute competition",
-        "GET /competition/999999 returns status 404 with view error/404",
-        "GET /competition/add as ADMIN returns status 200 with view competition/add and model attributes stadiums, countries, inputCompetitionDto",
-        "POST /competition/add as ADMIN with valid data redirects to /home",
-        "POST /competition/add as ADMIN with invalid data returns view competition/add",
-        "GET /competition/add as USER returns 403",
+        "GET /register returns status 200 with view name account/register and model attribute inputRegistrationDto",
+        "GET /login returns status 200 with view name account/login",
+        "POST /register with valid params redirects to login or success page",
+        "POST /register with blank/invalid params returns view account/register with field errors",
+        "POST /register without CSRF token returns 403",
         "Test class is in src/test/java/com/example/callthematch/controller/ package"
       ],
       "priority": 2,
       "passes": false
     },
     {
-      "id": "home-controller-tests",
-      "title": "MVC Controller Tests – HomeController",
-      "description": "Create src/test/java/com/example/callthematch/controller/HomeControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /home returns status 200, view home, model contains competitionList. Verify this route is accessible without authentication (guest access).",
+      "id": "mvc-controller-tests-supplement",
+      "title": "MVC Controller Tests – Aanvullingen",
+      "description": "Review the moved MVC controller tests in controller/ package and supplement missing scenarios. Ensure each controller test covers at minimum: happy path, validation error return to view, redirect after success, and model attributes. CompetitionControllerTests must cover GET list, GET detail, GET not-found (404), admin add flow (valid + invalid), USER access denied. TeamControllerTests must cover dashboard, create (valid + invalid + duplicate), join (valid + invalid), detail (member vs non-member), owner-only actions. PredictionControllerTests must cover prediction submit flows.",
       "acceptance_criteria": [
-        "GET /home returns status 200 with view name home and model attribute competitionList",
-        "GET /home is accessible without authentication",
-        "Test class is in src/test/java/com/example/callthematch/controller/ package"
+        "CompetitionControllerTests covers GET list, GET detail, GET not-found 404, admin add valid+invalid, USER 403",
+        "TeamControllerTests covers dashboard, create valid+invalid+duplicate, join valid+invalid, detail member vs non-member, owner-only actions",
+        "PredictionControllerTests covers prediction submit flows",
+        "All tests pass with mvn test"
       ],
       "priority": 3,
       "passes": false
     },
     {
-      "id": "ranking-controller-tests",
-      "title": "MVC Controller Tests – RankingController",
-      "description": "Create src/test/java/com/example/callthematch/controller/RankingControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /ranking returns status 200, view ranking/list, model contains teamList. Verify the list has at most 10 entries sorted by score descending. Verify this route is accessible without authentication.",
+      "id": "security-tests-extend",
+      "title": "Security Tests – Uitbreiden",
+      "description": "Extend the moved security/AccessSecurityTests with missing access verifications. Ensure coverage of: guest accessing public routes (200), guest redirected to /login for user-only routes, USER accessing /team/dashboard and /predictions (200), USER getting 403 on admin routes, ADMIN accessing /competition/add (200), ADMIN getting 403 on user-only routes, form-login with correct/incorrect credentials, logout redirect to /login?logout, POST without CSRF returns 403.",
       "acceptance_criteria": [
-        "GET /ranking returns status 200 with view name ranking/list and model attribute teamList",
-        "teamList contains at most 10 entries sorted by score descending",
-        "GET /ranking is accessible without authentication",
-        "Test class is in src/test/java/com/example/callthematch/controller/ package"
+        "Guest can access /home, /ranking, /competition/{id}, /login, /register with status 200",
+        "Guest accessing /team/dashboard is redirected to /login",
+        "USER can access /team/dashboard with status 200",
+        "USER accessing /competition/add gets 403",
+        "ADMIN can access /competition/add with status 200",
+        "ADMIN accessing /team/dashboard gets 403",
+        "Form-login with correct email and password results in authenticated session",
+        "Form-login with incorrect credentials redirects to /login?error",
+        "Logout redirects to /login?logout",
+        "POST without CSRF token returns 403"
       ],
       "priority": 4,
       "passes": false
     },
     {
-      "id": "team-controller-tests",
-      "title": "MVC Controller Tests – TeamController",
-      "description": "Create src/test/java/com/example/callthematch/controller/TeamControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test: GET /team/dashboard as USER (status 200, view team/dashboard, model has teamList, inputTeamDto, inputTeamJoinDto, shows only current user's teams). POST /team/create as USER with valid name (redirect /team/dashboard). POST /team/create with blank name (returns view team/dashboard with field error on name). POST /team/create with duplicate name (returns view with error on name). POST /team/join with valid invite-code (redirect). POST /team/join with invalid code (returns dashboard with field error on inviteCode). GET /team/{id} as member (status 200, view team/show, model has team and isOwner). GET /team/{id} as non-member (403). POST /team/{id}/invite-code as non-owner (403). POST /team/{id}/members/{memberId}/remove as non-owner (403). Use .with(user(...).roles('USER')) and .with(csrf()).",
+      "id": "validation-tests-supplement",
+      "title": "Validatie Tests – Aanvullingen Bestaande Annotaties",
+      "description": "Review moved validation tests in validation/ package and supplement missing positive/negative cases. Add InputTeamJoinDTOValidationTests if missing. Ensure each DTO validation test has both positive (valid input = 0 violations) and negative (invalid input = expected violations) cases. All tests must use jakarta.validation.Validator without Spring context.",
       "acceptance_criteria": [
-        "GET /team/dashboard as USER returns status 200 with view team/dashboard and model attributes teamList, inputTeamDto, inputTeamJoinDto",
-        "Dashboard teamList contains only teams owned by or joined by the authenticated user",
-        "POST /team/create with valid name redirects to /team/dashboard",
-        "POST /team/create with blank name returns view team/dashboard with field error on name",
-        "POST /team/create with duplicate name returns view team/dashboard with error on name",
-        "POST /team/join with valid invite-code redirects to /team/dashboard",
-        "POST /team/join with invalid invite-code returns view team/dashboard with field error on inviteCode",
-        "GET /team/{id} as member returns status 200 with view team/show and model attributes team, isOwner",
-        "GET /team/{id} as non-member returns 403",
-        "POST /team/{id}/invite-code as non-owner returns 403",
-        "POST /team/{id}/members/{memberId}/remove as non-owner returns 403",
-        "Test class is in src/test/java/com/example/callthematch/controller/ package"
+        "Each DTO validation test has both positive and negative cases",
+        "InputTeamJoinDTOValidationTests exists and tests blank inviteCode",
+        "All tests use jakarta.validation.Validator without Spring context",
+        "Test classes are in src/test/java/com/example/callthematch/validation/ package"
       ],
       "priority": 5,
       "passes": false
     },
     {
-      "id": "security-tests",
-      "title": "Security Tests – Role-Based Access",
-      "description": "Create src/test/java/com/example/callthematch/security/AccessSecurityTests.java using @SpringBootTest + @AutoConfigureMockMvc. Verify all route access decisions per role. Guest can open /home, /ranking, /competition/{id}, /login, /register. Guest is redirected to /login for /team/dashboard and /predictions. USER can open /team/dashboard and /predictions but gets 403 on /competition/add, /competition/edit/{id}, /competition/{id}/result. ADMIN can open /competition/add and /competition/edit/{id} but gets 403 on /team/dashboard and /predictions. Test form-login with correct credentials (email + password) authenticates. Test form-login with wrong credentials redirects to /login?error. Test logout redirects to /login?logout. Test POST endpoints without CSRF return 403.",
-      "acceptance_criteria": [
-        "Guest can access /home, /ranking, /competition/{id}, /login, /register with status 200",
-        "Guest accessing /team/dashboard is redirected to /login",
-        "Guest accessing /predictions is redirected to /login",
-        "USER can access /team/dashboard with status 200",
-        "USER accessing /competition/add gets 403",
-        "ADMIN can access /competition/add with status 200",
-        "ADMIN accessing /team/dashboard gets 403",
-        "ADMIN accessing /predictions gets 403",
-        "Form-login with correct email and password results in authenticated session",
-        "Form-login with incorrect credentials redirects to /login?error",
-        "Logout redirects to /login?logout",
-        "POST to /team/create without CSRF token returns 403",
-        "Test class is in src/test/java/com/example/callthematch/security/ package"
-      ],
-      "priority": 6,
-      "passes": false
-    },
-    {
-      "id": "existing-annotation-validation-tests",
-      "title": "Validation Tests – Existing Jakarta Annotations",
-      "description": "Create validation test classes in src/test/java/com/example/callthematch/validation/ for all request DTOs. Use jakarta.validation.Validation.buildDefaultValidatorFactory().getValidator() without Spring context. Create: InputRegistrationDTOValidationTests (test blank fields, invalid email, short password produce violations; valid input produces none), InputTeamDTOValidationTests (blank name produces violation; valid name produces none), InputTeamJoinDTOValidationTests (blank inviteCode produces violation; valid code produces none), InputCompetitionDTOValidationTests (invalid fields produce violations; valid input produces none). Each test must verify both positive (valid input = no violations) and negative (invalid input = expected violations) cases.",
-      "acceptance_criteria": [
-        "InputRegistrationDTOValidationTests: blank/invalid fields produce violations on firstName, lastName, userName, email, password",
-        "InputRegistrationDTOValidationTests: valid input produces zero violations",
-        "InputTeamDTOValidationTests: blank name produces violation; valid name produces zero violations",
-        "InputTeamJoinDTOValidationTests: blank inviteCode produces violation; valid code produces zero violations",
-        "InputCompetitionDTOValidationTests: invalid fields produce violations; valid input produces zero violations",
-        "All tests use jakarta.validation.Validator without Spring context",
-        "Test classes are in src/test/java/com/example/callthematch/validation/ package"
-      ],
-      "priority": 7,
-      "passes": false
-    },
-    {
       "id": "custom-annotation-validator-tests",
-      "title": "Validation Tests – Custom Annotation & Validator Class",
-      "description": "Create test class(es) in src/test/java/com/example/callthematch/validation/ for custom annotation validator(s). Directly instantiate the ConstraintValidator implementation class (e.g. ValidMatchDateValidator or UniqueTeamNameValidator). Call initialize() if needed. Call isValid(value, context) with a Mockito-mocked ConstraintValidatorContext. Verify: isValid with a valid value returns true, isValid with an invalid value returns false, isValid with null returns true (null-safe convention). At least one custom annotation + validator class must be fully tested.",
+      "title": "Validatie Tests – Custom Annotatie & Validator Klasse",
+      "description": "Create test class(es) in src/test/java/com/example/callthematch/validation/ for custom annotation validator(s). Directly instantiate the ConstraintValidator implementation class. Call initialize() if needed. Call isValid(value, context) with a Mockito-mocked ConstraintValidatorContext. Verify: isValid with valid value returns true, isValid with invalid value returns false, isValid with null returns true (null-safe convention). At least one custom annotation + validator class must be fully tested.",
       "acceptance_criteria": [
         "Validator class is instantiated directly without Spring context",
         "isValid(validValue, mockContext) returns true",
@@ -175,13 +130,13 @@
         "At least 1 custom annotation validator is fully tested",
         "Test class is in src/test/java/com/example/callthematch/validation/ package"
       ],
-      "priority": 8,
+      "priority": 6,
       "passes": false
     },
     {
       "id": "rest-controller-tests",
       "title": "REST Controller Tests",
-      "description": "Create test class(es) in src/test/java/com/example/callthematch/restcontroller/ for REST endpoints once they exist. Use @SpringBootTest + @AutoConfigureMockMvc with MockMvc. Test: GET on public REST endpoint returns 200 with JSON body, GET on non-existing resource returns 404, POST/PUT/DELETE without authentication returns 401 or 403, POST with valid JSON as authorized user returns 201 or 200, POST with invalid JSON returns 400 with validation errors. Verify JSON structure with jsonPath assertions.",
+      "description": "Create test class(es) in src/test/java/com/example/callthematch/restcontroller/ for REST endpoints once they exist. Use @WebMvcTest or @SpringBootTest + @AutoConfigureMockMvc with MockMvc. Test: GET on public REST endpoint returns 200 with JSON body, GET on non-existing resource returns 404, POST/PUT/DELETE without authentication returns 401 or 403, POST with valid JSON as authorized user returns 201 or 200, POST with invalid JSON returns 400 with validation errors. Verify JSON structure with jsonPath assertions.",
       "acceptance_criteria": [
         "GET on public REST endpoint returns 200 with JSON body verified by jsonPath",
         "GET on non-existing resource returns 404",
@@ -191,9 +146,8 @@
         "JSON response structure is verified with jsonPath assertions",
         "Test class is in src/test/java/com/example/callthematch/restcontroller/ package"
       ],
-      "priority": 9,
+      "priority": 7,
       "passes": false
     }
   ]
 }
-

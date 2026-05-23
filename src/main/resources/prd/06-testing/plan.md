@@ -4,17 +4,16 @@
 
 ## Sources
 
-1. Existing `call-the-match` codebase: existing controllers, validators, security configuration and test classes that the test block must cover.
+1. Existing `call-the-match` codebase: existing controllers, validators, security configuration and test classes that must be reorganized.
 2. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_Flow_JUnit.pdf`: school JUnit and MockMvc guidance for Spring MVC controller tests.
 3. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_MultipleRow.pdf`: controller, path-variable, not-found and MVC test patterns.
 4. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Security_JDBC.pdf`: form login, role access and Spring Security test expectations.
 5. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\webservices_REST.pdf`: REST controller behavior and JSON test expectations.
-6. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Multirow\Spring_Boot_list_crud-opl\src\test\java\com\example\spring_boot_list_crudopl\controller\ContactControllerTest.java`: MVC MockMvc example for status, view, model and error assertions.
+6. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Multirow\Spring_Boot_list_crud-opl\src\test\java\com\example\spring_boot_list_crudopl\controller\ContactControllerTest.java`: MVC MockMvc example.
 7. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_Security\Spring_Boot_security_JPA\src\test\java\com\example\spring_boot_security_jpa\controller\SecurityTest.java`: role-aware security test example.
 8. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_ErrorMessages\Spring_Boot_i18n_Product2`: validator, i18n error-message and MVC validation examples.
 9. `C:\Users\Armour\Documents\HOGENT\EWD\WorkspacesIntelij\EWDJ_REST\Spring_Boot_rest_fruit_start\src\test\java\com\example\spring_boot_rest_fruit_start\controller\FruitRestControllerTest.java`: primary REST MockMvc and `jsonPath` test example.
 10. Git repository: https://github.com/HeyEdis/call-the-match.git.
-11. User decisions from this conversation: custom annotations may arrive later but their required validation coverage remains in scope.
 
 ## Architectural Decisions
 
@@ -24,178 +23,146 @@
 - **Security**: email login, CSRF, role-based access (USER, ADMIN), 403 handler, form-login page.
 - **Validation/i18n**: bestaande annotaties op DTOs, custom annotatie(s) en validator-klasse(n) worden later toegevoegd.
 - **REST/WebClient**: REST controllers bestaan nog niet; tests worden geschreven zodra die bestaan.
-- **Testing**: tests in aparte folders: `controller/`, `restcontroller/`, `security/`, `validation/`.
+- **Testing**: tests reorganiseren naar aparte folders: `controller/`, `restcontroller/`, `security/`, `validation/`. Service tests blijven in `service/`.
 
 ---
 
-## Phase 1: MVC Controller Tests – AccountController
+## Phase 1: Reorganisatie – Verplaats Bestaande Tests Naar Juiste Packages
+
+**User stories**: 1, 3, 4
+
+### What To Build
+
+Verplaats alle bestaande testklassen naar de school-conforme mappenstructuur. Geen nieuwe testlogica schrijven, alleen verplaatsen, package declaratie aanpassen en hernoemen waar nodig.
+
+Verplaatsingen:
+- `AccessSecurityMvcTests` → `security/AccessSecurityTests`
+- `PublicBrowseMvcTests` → `controller/PublicBrowseControllerTests`
+- `TeamManagementMvcTests` → `controller/TeamControllerTests`
+- `MatchManagementMvcTests` → `controller/CompetitionControllerTests`
+- `PredictionMvcTests` → `controller/PredictionControllerTests`
+- `dto/InputRegistrationDTOValidationTests` → `validation/InputRegistrationDTOValidationTests`
+- `dto/InputTeamDTOValidationTests` → `validation/InputTeamDTOValidationTests`
+- `dto/InputCompetitionDTOValidationTests` → `validation/InputCompetitionDTOValidationTests`
+- `dto/InputPredictionDTOValidationTests` → `validation/InputPredictionDTOValidationTests`
+- `validator/CompetitionValidatorTests` → `validation/CompetitionValidatorTests`
+
+### Acceptance Criteria
+
+- [ ] Alle verplaatste tests compileren en slagen na verplaatsing.
+- [ ] Package declaraties zijn correct aangepast.
+- [ ] Oude bestanden in root package en `dto/`/`validator/` zijn verwijderd.
+- [ ] `service/` tests blijven onaangeroerd op hun huidige locatie.
+- [ ] `CallTheMatchApplicationTests` blijft in root package.
+- [ ] `mvn test` slaagt volledig na reorganisatie.
+
+---
+
+## Phase 2: MVC Controller Tests – AccountController (nieuw)
 
 **User stories**: 1
 
 ### What To Build
 
-Tests voor `AccountController` in `src/test/java/com/example/callthematch/controller/AccountControllerTests.java`. Dekt registratie-formulier tonen, succesvolle registratie redirect, en validatiefouten terug naar register view.
+Nieuwe test `src/test/java/com/example/callthematch/controller/AccountControllerTests.java` voor register/login MVC flows.
 
 ### Acceptance Criteria
 
 - [ ] GET `/register` retourneert status 200, view `account/register`, model bevat `inputRegistrationDto`.
 - [ ] GET `/login` retourneert status 200, view `account/login`.
-- [ ] POST `/register` met geldige data redirectt naar `/login` (of verwachte success-route).
-- [ ] POST `/register` met ongeldige data retourneert view `account/register` met field errors op `firstName`, `lastName`, `userName`, `email`, `password`.
+- [ ] POST `/register` met geldige data redirectt naar `/login`.
+- [ ] POST `/register` met ongeldige data retourneert view `account/register` met field errors.
 - [ ] POST `/register` zonder CSRF token geeft 403.
 
 ---
 
-## Phase 2: MVC Controller Tests – CompetitionController
+## Phase 3: MVC Controller Tests – Aanvullingen
 
 **User stories**: 1
 
 ### What To Build
 
-Tests voor `CompetitionController` in `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`. Dekt publieke lijst/detail en admin add-flow.
+Beoordeel de verplaatste MVC controller tests en vul ontbrekende scenario's aan. Check of elke controller minstens happy path, validatiefout-terugkeer, redirect en model-attributen dekt.
 
 ### Acceptance Criteria
 
-- [ ] GET `/competition` retourneert status 200, view `competition/list`, model bevat `competitionList`.
-- [ ] GET `/competition/1` retourneert status 200, view `competition/show`, model bevat `competition`.
-- [ ] GET `/competition/999999` retourneert status 404, view `error/404`.
-- [ ] GET `/competition/add` als ADMIN retourneert status 200, view `competition/add`, model bevat `stadiums`, `countries`, `inputCompetitionDto`.
-- [ ] POST `/competition/add` als ADMIN met geldige data redirectt naar `/home`.
-- [ ] POST `/competition/add` als ADMIN met ongeldige data retourneert view `competition/add` met foutmelding.
-- [ ] GET `/competition/add` als USER retourneert 403.
+- [ ] `CompetitionControllerTests` dekt GET list, GET detail, GET not-found (404), admin add flow (valid + invalid), USER access denied.
+- [ ] `TeamControllerTests` dekt dashboard, create (valid + invalid + duplicate), join (valid + invalid), detail (member vs non-member), owner-only acties.
+- [ ] `PredictionControllerTests` dekt prediction submit flows.
+- [ ] Alle tests slagen met `mvn test`.
 
 ---
 
-## Phase 3: MVC Controller Tests – HomeController
-
-**User stories**: 1
-
-### What To Build
-
-Tests voor `HomeController` in `src/test/java/com/example/callthematch/controller/HomeControllerTests.java`. Dekt de publieke homepagina.
-
-### Acceptance Criteria
-
-- [ ] GET `/home` retourneert status 200, view `home`, model bevat `competitionList`.
-- [ ] GET `/home` is toegankelijk als guest (geen authenticatie nodig).
-
----
-
-## Phase 4: MVC Controller Tests – RankingController
-
-**User stories**: 1
-
-### What To Build
-
-Tests voor `RankingController` in `src/test/java/com/example/callthematch/controller/RankingControllerTests.java`. Dekt de publieke ranking pagina.
-
-### Acceptance Criteria
-
-- [ ] GET `/ranking` retourneert status 200, view `ranking/list`, model bevat `teamList`.
-- [ ] Ranking lijst bevat maximaal 10 teams, gesorteerd op score (aflopend).
-- [ ] GET `/ranking` is toegankelijk als guest.
-
----
-
-## Phase 5: MVC Controller Tests – TeamController
-
-**User stories**: 1
-
-### What To Build
-
-Tests voor `TeamController` in `src/test/java/com/example/callthematch/controller/TeamControllerTests.java`. Dekt dashboard, create, join, detail, invite-code regeneratie en member removal.
-
-### Acceptance Criteria
-
-- [ ] GET `/team/dashboard` als USER retourneert status 200, view `team/dashboard`, model bevat `teamList`, `inputTeamDto`, `inputTeamJoinDto`.
-- [ ] GET `/team/dashboard` toont alleen teams van de ingelogde user.
-- [ ] POST `/team/create` als USER met geldige naam redirectt naar `/team/dashboard`.
-- [ ] POST `/team/create` als USER met lege naam retourneert view `team/dashboard` met field error op `name`.
-- [ ] POST `/team/create` met duplicate naam retourneert view `team/dashboard` met error op `name`.
-- [ ] POST `/team/join` als USER met geldige invite-code redirectt naar `/team/dashboard`.
-- [ ] POST `/team/join` als USER met ongeldige invite-code retourneert view `team/dashboard` met field error op `inviteCode`.
-- [ ] GET `/team/{id}` als member retourneert status 200, view `team/show`, model bevat `team` en `isOwner`.
-- [ ] GET `/team/{id}` als non-member retourneert 403.
-- [ ] POST `/team/{id}/invite-code` als owner redirectt succesvol.
-- [ ] POST `/team/{id}/invite-code` als non-owner retourneert 403.
-- [ ] POST `/team/{id}/members/{memberId}/remove` als non-owner retourneert 403.
-
----
-
-## Phase 6: Security Tests
+## Phase 4: Security Tests – Uitbreiden
 
 **User stories**: 3
 
 ### What To Build
 
-Security tests in `src/test/java/com/example/callthematch/security/AccessSecurityTests.java`. Verificatie van alle route-toegangsbeslissingen per rol.
+Breid de verplaatste `security/AccessSecurityTests` uit met ontbrekende access-verificaties.
 
 ### Acceptance Criteria
 
 - [ ] Guest kan public routes openen: `/home`, `/ranking`, `/competition/{id}`, `/login`, `/register`.
-- [ ] Guest wordt geredirect naar `/login` bij user-only routes (`/team/**`, `/predictions/**`).
+- [ ] Guest wordt geredirect naar `/login` bij user-only routes.
 - [ ] USER kan `/team/dashboard` en `/predictions` openen.
-- [ ] USER krijgt 403 op admin-routes (`/competition/add`, `/competition/edit/**`, `/competition/*/result`).
-- [ ] ADMIN kan `/competition/add` en `/competition/edit/{id}` openen.
-- [ ] ADMIN krijgt 403 op user-only routes (`/team/**`, `/predictions/**`).
-- [ ] Form-login met correcte credentials (email + password) resulteert in authenticated session.
-- [ ] Form-login met onjuiste credentials redirect naar `/login?error`.
+- [ ] USER krijgt 403 op admin-routes.
+- [ ] ADMIN kan `/competition/add` openen.
+- [ ] ADMIN krijgt 403 op user-only routes.
+- [ ] Form-login met correcte/onjuiste credentials werkt correct.
 - [ ] Logout redirect naar `/login?logout`.
-- [ ] POST endpoints zonder CSRF token geven 403.
+- [ ] POST zonder CSRF geeft 403.
 
 ---
 
-## Phase 7: Validatie Tests – Bestaande Annotaties
+## Phase 5: Validatie Tests – Aanvullingen Bestaande Annotaties
 
 **User stories**: 4
 
 ### What To Build
 
-Validatie unit tests in `src/test/java/com/example/callthematch/validation/` voor alle request DTOs met `jakarta.validation.Validator`. Geen Spring context nodig.
+Beoordeel de verplaatste validatie tests in `validation/` en vul ontbrekende positieve/negatieve cases aan. Voeg `InputTeamJoinDTOValidationTests` toe als die ontbreekt.
 
 ### Acceptance Criteria
 
-- [ ] `InputRegistrationDTOValidationTests`: ongeldige velden (blank, invalid email, kort wachtwoord) geven violations; geldige input geeft geen violations.
-- [ ] `InputTeamDTOValidationTests`: lege naam geeft violation; geldige naam geeft geen violation.
-- [ ] `InputTeamJoinDTOValidationTests`: lege invite-code geeft violation; geldige code geeft geen violation.
-- [ ] `InputCompetitionDTOValidationTests`: ongeldige velden geven violations; geldige input geeft geen violations.
-- [ ] Elke test verifieert zowel het negatieve (ongeldige input) als het positieve (geldige input) geval.
+- [ ] Elke DTO-validatietest heeft zowel positief (geldige input = 0 violations) als negatief (ongeldige input = verwachte violations) cases.
+- [ ] `InputTeamJoinDTOValidationTests` bestaat en test blank inviteCode.
+- [ ] Alle tests gebruiken `jakarta.validation.Validator` zonder Spring context.
 
 ---
 
-## Phase 8: Validatie Tests – Custom Annotatie(s) & Validator Klasse(n)
+## Phase 6: Validatie Tests – Custom Annotatie(s) & Validator Klasse(n)
 
 **User stories**: 5, 6
 
 ### What To Build
 
-Tests in `src/test/java/com/example/callthematch/validation/` voor custom annotatie(s) en hun validator-klassen. Zodra de custom annotatie (bijv. `@ValidMatchDate`) en validator-klasse worden aangemaakt, schrijf een test die de validator direct instantieert.
+Tests voor custom annotatie(s) en hun validator-klassen zodra die bestaan. Direct instantiëren zonder Spring context.
 
 ### Acceptance Criteria
 
-- [ ] Validator-klasse wordt direct geïnstantieerd (zonder Spring context).
+- [ ] Validator-klasse wordt direct geïnstantieerd.
 - [ ] `isValid(geldigeWaarde, context)` retourneert `true`.
 - [ ] `isValid(ongeldigeWaarde, context)` retourneert `false`.
-- [ ] `isValid(null, context)` retourneert `true` (null-handling conventie).
-- [ ] ConstraintValidatorContext mag gemockt worden met Mockito.
-- [ ] Minstens 1 custom annotatie + validator is volledig getest.
+- [ ] `isValid(null, context)` retourneert `true`.
+- [ ] ConstraintValidatorContext gemockt met Mockito.
+- [ ] Minstens 1 custom annotatie + validator volledig getest.
 
 ---
 
-## Phase 9: REST Controller Tests
+## Phase 7: REST Controller Tests
 
 **User stories**: 2
 
 ### What To Build
 
-Tests in `src/test/java/com/example/callthematch/restcontroller/` voor REST endpoints zodra die bestaan. MockMvc met JSON assertions.
+Tests voor REST endpoints zodra die bestaan. MockMvc met JSON assertions.
 
 ### Acceptance Criteria
 
 - [ ] GET op public REST endpoint retourneert 200 + JSON body.
 - [ ] GET op niet-bestaande resource retourneert 404.
 - [ ] POST/PUT/DELETE zonder authenticatie retourneert 401 of 403.
-- [ ] POST met geldige JSON body als geautoriseerde user retourneert 201 of 200.
-- [ ] POST met ongeldige JSON body retourneert 400 met validation errors.
-- [ ] JSON response structuur wordt geverifieerd met `jsonPath`.
-
+- [ ] POST met geldige JSON retourneert 201 of 200.
+- [ ] POST met ongeldige JSON retourneert 400.
+- [ ] JSON structuur geverifieerd met `jsonPath`.

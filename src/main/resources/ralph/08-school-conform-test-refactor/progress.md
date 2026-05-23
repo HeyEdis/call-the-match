@@ -214,3 +214,26 @@ Review cleanup:
 - Moved repeated competition, team, and prediction controller-test fixtures into `src/test/java/com/example/callthematch/support`.
 - Updated the affected controller tests to use the shared support fixtures instead of duplicating local object creation.
 - Removed completed competition, team, and prediction controller items from `TODO.md`; remaining Ralph TODOs now focus on security cleanup and final verification.
+
+### security-tests-school-style-cleanup - Security Tests School-Style Cleanup
+
+What changed:
+
+- Split grouped user/admin route assertions in `AccessSecurityTests` into smaller, traceable tests.
+- Added `@WithAnonymousUser` to guest route tests.
+- Added `@WithMockUser` annotations to user/admin role tests to mirror the school security examples.
+- Preserved full `@SpringBootTest` + `@AutoConfigureMockMvc` security wiring for form login, logout, CSRF, and real route access checks.
+- Kept request-level `user(...)` principals on authenticated MockMvc route requests because this Spring Boot 4 full-context setup did not apply `@WithMockUser` alone to those requests during verification.
+- Kept form login with `email` as the user parameter and retained logout/CSRF coverage.
+
+Files changed:
+
+- `src/test/java/com/example/callthematch/security/AccessSecurityTests.java`
+- `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
+- `src/main/resources/ralph/08-school-conform-test-refactor/TODO.md`
+- `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
+
+Verification:
+
+- Initial pure-annotation attempt failed because authenticated route requests were treated as anonymous redirects.
+- `.\mvnw.cmd "-Dtest=AccessSecurityTests" test` passed after retaining request-level principals: 13 tests, 0 failures, 0 errors.

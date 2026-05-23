@@ -1,11 +1,6 @@
 package com.example.callthematch.controller;
 
-import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
-import com.example.callthematch.exception.CompetitionNotFound;
-import com.example.callthematch.service.CompetitionService;
-import com.example.callthematch.service.CountryService;
-import com.example.callthematch.service.StadiumService;
 import com.example.callthematch.service.TeamService;
 import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
@@ -17,7 +12,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
-import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,39 +20,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest({HomeController.class, RankingController.class, CompetitionController.class})
-class PublicBrowseControllerTests {
+@WebMvcTest(RankingController.class)
+class RankingControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private CompetitionService competitionService;
-
-    @MockitoBean
     private TeamService teamService;
 
     @MockitoBean
-    private StadiumService stadiumService;
-
-    @MockitoBean
-    private CountryService countryService;
-
-    @MockitoBean
     private CompetitionValidator competitionValidator;
-
-    @Test
-    void homeShowsPublicScheduleModel() throws Exception {
-        List<CompetitionDTO> competitions = List.of(competitionDto(1L));
-        when(competitionService.getAllCompetitions()).thenReturn(competitions);
-
-        mockMvc.perform(get("/home"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("home"))
-                .andExpect(model().attribute("competitionList", competitions));
-
-        verify(competitionService).getAllCompetitions();
-    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -81,29 +53,6 @@ class PublicBrowseControllerTests {
         assertThat(teams).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
                 Integer.compare(right, left));
         verify(teamService).getTop10Teams();
-    }
-
-    @Test
-    void competitionDetailShowsPublicFixtureAndFriendlyErrors() throws Exception {
-        CompetitionDTO competition = competitionDto(1L);
-        when(competitionService.findById(1L)).thenReturn(competition);
-        when(competitionService.findById(999999L)).thenThrow(new CompetitionNotFound(999999L));
-
-        mockMvc.perform(get("/competition/1"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("competition/show"))
-                .andExpect(model().attribute("competition", competition));
-
-        mockMvc.perform(get("/competition/999999"))
-                .andExpect(status().isNotFound())
-                .andExpect(view().name("error/404"));
-
-        mockMvc.perform(get("/competition/not-a-number"))
-                .andExpect(status().isNotFound())
-                .andExpect(view().name("error/404"));
-
-        verify(competitionService).findById(1L);
-        verify(competitionService).findById(999999L);
     }
 
 }

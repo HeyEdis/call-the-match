@@ -199,7 +199,7 @@
       "title": "Final Verification And Plan Alignment",
       "description": "Run the final verification pass and align plan/progress artifacts with what is actually implemented. The final suite should be easy to defend: each required school category should point to a concrete local exercise-project style.",
       "acceptance_criteria": [
-        "All targeted controller tests pass",
+        "All controller tests pass",
         "Security tests pass",
         "REST GET tests pass",
         "Validation tests pass",

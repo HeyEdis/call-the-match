@@ -45,7 +45,8 @@ What changed:
 - Used `flashAttr(...)` for DTO-backed valid and invalid registration form submissions.
 - Verified invalid registration does not call `userService.register(...)`.
 - Kept missing-CSRF registration coverage by importing the Spring Boot 4 servlet security auto-configuration and project `SecurityConfig` into the account slice.
-- Converted `PublicBrowseControllerTests` to a focused `@WebMvcTest` slice for `HomeController`, `RankingController`, and `CompetitionController`.
+- Converted public browse coverage into focused `@WebMvcTest` slices for `HomeControllerTests` and `RankingControllerTests`.
+- Moved public competition detail, not-found, and type-mismatch coverage into `CompetitionControllerTests`.
 - Mocked `CompetitionService` and `TeamService`, asserted view/model behavior, and verified service calls.
 - Added nested DTO fixture data needed for Thymeleaf rendering in the sliced public match views.
 
@@ -58,13 +59,15 @@ Decisions:
 Files changed:
 
 - `src/test/java/com/example/callthematch/controller/AccountControllerTests.java`
-- `src/test/java/com/example/callthematch/controller/PublicBrowseControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/HomeControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/RankingControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`
 - `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
 - `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
 
 Verification:
 
-- `.\mvnw.cmd "-Dtest=AccountControllerTests,PublicBrowseControllerTests" test` passed: 8 tests, 0 failures, 0 errors.
+- `.\mvnw.cmd "-Dtest=AccountControllerTests,HomeControllerTests,RankingControllerTests,CompetitionControllerTests" test` passed.
 
 ### rest-get-test-scope-verification - REST GET Test Scope Verification
 
@@ -237,3 +240,48 @@ Verification:
 
 - Initial pure-annotation attempt failed because authenticated route requests were treated as anonymous redirects.
 - `.\mvnw.cmd "-Dtest=AccessSecurityTests" test` passed after retaining request-level principals: 13 tests, 0 failures, 0 errors.
+
+### final-verification-and-plan-alignment - Final Verification And Plan Alignment
+
+What changed:
+
+- Split the old combined public browse controller test into dedicated `HomeControllerTests` and `RankingControllerTests`.
+- Kept public competition detail and friendly error coverage with `CompetitionControllerTests`, where those routes belong.
+- Updated the plan artifacts so they no longer reference `PublicBrowseControllerTests` as the final public-browse test class.
+- Marked the final verification task as passed after targeted category checks and the full suite passed.
+- Cleared the final open Ralph TODO.
+
+Decisions:
+
+- REST coverage remains explicitly scoped to implemented public GET endpoints; no plan/progress text claims POST/PUT/DELETE REST mutation coverage.
+- `AccessSecurityTests` remains a full `@SpringBootTest` because it verifies real security wiring: public/protected routes, login with email, logout, role restrictions, and CSRF behavior.
+- Service tests remain extra coverage and are not presented as substitutes for MVC, security, REST, DTO validation, custom annotation validator, or Spring validator tests.
+
+Files changed:
+
+- `src/test/java/com/example/callthematch/controller/HomeControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/RankingControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`
+- `src/test/java/com/example/callthematch/controller/PublicBrowseControllerTests.java`
+- `src/main/resources/prd/08-school-conform-test-refactor/plan.md`
+- `src/main/resources/ralph/08-school-conform-test-refactor/progress.md`
+- `src/main/resources/ralph/08-school-conform-test-refactor/TODO.md`
+- `src/main/resources/plan/08-school-conform-test-refactor/plan.json`
+
+Verification:
+
+- MVC controller tests: `.\mvnw.cmd "-Dtest=AccountControllerTests,HomeControllerTests,RankingControllerTests,CompetitionControllerTests,TeamControllerTests,PredictionControllerTests" test` passed: 33 tests, 0 failures, 0 errors.
+- Security tests: `.\mvnw.cmd "-Dtest=AccessSecurityTests" test` passed: 13 tests, 0 failures, 0 errors.
+- REST GET tests: `.\mvnw.cmd "-Dtest=CompetitionRestControllerTests,StadiumRestControllerTests" test` passed: 5 tests, 0 failures, 0 errors.
+- Validation tests: `.\mvnw.cmd "-Dtest=*ValidationTests,CompetitionValidatorTests,StadiumChecksumValidatorTests" test` passed: 23 tests, 0 failures, 0 errors.
+- Full suite: `.\mvnw.cmd test` passed: 91 tests, 0 failures, 0 errors.
+
+Final category summary:
+
+- MVC: `AccountControllerTests`, `HomeControllerTests`, `RankingControllerTests`, `CompetitionControllerTests`, `TeamControllerTests`, and `PredictionControllerTests`.
+- Security: `AccessSecurityTests`.
+- REST GET: `CompetitionRestControllerTests` and `StadiumRestControllerTests`.
+- DTO validation: `*ValidationTests`.
+- Custom annotation validator: `StadiumChecksumValidatorTests`.
+- Spring validator class: `CompetitionValidatorTests`.
+- Extra service coverage: service-layer tests under `src/test/java/com/example/callthematch/service`.

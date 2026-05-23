@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -33,24 +32,19 @@ class RankingControllerTests {
     private CompetitionValidator competitionValidator;
 
     @Test
-    @SuppressWarnings("unchecked")
     void rankingShowsPublicTopTenInScoreOrder() throws Exception {
         List<PublicRankingDTO> ranking = List.of(
                 new PublicRankingDTO("Winners", 21, 4),
                 new PublicRankingDTO("Chasers", 13, 3));
         when(teamService.getTop10Teams()).thenReturn(ranking);
 
-        MvcResult result = mockMvc.perform(get("/ranking"))
+        mockMvc.perform(get("/ranking"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ranking/list"))
-                .andExpect(model().attribute("teamList", ranking))
-                .andReturn();
+                .andExpect(model().attribute("teamList", ranking));
 
-        List<PublicRankingDTO> teams =
-                (List<PublicRankingDTO>) result.getModelAndView().getModel().get("teamList");
-
-        assertThat(teams).hasSizeLessThanOrEqualTo(10);
-        assertThat(teams).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
+        assertThat(ranking).hasSizeLessThanOrEqualTo(10);
+        assertThat(ranking).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
                 Integer.compare(right, left));
         verify(teamService).getTop10Teams();
     }

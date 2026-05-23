@@ -47,7 +47,7 @@ class AccountControllerTests {
     private CompetitionValidator competitionValidator;
 
     @Test
-    void getRegisterReturnsFormWithModel() throws Exception {
+    void registerViewExists() throws Exception {
         mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
@@ -55,14 +55,14 @@ class AccountControllerTests {
     }
 
     @Test
-    void getLoginReturnsLoginView() throws Exception {
+    void loginViewExists() throws Exception {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/login"));
     }
 
     @Test
-    void postRegisterWithValidDataRedirectsToLogin() throws Exception {
+    void validRegistrationRedirectsToLoginView() throws Exception {
         InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
                 "Test",
                 "User",
@@ -80,7 +80,7 @@ class AccountControllerTests {
     }
 
     @Test
-    void postRegisterWithInvalidDataReturnsRegisterViewWithFieldErrors() throws Exception {
+    void invalidRegistrationReturnsRegisterViewWithFieldErrors() throws Exception {
         InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
                 "",
                 "",
@@ -101,7 +101,7 @@ class AccountControllerTests {
     }
 
     @Test
-    void postRegisterWithoutCsrfTokenReturnsForbidden() throws Exception {
+    void forbiddenToRegisterWithoutCSRFToken() throws Exception {
         mockMvc.perform(post("/register")
                         .param("firstName", "Test")
                         .param("lastName", "User")

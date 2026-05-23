@@ -78,7 +78,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void publicCompetitionListAndDetailAreAccessibleToGuest() throws Exception {
+    void guestCanAccessPublicCompetitionRoutes() throws Exception {
         List<CompetitionDTO> competitions = List.of(competitionDto(1L));
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.getAllCompetitions()).thenReturn(competitions);
@@ -99,18 +99,21 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void publicCompetitionDetailKeepsFriendlyNotFoundAndTypeMismatchErrors() throws Exception {
+    void invalidCompetitionIdLookup() throws Exception {
         when(competitionService.findById(999999L)).thenThrow(new CompetitionNotFound(999999L));
 
         mockMvc.perform(get("/competition/999999"))
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("error/404"));
 
+        verify(competitionService).findById(999999L);
+    }
+
+    @Test
+    void competitionTypeMismatchLookup() throws Exception {
         mockMvc.perform(get("/competition/not-a-number"))
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("error/404"));
-
-        verify(competitionService).findById(999999L);
     }
 
     @Test
@@ -121,13 +124,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void adminAddEditAndResultFormsExposeSchoolMvcModels() throws Exception {
-        InputCompetitionDTO inputCompetitionDto = inputCompetitionDto(3L);
-        InputCompetitionResultDTO inputCompetitionResultDto = new InputCompetitionResultDTO(2, 1);
-        when(competitionService.findInputById(3L)).thenReturn(inputCompetitionDto);
-        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
-        when(competitionService.findInputResultById(3L)).thenReturn(inputCompetitionResultDto);
-
+    void adminAddFormExposesModelAndRendersStadiumsCorrectly() throws Exception {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
@@ -137,6 +134,12 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/js/matchStadiumChecksum.js")))
                 .andExpect(content().string(containsString("New York - MetLife Stadium")))
                 .andExpect(content().string(not(containsString("MetLife Stadium - New York - 1001"))));
+    }
+
+    @Test
+    void adminEditFormExposesCorrectModelAttributes() throws Exception {
+        InputCompetitionDTO inputCompetitionDto = inputCompetitionDto(3L);
+        when(competitionService.findInputById(3L)).thenReturn(inputCompetitionDto);
 
         mockMvc.perform(get("/competition/edit/3").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
@@ -144,27 +147,29 @@ class CompetitionControllerTests {
                 .andExpect(model().attribute("inputCompetitionDto", inputCompetitionDto))
                 .andExpect(model().attributeExists("countries", "stadiums"));
 
+        verify(competitionService).findInputById(3L);
+    }
+
+    @Test
+    void adminResultFormExposesCorrectModelAttributes() throws Exception {
+        InputCompetitionResultDTO inputCompetitionResultDto = new InputCompetitionResultDTO(2, 1);
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
+        when(competitionService.findInputResultById(3L)).thenReturn(inputCompetitionResultDto);
+
         mockMvc.perform(get("/competition/3/result").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/result"))
                 .andExpect(model().attribute("inputCompetitionResultDto", inputCompetitionResultDto))
                 .andExpect(model().attributeExists("competition"));
 
-        verify(stadiumService, org.mockito.Mockito.times(2)).getAllStadiums();
-        verify(countryService, org.mockito.Mockito.times(2)).getAllCountries();
-        verify(competitionService).findInputById(3L);
         verify(competitionService).findById(3L);
         verify(competitionService).findInputResultById(3L);
     }
 
     @Test
-    void validAdminAddEditAndResultSubmissionsCallServicesAndRedirect() throws Exception {
+    void validAdminAddSubmissionCallsServiceAndRedirectsToHome() throws Exception {
         InputCompetitionDTO newCompetition = inputCompetitionDto(null);
-        InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
-        InputCompetitionResultDTO resultDto = new InputCompetitionResultDTO(2, 1);
         when(competitionService.add(newCompetition)).thenReturn(4L);
-        when(competitionService.update(existingCompetition)).thenReturn(3L);
-        when(competitionService.updateResult(3L, resultDto)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/add")
                         .with(user("admin@example.com").roles("ADMIN"))
@@ -173,12 +178,28 @@ class CompetitionControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
 
+        verify(competitionService).add(newCompetition);
+    }
+
+    @Test
+    void validAdminEditSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
+        InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
+        when(competitionService.update(existingCompetition)).thenReturn(3L);
+
         mockMvc.perform(post("/competition/edit/3")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
                         .flashAttr("inputCompetitionDto", existingCompetition))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
+
+        verify(competitionService).update(existingCompetition);
+    }
+
+    @Test
+    void validAdminResultSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
+        InputCompetitionResultDTO resultDto = new InputCompetitionResultDTO(2, 1);
+        when(competitionService.updateResult(3L, resultDto)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
@@ -187,15 +208,11 @@ class CompetitionControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
 
-        verify(competitionService).add(newCompetition);
-        verify(competitionService).update(existingCompetition);
         verify(competitionService).updateResult(3L, resultDto);
     }
 
     @Test
-    void invalidAdminAddEditAndResultSubmissionsReturnFieldErrorsAndDoNotWrite() throws Exception {
-        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
-
+    void invalidAdminAddSubmissionReturnsFieldErrorsAndDoesNotWrite() throws Exception {
         mockMvc.perform(post("/competition/add")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
@@ -206,6 +223,11 @@ class CompetitionControllerTests {
                 .andExpect(model().attributeHasFieldErrors(
                         "inputCompetitionDto", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
 
+        verify(competitionService, never()).add(any(InputCompetitionDTO.class));
+    }
+
+    @Test
+    void invalidAdminEditSubmissionReturnsFieldErrorsAndDoesNotWrite() throws Exception {
         mockMvc.perform(post("/competition/edit/3")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
@@ -215,6 +237,13 @@ class CompetitionControllerTests {
                 .andExpect(model().attributeExists("countries", "stadiums"))
                 .andExpect(model().attributeHasFieldErrors(
                         "inputCompetitionDto", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
+
+        verify(competitionService, never()).update(any(InputCompetitionDTO.class));
+    }
+
+    @Test
+    void invalidAdminResultSubmissionReturnsFieldErrorsAndDoesNotWrite() throws Exception {
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
 
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
@@ -225,24 +254,25 @@ class CompetitionControllerTests {
                 .andExpect(model().attributeExists("competition"))
                 .andExpect(model().attributeHasFieldErrors("inputCompetitionResultDto", "scoreA", "scoreB"));
 
-        verify(competitionService, never()).add(any(InputCompetitionDTO.class));
-        verify(competitionService, never()).update(any(InputCompetitionDTO.class));
         verify(competitionService, never()).updateResult(any(), any(InputCompetitionResultDTO.class));
     }
 
     @Test
-    void competitionAdminFormsKeepFriendlyNotFoundAndTypeMismatchErrors() throws Exception {
+    void adminEditFormReturns404ForUnknownCompetitionId() throws Exception {
         when(competitionService.findInputById(999999L)).thenThrow(new CompetitionNotFound(999999L));
 
         mockMvc.perform(get("/competition/edit/999999").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("error/404"));
 
+        verify(competitionService).findInputById(999999L);
+    }
+
+    @Test
+    void adminResultFormReturns404ForTypeMismatchId() throws Exception {
         mockMvc.perform(get("/competition/not-a-number/result").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("error/404"));
-
-        verify(competitionService).findInputById(999999L);
     }
 
 }

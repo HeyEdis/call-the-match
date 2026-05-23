@@ -36,7 +36,7 @@ class StadiumRestControllerTests {
     private StadiumService stadiumService;
 
     @Test
-    void testGetStadiumCapacity_returnsCapacity() throws Exception {
+    void getStadiumCapacityReturnsCapacityForValidId() throws Exception {
         Mockito.when(stadiumService.findCapacityById(1L))
                 .thenReturn(new StadiumCapacityDTO(1L, "BC Place", 54500));
 
@@ -50,7 +50,7 @@ class StadiumRestControllerTests {
     }
 
     @Test
-    void testGetStadiumCapacity_notFound() throws Exception {
+    void getStadiumCapacityReturnsNotFoundForUnknownId() throws Exception {
         Mockito.when(stadiumService.findCapacityById(999L)).thenThrow(new StadiumNotFound(999L));
 
         mockMvc.perform(get("/api/stadiums/999/capacity"))

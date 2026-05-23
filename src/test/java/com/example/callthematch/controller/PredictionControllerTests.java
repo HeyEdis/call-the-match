@@ -56,7 +56,7 @@ class PredictionControllerTests {
     private CompetitionValidator competitionValidator;
 
     @Test
-    void userPredictionListShowsCurrentUserPredictions() throws Exception {
+    void showsCurrentUserPredictions() throws Exception {
         when(predictionService.getCurrentUserPredictions()).thenReturn(predictionOverviewDtos());
 
         mockMvc.perform(get("/predictions").with(user("user1@example.com").roles("USER")))
@@ -72,7 +72,7 @@ class PredictionControllerTests {
     }
 
     @Test
-    void userPredictionFormShowsMatchAndPrefillsExistingPrediction() throws Exception {
+    void predictionFormRendersMatchAndPrefillsExistingPrediction() throws Exception {
         when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDto());
         when(predictionService.isCutoffPassed(3L)).thenReturn(false);
@@ -91,11 +91,14 @@ class PredictionControllerTests {
     }
 
     @Test
-    void guestAndAdminCannotAccessPredictionRoutes() throws Exception {
+    void guestIsRedirectedToLoginOnPredictionRoutes() throws Exception {
         mockMvc.perform(get("/predictions/3"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
+    }
 
+    @Test
+    void adminIsForbiddenOnPredictionRoutes() throws Exception {
         mockMvc.perform(get("/predictions/3").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }
@@ -134,16 +137,22 @@ class PredictionControllerTests {
     }
 
     @Test
-    void closedPredictionFormDisablesSubmitAndShowsCutoffErrorOnSave() throws Exception {
+    void closedPredictionFormDisablesSubmitButton() throws Exception {
         when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDto());
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
-        doThrow(new PredictionCutoffPassed())
-                .when(predictionService).saveCurrentUserPrediction(3L, inputPredictionDto());
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("disabled")));
+    }
+
+    @Test
+    void postToPastCutoffPredictionShowsCutoffError() throws Exception {
+        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
+        when(predictionService.isCutoffPassed(3L)).thenReturn(true);
+        doThrow(new PredictionCutoffPassed())
+                .when(predictionService).saveCurrentUserPrediction(3L, inputPredictionDto());
 
         mockMvc.perform(post("/predictions/3")
                         .with(user("user1@example.com").roles("USER"))

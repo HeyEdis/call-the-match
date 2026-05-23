@@ -1,4 +1,4 @@
-package com.example.callthematch.dto;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
@@ -59,3 +59,4 @@ class InputCompetitionDTOValidationTests {
                 LocalTime.NOON);
     }
 }
+

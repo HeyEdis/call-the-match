@@ -1,4 +1,4 @@
-package com.example.callthematch.dto;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputRegistrationDTO;
 import jakarta.validation.Validation;
@@ -19,4 +19,12 @@ class InputRegistrationDTOValidationTests {
                 .extracting(violation -> violation.getPropertyPath().toString())
                 .contains("firstName", "lastName", "userName", "email", "password");
     }
+
+    @Test
+    void validRegistrationProducesNoViolations() {
+        InputRegistrationDTO input = new InputRegistrationDTO("Jan", "Peeters", "janpeeters", "jan@example.com", "ValidPass1");
+
+        assertThat(validator.validate(input)).isEmpty();
+    }
 }
+

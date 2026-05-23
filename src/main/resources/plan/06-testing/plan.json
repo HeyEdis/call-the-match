@@ -55,7 +55,7 @@
         "mvn test passes fully after reorganization"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "account-controller-tests",
@@ -70,7 +70,7 @@
         "Test class is in src/test/java/com/example/callthematch/controller/ package"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "mvc-controller-tests-supplement",
@@ -83,7 +83,7 @@
         "All tests pass with mvn test"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-tests-extend",
@@ -102,7 +102,7 @@
         "POST without CSRF token returns 403"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "validation-tests-supplement",
@@ -131,7 +131,7 @@
         "Test class is in src/test/java/com/example/callthematch/validation/ package"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "rest-controller-tests",
@@ -147,7 +147,7 @@
         "Test class is in src/test/java/com/example/callthematch/restcontroller/ package"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -1,9 +1,10 @@
-package com.example.callthematch.validator;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.model.Stadium;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.StadiumRepository;
+import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -71,3 +72,4 @@ class CompetitionValidatorTests {
                 LocalTime.NOON);
     }
 }
+

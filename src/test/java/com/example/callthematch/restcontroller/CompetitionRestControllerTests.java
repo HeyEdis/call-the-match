@@ -1,16 +1,12 @@
-package com.example.callthematch;
+package com.example.callthematch.restcontroller;
 
-import com.example.callthematch.controller.CompetitionRestController;
-import com.example.callthematch.controller.StadiumRestController;
-import com.example.callthematch.dto.response.MatchRestDTO;
-import com.example.callthematch.dto.response.StadiumCapacityDTO;
-import com.example.callthematch.exception.StadiumNotFound;
-import com.example.callthematch.formatter.DateFormatter;
-import com.example.callthematch.service.CompetitionService;
-import com.example.callthematch.service.StadiumService;
 import com.example.callthematch.advice.CompetitionValidatorAdvice;
 import com.example.callthematch.advice.GlobalExceptionAdvice;
 import com.example.callthematch.advice.RestErrorAdvice;
+import com.example.callthematch.controller.CompetitionRestController;
+import com.example.callthematch.dto.response.MatchRestDTO;
+import com.example.callthematch.formatter.DateFormatter;
+import com.example.callthematch.service.CompetitionService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
-        controllers = {CompetitionRestController.class, StadiumRestController.class},
+        controllers = CompetitionRestController.class,
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
                 classes = {GlobalExceptionAdvice.class, CompetitionValidatorAdvice.class}))
 @Import(RestErrorAdvice.class)
-class RestControllerTests {
+class CompetitionRestControllerTests {
 
     private static final LocalDate MATCH_DATE = LocalDate.of(2026, 5, 20);
 
@@ -48,9 +44,6 @@ class RestControllerTests {
 
     @MockitoBean
     private CompetitionService competitionService;
-
-    @MockitoBean
-    private StadiumService stadiumService;
 
     @MockitoBean
     private DateFormatter dateFormatter;
@@ -113,31 +106,5 @@ class RestControllerTests {
 
         Mockito.verify(dateFormatter).parse(eq("invalid"), any(Locale.class));
     }
-
-    @Test
-    void testGetStadiumCapacity_returnsCapacity() throws Exception {
-        Mockito.when(stadiumService.findCapacityById(1L))
-                .thenReturn(new StadiumCapacityDTO(1L, "BC Place", 54500));
-
-        mockMvc.perform(get("/api/stadiums/1/capacity"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("BC Place"))
-                .andExpect(jsonPath("$.capacity").value(54500));
-
-        Mockito.verify(stadiumService).findCapacityById(1L);
-    }
-
-    @Test
-    void testGetStadiumCapacity_notFound() throws Exception {
-        Mockito.when(stadiumService.findCapacityById(999L)).thenThrow(new StadiumNotFound(999L));
-
-        mockMvc.perform(get("/api/stadiums/999/capacity"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Stadium not found"))
-                .andExpect(jsonPath("$.timestamp").exists());
-
-        Mockito.verify(stadiumService).findCapacityById(999L);
-    }
 }
+

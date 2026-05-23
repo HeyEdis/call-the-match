@@ -1,4 +1,4 @@
-package com.example.callthematch.dto;
+package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import jakarta.validation.Validation;
@@ -44,3 +44,4 @@ class InputPredictionDTOValidationTests {
         assertThat(validator.validate(new InputPredictionDTO(0, 2))).isEmpty();
     }
 }
+

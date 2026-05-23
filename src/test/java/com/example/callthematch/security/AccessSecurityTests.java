@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +11,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.logout;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AccessSecurityMvcTests {
+class AccessSecurityTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -152,5 +155,30 @@ class AccessSecurityMvcTests {
                         "userName",
                         "email",
                         "password"));
+    }
+
+    @Test
+    void incorrectCredentialsRedirectToLoginError() throws Exception {
+        mockMvc.perform(formLogin("/login")
+                        .userParameter("email")
+                        .user("user1@example.com")
+                        .password("wrongpassword"))
+                .andExpect(unauthenticated())
+                .andExpect(redirectedUrl("/login?error"));
+    }
+
+    @Test
+    void logoutRedirectsToLoginLogout() throws Exception {
+        mockMvc.perform(logout("/logout"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login?logout"));
+    }
+
+    @Test
+    void postWithoutCsrfReturnsForbidden() throws Exception {
+        mockMvc.perform(post("/team/create")
+                        .with(user("user1@example.com").roles("USER"))
+                        .param("name", "SomeTeam"))
+                .andExpect(status().isForbidden());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.callthematch;
+package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PublicBrowseMvcTests {
+class PublicBrowseControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,3 +64,4 @@ class PublicBrowseMvcTests {
                 .andExpect(view().name("error/404"));
     }
 }
+

@@ -157,7 +157,7 @@
         ".\\mvnw.cmd -Dtest=AccessSecurityTests test passes"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "rest-get-test-scope-verification",

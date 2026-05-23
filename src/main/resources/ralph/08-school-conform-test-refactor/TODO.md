@@ -4,4 +4,4 @@ Human review items, blockers, and deferred decisions.
 
 ## Open Items
 
-- Run final targeted controller/security verification and then full `.\mvnw.cmd test` before marking `final-verification-and-plan-alignment` as passed.
+- None. Final targeted category checks and full `.\mvnw.cmd test` passed.

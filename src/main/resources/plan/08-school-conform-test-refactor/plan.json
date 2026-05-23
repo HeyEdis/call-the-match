@@ -66,8 +66,8 @@
     },
     {
       "id": "account-public-browse-controller-tests",
-      "title": "Account And Public Browse Controller Tests",
-      "description": "Convert the simplest MVC controller tests first: account registration/login and public browsing. Use focused @WebMvcTest slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home, ranking and public competition detail.",
+      "title": "Account And Public Home/Ranking Controller Tests",
+      "description": "Convert the simplest MVC controller tests first: account registration/login and public home/ranking browsing. Use focused @WebMvcTest slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home and ranking. Public competition detail coverage belongs with CompetitionControllerTests.",
       "acceptance_criteria": [
         "AccountControllerTests uses school-style MVC slice testing where practical",
         "Register GET asserts status, view name and inputRegistrationDto model attribute",
@@ -75,9 +75,10 @@
         "Valid registration submits a DTO/form request and verifies the registration service is called",
         "Invalid registration returns the register view with field errors and verifies the registration service is not called",
         "Missing CSRF on registration remains tested",
-        "PublicBrowseControllerTests uses focused MVC slice testing where practical",
-        "Home, ranking, public competition detail, not-found and type-mismatch behavior remain covered",
-        ".\\mvnw.cmd -Dtest=AccountControllerTests,PublicBrowseControllerTests test passes"
+        "HomeControllerTests uses focused MVC slice testing where practical",
+        "RankingControllerTests uses focused MVC slice testing where practical",
+        "Home, ranking, public competition detail, not-found and type-mismatch behavior remain covered across the focused controller test classes",
+        ".\\mvnw.cmd -Dtest=AccountControllerTests,HomeControllerTests,RankingControllerTests,CompetitionControllerTests test passes"
       ],
       "priority": 2,
       "passes": true
@@ -209,7 +210,7 @@
         "The final test suite can be summarized by category: MVC, security, REST GET, DTO validation, custom annotation validator, Spring validator class and extra service tests"
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -54,7 +54,7 @@ Define the school-conform MVC controller test shape before converting individual
 
 ### What To Build
 
-Convert the simplest MVC controller tests first: account registration/login and public browsing. Use focused `@WebMvcTest` slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home, ranking, and public competition detail.
+Convert the simplest MVC controller tests first: account registration/login and public home/ranking browsing. Use focused `@WebMvcTest` slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home, and ranking. Public competition detail coverage belongs with `CompetitionControllerTests`.
 
 ### Acceptance Criteria
 
@@ -64,9 +64,10 @@ Convert the simplest MVC controller tests first: account registration/login and 
 - [ ] Valid registration submits a DTO/form request and verifies the registration service is called.
 - [ ] Invalid registration returns the register view, field errors, and verifies the registration service is not called.
 - [ ] Missing CSRF on registration remains tested.
-- [ ] `PublicBrowseControllerTests` uses focused MVC slice testing where practical.
-- [ ] Home, ranking, public competition detail, not-found, and type-mismatch behavior remain covered.
-- [ ] Targeted tests pass with `.\mvnw.cmd -Dtest=AccountControllerTests,PublicBrowseControllerTests test`.
+- [ ] `HomeControllerTests` uses focused MVC slice testing where practical.
+- [ ] `RankingControllerTests` uses focused MVC slice testing where practical.
+- [ ] Home, ranking, public competition detail, not-found, and type-mismatch behavior remain covered across the focused controller test classes.
+- [ ] Targeted tests pass with `.\mvnw.cmd -Dtest=AccountControllerTests,HomeControllerTests,RankingControllerTests,CompetitionControllerTests test`.
 
 ---
 
@@ -218,7 +219,7 @@ Run the final verification pass and align plan/progress artifacts with what is a
 
 ### Acceptance Criteria
 
-- [ ] All targeted controller tests pass.
+- [ ] All controller tests pass.
 - [ ] Security tests pass.
 - [ ] REST GET tests pass.
 - [ ] Validation tests pass.

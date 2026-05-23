@@ -19,5 +19,12 @@ class InputRegistrationDTOValidationTests {
                 .extracting(violation -> violation.getPropertyPath().toString())
                 .contains("firstName", "lastName", "userName", "email", "password");
     }
+
+    @Test
+    void validRegistrationProducesNoViolations() {
+        InputRegistrationDTO input = new InputRegistrationDTO("Jan", "Peeters", "janpeeters", "jan@example.com", "ValidPass1");
+
+        assertThat(validator.validate(input)).isEmpty();
+    }
 }
 

@@ -75,3 +75,31 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 **Verification:** `.\mvnw.cmd -Dtest="AccessSecurityTests" test` → BUILD SUCCESS, 10 tests, 0 failures.
 
 **passes:** true
+
+### 2026-05-23 – validation-tests-supplement
+
+**Task:** Validatie Tests – Aanvullingen Bestaande Annotaties
+
+**What changed:**
+- `InputRegistrationDTOValidationTests`: added `validRegistrationProducesNoViolations` (positive case: valid input = 0 violations)
+- `InputTeamDTOValidationTests`: added `validTeamNameProducesNoViolations` and `validInviteCodeProducesNoViolations` (positive cases for both DTOs)
+- Created `InputTeamJoinDTOValidationTests` (new file): covers blank inviteCode (negative) and valid inviteCode (positive)
+- `InputCompetitionDTOValidationTests` and `InputPredictionDTOValidationTests`: already had both positive and negative cases — no changes needed
+
+**Verification:** 21 tests (all validation classes), 0 failures.
+
+**passes:** true
+
+### 2026-05-23 – custom-annotation-validator-tests
+
+**Task:** Validatie Tests – Custom Annotatie & Validator Klasse
+
+**What changed:**
+- Created `StadiumChecksumValidatorTests` in `validation/` package
+- Directly instantiates `StadiumChecksumValidator`, calls `initialize()` with mocked `ValidStadiumChecksum`
+- Mocks `ConstraintValidatorContext` with Mockito (incl. builder chain)
+- Tests: `validChecksumReturnsTrue` (1001 % 97 = 31 ✓), `invalidChecksumReturnsFalse` (checksum 32 ✗), `nullInputReturnsTrue`, `nullStadiumCodeReturnsTrue`, `nullChecksumReturnsTrue`
+
+**Verification:** 5 tests, 0 failures.
+
+**passes:** true

@@ -131,7 +131,7 @@
         "Test class is in src/test/java/com/example/callthematch/validation/ package"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "rest-controller-tests",

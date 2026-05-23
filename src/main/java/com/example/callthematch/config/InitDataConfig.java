@@ -334,7 +334,7 @@ public class InitDataConfig implements CommandLineRunner {
         competitionRepository.saveAll(List.of(c1,c2,c3,c4,c5,c6,c7,c8));
 
         // ── 11. PREDICTIONS  ──────────────────────────────────────────
-        /*var allCompetitions = competitionRepository.findAll();
+        var allCompetitions = competitionRepository.findAll();
         var generatedPredictions = new ArrayList<Prediction>();
         for (MyUser user : generatedUsers) {
             for (Competition competition : allCompetitions) {
@@ -349,34 +349,6 @@ public class InitDataConfig implements CommandLineRunner {
             }
         }
 
-        predictionRepository.saveAll(generatedPredictions);*/
+        predictionRepository.saveAll(generatedPredictions);
     }
-    /*private void calculateRankings(List<Competition> competitions, Map<Country, Ranking> rankingMap) {
-        for (Competition competition : competitions) {
-            if (competition.getScoreA() == null || competition.getScoreB() == null) continue;
-
-            Country teamA = competition.getTeamA();
-            Country teamB = competition.getTeamB();
-            int scoreA = competition.getScoreA();
-            int scoreB = competition.getScoreB();
-
-            Ranking rankA = rankingMap.get(teamA);
-            Ranking rankB = rankingMap.get(teamB);
-
-            if (scoreA > scoreB) {
-                rankA.setWins(rankA.getWins() + 1);
-                rankA.setPoints(rankA.getPoints() + 3);
-                rankB.setLosses(rankB.getLosses() + 1);
-            } else if (scoreB > scoreA) {
-                rankB.setWins(rankB.getWins() + 1);
-                rankB.setPoints(rankB.getPoints() + 3);
-                rankA.setLosses(rankA.getLosses() + 1);
-            } else {
-                rankA.setDraws(rankA.getDraws() + 1);
-                rankA.setPoints(rankA.getPoints() + 1);
-                rankB.setDraws(rankB.getDraws() + 1);
-                rankB.setPoints(rankB.getPoints() + 1);
-            }
-        }
-    }*/
 }

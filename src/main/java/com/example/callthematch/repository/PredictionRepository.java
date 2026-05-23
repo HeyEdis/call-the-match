@@ -14,4 +14,6 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     List<Prediction> findAllByCompetition(Competition competition);
 
     List<Prediction> findAllByUser(MyUser user);
+
+    List<Prediction> findAllByUserOrderByCompetitionDateAscCompetitionTimeAsc(MyUser user);
 }

@@ -1,10 +1,16 @@
 package com.example.callthematch;
 
+import com.example.callthematch.model.Prediction;
+import com.example.callthematch.repository.CompetitionRepository;
+import com.example.callthematch.repository.PredictionRepository;
+import com.example.callthematch.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -23,6 +29,38 @@ class PredictionMvcTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private CompetitionRepository competitionRepository;
+
+    @Autowired
+    private PredictionRepository predictionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    void userPredictionListShowsCurrentUserPredictions() throws Exception {
+        var user = userRepository.findByEmail("user1@example.com").orElseThrow();
+        var competition = competitionRepository.findById(3L).orElseThrow();
+        predictionRepository.findByUserAndCompetition(user, competition)
+                .orElseGet(() -> predictionRepository.save(Prediction.builder()
+                        .user(user)
+                        .competition(competition)
+                        .predictedScoreA(2)
+                        .predictedScoreB(1)
+                        .createdAt(LocalDateTime.now())
+                        .build()));
+
+        mockMvc.perform(get("/predictions").with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("prediction/list"))
+                .andExpect(model().attributeExists("predictionList"))
+                .andExpect(content().string(containsString("Brazil")))
+                .andExpect(content().string(containsString("Morocco")))
+                .andExpect(content().string(containsString("4 - 3")))
+                .andExpect(content().string(containsString("2 - 1")));
+    }
 
     @Test
     void userPredictionFormShowsMatchAndPrefillsExistingPrediction() throws Exception {

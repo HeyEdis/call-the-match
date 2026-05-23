@@ -97,7 +97,7 @@
         ".\\mvnw.cmd -Dtest=CompetitionControllerTests test passes"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "team-controller-tests-school-style",

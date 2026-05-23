@@ -22,7 +22,7 @@
 Durable decisions that apply across all phases:
 
 - **Routes**: user-only `/predictions/**` for create/edit; user-only `/team/{id}/scoreboard` for private scoreboard; admin match result save triggers recalculation (existing admin route).
-- **Schema**: `Prediction` already links user + competition with predicted scores and points earned. `TeamMember.score` holds member total. `Team.score` holds team total. Unique constraint on (user, competition) enforces one prediction per match.
+- **Schema**: `Prediction` already links user + competition with predicted scores and points earned. For this feature, `Prediction.pointsEarned` means team-independent base points only. `TeamMember.score` holds the member total including team-specific unique bonuses. `Team.score` holds team total. Unique constraint on (user, competition) enforces one prediction per match.
 - **Key models**: `Prediction`, `Competition`, `TeamMember`, `Team`, `MyUser`; new `InputPredictionDTO` for form input; new `ScoringService` for point calculation.
 - **Security**: prediction routes are user-only; admin does not predict; scoreboard is member-only (403 for guest, non-member, admin); cutoff is enforced server-side.
 - **Validation/i18n**: prediction DTO uses `@Min(0)` and `@NotNull` Jakarta annotations; scoring constants (`exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3`, `uniqueOutcomeBonus=1`) live in a model constants class; error messages in bundle.
@@ -98,14 +98,14 @@ A dedicated `ScoringService` that calculates points for a single prediction give
 
 ### What To Build
 
-When admin saves an official result for a competition (scoreA and scoreB), the system triggers the scoring service to recalculate points for all predictions on that competition. After scoring individual predictions, the system updates each affected `TeamMember.score` (sum of that member's prediction points) and each affected `Team.score` (sum of member scores). This ensures the public ranking stays up to date.
+When admin saves an official result for a competition (scoreA and scoreB), the system triggers the scoring service to recalculate points for all predictions on that competition. The system first updates each affected `Prediction.pointsEarned` with team-independent base points only. Then it recalculates each affected `TeamMember.score` per team context, including unique exact/outcome bonuses for that team. Each affected `Team.score` is recalculated from member scores. This ensures the public ranking stays up to date.
 
 ### Acceptance Criteria
 
 - [ ] Saving an official result (admin action) triggers recalculation automatically.
 - [ ] All predictions for the competition are rescored using `ScoringService`.
-- [ ] Each prediction's `pointsEarned` field is updated and persisted.
-- [ ] Each affected team member's `score` field is recalculated as the sum of their prediction points.
+- [ ] Each prediction's `pointsEarned` field is updated and persisted with base points only.
+- [ ] Each affected team member's `score` field is recalculated as the sum of their base points plus team-specific unique bonuses.
 - [ ] Each affected team's `score` field is recalculated via `calculateTeamScore()` or equivalent.
 - [ ] If admin changes an already-entered result, points are recalculated (idempotent).
 - [ ] Public ranking reflects updated team totals without additional manual steps.

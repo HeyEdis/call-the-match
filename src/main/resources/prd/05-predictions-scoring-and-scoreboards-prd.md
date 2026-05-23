@@ -6,11 +6,11 @@ De kern van de opdracht is dat users wedstrijden voorspellen en punten vergelijk
 
 ## Solution
 
-Maak een user-only prediction flow with one current prediction per user and match. Laat users predictions wijzigen tot one hour before kick-off. Wanneer admin een official result saves, berekent a dedicated scoring service the prediction points, team-member totals and team totals with bundle-backed constants and unique bonuses inside each team. Team members krijgen a private scoreboard; the public ranking reuses team totals without exposing private detail.
+Maak een user-only prediction flow with one current prediction per user and match. Laat users predictions wijzigen tot one hour before kick-off. Wanneer admin een official result saves, berekent a dedicated scoring service the prediction base points, team-member totals and team totals with model constants and unique bonuses inside each team. Team members krijgen a private scoreboard; the public ranking reuses team totals without exposing private detail.
 
 ## Current Codebase State
 
-- Prediction records already link users and competitions and store predicted scores plus earned points.
+- Prediction records already link users and competitions and store predicted scores plus team-independent base points.
 - Team members already have score fields and teams already compute a team total from members.
 - Seed data already creates sample predictions.
 - There is no visible prediction controller, prediction form DTO, scoring service or cutoff enforcement yet.
@@ -64,6 +64,10 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Use scoring constants `exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3` and `uniqueOutcomeBonus=1`.
 - Store those constants in a model constants class; do not store fixed score values in resource bundles.
 - Calculate unique bonuses per team, not globally.
+- Required implementation choice: use Option A. `Prediction.pointsEarned` stores only team-independent base points, because one user can belong to multiple teams and unique bonuses can differ per team.
+- Do not add a `bonusPoints` column to `Prediction` for the required implementation; it would be ambiguous for users in multiple teams.
+- Include unique bonuses while recalculating each `TeamMember.score` for each team context.
+- Optional later extension: add a per-team, per-match score detail entity such as `TeamPredictionScore` if detailed bonus history is needed.
 - Keep pending matches without official results at zero or unscored state as defined by the service boundary.
 - Recalculate affected prediction points, member totals and team totals consistently when a result changes.
 - Restrict scoreboards to members and keep public ranking summary-only.

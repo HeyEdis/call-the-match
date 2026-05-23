@@ -31,3 +31,10 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Review result: moved fixed scoring values out of `messages.properties` into `model/ScoringPoints`.
 - Source decision: FIFA assignment page 5 says X/Y/B/C are mentioned in resource bundles, while page 6 says resource bundles contain no fixed values. Applied the review instruction and the stricter fixed-value rule from page 6.
 - Follow-up state: updated the feature PRD, plan and plan.json wording so later Ralph iterations do not re-add numeric score values to the message bundle.
+
+### 2026-05-23 - Result recalculation decision
+
+- Decision: use Option A for the required implementation. Keep one prediction per user and match; `Prediction.pointsEarned` means base points only and does not include team-specific unique bonuses.
+- Recalculation guidance for Ralph: when an official result is saved, update each prediction's base points, then recalculate each affected `TeamMember.score` per team using `ScoringService` with that team's member predictions so unique bonuses are computed within the team context.
+- Rejected for required implementation: adding `bonusPoints` to `Prediction`, because the same prediction can have different unique bonuses in different teams.
+- Deferred optional feature: Option C, a `TeamPredictionScore` detail entity for per-team/per-match base and bonus detail. Handoff saved outside the workspace at `C:\Users\Armour\AppData\Local\Temp\call-the-match-option-c-team-prediction-score-handoff.md`.

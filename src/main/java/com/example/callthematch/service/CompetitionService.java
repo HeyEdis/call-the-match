@@ -3,6 +3,7 @@ package com.example.callthematch.service;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
+import com.example.callthematch.dto.response.MatchRestDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.CountryNotFound;
 import com.example.callthematch.exception.StadiumNotFound;
@@ -13,6 +14,7 @@ import com.example.callthematch.repository.StadiumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,6 +29,18 @@ public class CompetitionService {
 
     private CompetitionDTO toDTO(Competition c) {
         return new CompetitionDTO(c.getId(),c.getTeamA(),c.getTeamB(),c.getStadium(),c.getScoreA(),c.getScoreB(),c.getDate(),c.getTime());
+    }
+
+    private MatchRestDTO toRestDTO(Competition c) {
+        return new MatchRestDTO(
+                c.getId(),
+                c.getTeamA().getName(),
+                c.getTeamB().getName(),
+                c.getDate(),
+                c.getTime(),
+                c.getStadium().getName(),
+                c.getScoreA(),
+                c.getScoreB());
     }
 
     private InputCompetitionDTO toInputDTO(Competition c) {
@@ -57,6 +71,14 @@ public class CompetitionService {
                 .map(c -> toDTO(c))
                 .sorted(Comparator.comparing(CompetitionDTO::date)
                         .thenComparing(CompetitionDTO::time))
+                .toList();
+    }
+
+    public List<MatchRestDTO> findRestMatchesByDate(LocalDate date) {
+        return competitionRepository.findByDate(date)
+                .stream()
+                .map(this::toRestDTO)
+                .sorted(Comparator.comparing(MatchRestDTO::time))
                 .toList();
     }
 

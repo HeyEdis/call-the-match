@@ -60,7 +60,7 @@
         "Endpoint is accessible without authentication for guest, user, and admin"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "stadium-capacity-rest-endpoint",

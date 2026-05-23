@@ -4,7 +4,7 @@
 
 ## Sources
 
-1. FIFA World Cup 2026 Team Prediction PDF, pages 5-6: prognoses, score calculation, private scoreboard, public ranking and resource-bundle score constants.
+1. FIFA World Cup 2026 Team Prediction PDF, pages 5-6: prognoses, score calculation, private scoreboard, public ranking and the fixed-value bundle conflict.
 2. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring&JPA_mySql.pdf`: repository, entity and service boundaries for persisted prediction and score updates.
 3. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_Flow.pdf`: MVC form DTOs, `@Valid`, `BindingResult` and server-side validation flow.
 4. `C:\Users\Armour\Documents\HOGENT\EWD\Richtlijnen\Slides_Spring_Web_MVC_i18n.pdf`: Thymeleaf form errors, validation messages and resource bundles.
@@ -22,10 +22,10 @@
 Durable decisions that apply across all phases:
 
 - **Routes**: user-only `/predictions/**` for create/edit; user-only `/team/{id}/scoreboard` for private scoreboard; admin match result save triggers recalculation (existing admin route).
-- **Schema**: `Prediction` already links user + competition with predicted scores and points earned. `TeamMember.score` holds member total. `Team.score` holds team total. Unique constraint on (user, competition) enforces one prediction per match.
+- **Schema**: `Prediction` already links user + competition with predicted scores and points earned. For this feature, `Prediction.pointsEarned` means team-independent base points only. `TeamMember.score` holds the member total including team-specific unique bonuses. `Team.score` holds team total. Unique constraint on (user, competition) enforces one prediction per match.
 - **Key models**: `Prediction`, `Competition`, `TeamMember`, `Team`, `MyUser`; new `InputPredictionDTO` for form input; new `ScoringService` for point calculation.
 - **Security**: prediction routes are user-only; admin does not predict; scoreboard is member-only (403 for guest, non-member, admin); cutoff is enforced server-side.
-- **Validation/i18n**: prediction DTO uses `@Min(0)` and `@NotNull` Jakarta annotations; scoring constants (`exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3`, `uniqueOutcomeBonus=1`) loaded from resource bundle; error messages in bundle.
+- **Validation/i18n**: prediction DTO uses `@Min(0)` and `@NotNull` Jakarta annotations; scoring constants (`exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3`, `uniqueOutcomeBonus=1`) live in a model constants class; error messages in bundle.
 - **REST/WebClient**: out of scope; separate late block.
 - **Testing**: late closure block; scoring service designed testably from the start with a small deterministic interface.
 
@@ -76,12 +76,12 @@ The prediction service checks whether the current time is before the match kicko
 
 ### What To Build
 
-A dedicated `ScoringService` that calculates points for a single prediction given the official result and team context. Scoring constants are loaded from the resource bundle. The service awards exact-score points, correct-outcome points, and unique bonuses within a team. The interface is small and deterministic so it is easy to test later.
+A dedicated `ScoringService` that calculates points for a single prediction given the official result and team context. Fixed scoring constants live in the model folder rather than the resource bundle. The service awards exact-score points, correct-outcome points, and unique bonuses within a team. The interface is small and deterministic so it is easy to test later.
 
 ### Acceptance Criteria
 
-- [ ] Resource bundle contains `scoring.exactScore=5`, `scoring.correctOutcome=2`, `scoring.uniqueExactBonus=3`, `scoring.uniqueOutcomeBonus=1`.
-- [ ] `ScoringService` reads constants from the bundle (e.g. via `@Value` or `MessageSource`).
+- [ ] Model constants class contains exact-score, correct-outcome and unique bonus score values.
+- [ ] `ScoringService` reads fixed score values from the model constants class.
 - [ ] Exact-score match awards 5 points.
 - [ ] Correct outcome (win/loss/draw) without exact score awards 2 points.
 - [ ] No match awards 0 points.
@@ -98,14 +98,14 @@ A dedicated `ScoringService` that calculates points for a single prediction give
 
 ### What To Build
 
-When admin saves an official result for a competition (scoreA and scoreB), the system triggers the scoring service to recalculate points for all predictions on that competition. After scoring individual predictions, the system updates each affected `TeamMember.score` (sum of that member's prediction points) and each affected `Team.score` (sum of member scores). This ensures the public ranking stays up to date.
+When admin saves an official result for a competition (scoreA and scoreB), the system triggers the scoring service to recalculate points for all predictions on that competition. The system first updates each affected `Prediction.pointsEarned` with team-independent base points only. Then it recalculates each affected `TeamMember.score` per team context, including unique exact/outcome bonuses for that team. Each affected `Team.score` is recalculated from member scores. This ensures the public ranking stays up to date.
 
 ### Acceptance Criteria
 
 - [ ] Saving an official result (admin action) triggers recalculation automatically.
 - [ ] All predictions for the competition are rescored using `ScoringService`.
-- [ ] Each prediction's `pointsEarned` field is updated and persisted.
-- [ ] Each affected team member's `score` field is recalculated as the sum of their prediction points.
+- [ ] Each prediction's `pointsEarned` field is updated and persisted with base points only.
+- [ ] Each affected team member's `score` field is recalculated as the sum of their base points plus team-specific unique bonuses.
 - [ ] Each affected team's `score` field is recalculated via `calculateTeamScore()` or equivalent.
 - [ ] If admin changes an already-entered result, points are recalculated (idempotent).
 - [ ] Public ranking reflects updated team totals without additional manual steps.

@@ -26,7 +26,7 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/error/**"
                         ).permitAll()
-                        .requestMatchers("/team/**", "/predictions/**").hasRole("USER")
+                        .requestMatchers("/predictions/**", "/team/*/scoreboard", "/team/**").hasRole("USER")
                         .anyRequest().permitAll())
                 .formLogin(login -> login
                         .loginPage("/login")

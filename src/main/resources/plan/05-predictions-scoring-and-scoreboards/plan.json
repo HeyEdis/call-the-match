@@ -52,7 +52,7 @@
         "Resource bundle contains error messages for null and negative score validation failures"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-repository-query",
@@ -64,7 +64,7 @@
         "Application starts without errors with the new constraint"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-service-upsert",
@@ -77,7 +77,7 @@
         "createdAt is set on new predictions"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-controller-form",
@@ -93,7 +93,7 @@
         "Guest is redirected to login, admin gets 403"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "cutoff-enforcement",
@@ -107,27 +107,26 @@
         "Form disables submit button when cutoff has passed"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-constants-bundle",
-      "title": "Scoring Constants In Resource Bundle",
-      "description": "Add scoring constants to src/main/resources/i18n/messages.properties: scoring.exactScore=5, scoring.correctOutcome=2, scoring.uniqueExactBonus=3, scoring.uniqueOutcomeBonus=1. These will be read by ScoringService.",
+      "title": "Scoring Constants In Model",
+      "description": "Add fixed scoring constants in a model-folder constants class: exact score=5, correct outcome=2, unique exact bonus=3, unique outcome bonus=1. Keep fixed numeric values out of messages.properties.",
       "acceptance_criteria": [
-        "messages.properties contains scoring.exactScore=5",
-        "messages.properties contains scoring.correctOutcome=2",
-        "messages.properties contains scoring.uniqueExactBonus=3",
-        "messages.properties contains scoring.uniqueOutcomeBonus=1"
+        "Model folder contains fixed scoring constants",
+        "messages.properties does not store fixed scoring values",
+        "ScoringService can use the score constants"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-service",
       "title": "Scoring Service Implementation",
-      "description": "Create ScoringService in the service package. Load scoring constants from the resource bundle (via @Value with property placeholders or MessageSource). Implement calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB, List<Prediction> teamPredictions) that: awards exactScore points for exact match; awards correctOutcome points for correct winner/draw without exact match; awards 0 otherwise. Then compute unique bonuses: if only one prediction in teamPredictions has that exact score, add uniqueExactBonus; if only one has that outcome, add uniqueOutcomeBonus. Return total points.",
+      "description": "Create ScoringService in the service package. Read fixed scoring constants from the model constants class. Implement calculatePoints(Prediction prediction, Integer officialScoreA, Integer officialScoreB, List<Prediction> teamPredictions) that: awards exactScore points for exact match; awards correctOutcome points for correct winner/draw without exact match; awards 0 otherwise. Then compute unique bonuses: if only one prediction in teamPredictions has that exact score, add uniqueExactBonus; if only one has that outcome, add uniqueOutcomeBonus. Return total points.",
       "acceptance_criteria": [
-        "ScoringService exists and reads constants from resource bundle",
+        "ScoringService exists and reads constants from the model constants class",
         "Exact-score match awards 5 points",
         "Correct outcome only awards 2 points",
         "Wrong prediction awards 0 points",
@@ -136,23 +135,23 @@
         "Bonuses computed per team predictions list, not globally"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "result-triggers-recalculation",
       "title": "Official Result Triggers Recalculation",
-      "description": "When admin saves an official result (scoreA/scoreB) on a Competition via the existing CompetitionController/CompetitionService, trigger score recalculation. Add a method in ScoringService (or a new RecalculationService) that: finds all predictions for the competition, groups them by team (via each prediction user's team memberships), calculates points for each prediction using team context, updates prediction.pointsEarned, recalculates each affected TeamMember.score as sum of their prediction points, and recalculates each affected Team.score via calculateTeamScore(). Call this from the admin result-save flow.",
+      "description": "When admin saves an official result (scoreA/scoreB) on a Competition via the existing CompetitionController/CompetitionService, trigger score recalculation. Add a method in ScoringService (or a new RecalculationService) that: finds all predictions for the competition, updates prediction.pointsEarned with team-independent base points only, groups predictions by team via each prediction user's team memberships, recalculates each affected TeamMember.score as the sum of base points plus team-specific unique bonuses, and recalculates each affected Team.score via calculateTeamScore(). Call this from the admin result-save flow. Do not add bonusPoints to Prediction because one user can belong to multiple teams and unique bonuses can differ per team.",
       "acceptance_criteria": [
         "Admin saving official result triggers recalculation",
         "All predictions for the competition are rescored",
-        "Each prediction.pointsEarned is updated and persisted",
-        "Each affected TeamMember.score is recalculated as sum of their prediction points",
+        "Each prediction.pointsEarned is updated and persisted with base points only",
+        "Each affected TeamMember.score is recalculated as sum of base points plus team-specific unique bonuses",
         "Each affected Team.score is recalculated from member scores",
         "Changing an already-entered result recalculates correctly (idempotent)",
         "Public ranking reflects updated team totals"
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "private-scoreboard-page",
@@ -168,7 +167,7 @@
         "Admin gets 403"
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-hardening",
@@ -182,7 +181,7 @@
         "Scoreboard membership enforced server-side in controller/service"
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-service-tests",
@@ -199,7 +198,7 @@
         "Test: cutoff enforcement rejects late predictions"
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-mvc-tests",
@@ -213,7 +212,7 @@
         "Security test: non-member cannot access scoreboard (403)"
       ],
       "priority": 12,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-validation-tests",
@@ -227,7 +226,7 @@
         "Test: valid non-negative values pass validation"
       ],
       "priority": 13,
-      "passes": false
+      "passes": true
     }
   ]
 }

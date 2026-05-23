@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title th:text="#{prediction.form.label}">Prediction</title>
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
+<h1 th:text="#{prediction.form.label}">Prediction</h1>
+<p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+
+<div>
+    <form th:action="@{/predictions/{competitionId}(competitionId=${competition.id})}"
+          th:object="${inputPredictionDto}" method="post">
+        <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
+        <p>
+            <label th:text="|${competition.teamA.name} #{prediction.score.label}|"></label>
+            <input type="number" th:field="*{predictedScoreA}" min="0"/>
+            <span th:if="${#fields.hasErrors('predictedScoreA')}"
+                  th:errorclass="error" th:errors="*{predictedScoreA}"></span>
+        </p>
+
+        <p>
+            <label th:text="|${competition.teamB.name} #{prediction.score.label}|"></label>
+            <input type="number" th:field="*{predictedScoreB}" min="0"/>
+            <span th:if="${#fields.hasErrors('predictedScoreB')}"
+                  th:errorclass="error" th:errors="*{predictedScoreB}"></span>
+        </p>
+
+        <button type="submit" th:disabled="${cutoffPassed}"
+                th:text="#{prediction.save.submit}">Save prediction</button>
+        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
+    </form>
+</div>
+
+</body>
+</html>

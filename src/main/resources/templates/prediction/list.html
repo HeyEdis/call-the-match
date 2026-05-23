@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <title th:text="#{prediction.list.title}">Predictions</title>
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</header>
+
+<h1 th:text="#{prediction.list.title}">Predictions</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th th:text="#{label_competition_teamA}">Team A</th>
+        <th th:text="#{label_competition_teamB}">Team B</th>
+        <th th:text="#{prediction.match.score}">Match score</th>
+        <th th:text="#{prediction.own.score}">Your prediction</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="prediction : ${predictionList}">
+        <td th:text="${prediction.teamA}"></td>
+        <td th:text="${prediction.teamB}"></td>
+        <td th:if="${prediction.scoreA != null and prediction.scoreB != null}"
+            th:text="|${prediction.scoreA} - ${prediction.scoreB}|"></td>
+        <td th:unless="${prediction.scoreA != null and prediction.scoreB != null}"
+            th:text="#{competition.detail.noResult}">No official result yet.</td>
+        <td>
+            <a th:href="@{/predictions/{competitionId}(competitionId=${prediction.competitionId})}"
+               th:text="|${prediction.predictedScoreA} - ${prediction.predictedScoreB}|">0 - 0</a>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(predictionList)}">
+        <td colspan="4" th:text="#{prediction.list.empty}">No predictions yet.</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

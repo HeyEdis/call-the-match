@@ -3,6 +3,8 @@ package com.example.callthematch.service;
 import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
+import com.example.callthematch.dto.response.TeamMemberScoreDTO;
+import com.example.callthematch.dto.response.TeamScoreboardDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNameAlreadyExists;
 import com.example.callthematch.exception.TeamNotFound;
@@ -34,6 +36,18 @@ public class TeamService {
 
     private PublicRankingDTO toPublicRankingDTO(Team t) {
         return new PublicRankingDTO(t.getName(), t.calculateTeamScore(), t.getMembers().size());
+    }
+
+    private TeamMemberScoreDTO toTeamMemberScoreDTO(TeamMember member) {
+        return new TeamMemberScoreDTO(member.getUser().getUserName(), member.getScore());
+    }
+
+    private TeamScoreboardDTO toScoreboardDTO(Team team) {
+        List<TeamMemberScoreDTO> members = teamMemberRepository.findAllByTeamOrderByScoreDesc(team)
+                .stream()
+                .map(this::toTeamMemberScoreDTO)
+                .toList();
+        return new TeamScoreboardDTO(team.getId(), team.getName(), team.getScore(), members);
     }
 
     private Team findTeamById(Long id)
@@ -71,6 +85,12 @@ public class TeamService {
         Team team = findTeamById(id);
         requireCurrentUserMembership(team);
         return toDTO(team);
+    }
+
+    public TeamScoreboardDTO findScoreboardById(Long id) {
+        Team team = findTeamById(id);
+        requireCurrentUserMembership(team);
+        return toScoreboardDTO(team);
     }
 
     public boolean isCurrentUserOwner(Long id) {

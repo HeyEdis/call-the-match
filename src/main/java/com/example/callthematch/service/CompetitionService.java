@@ -23,6 +23,7 @@ public class CompetitionService {
     private final CompetitionRepository competitionRepository;
     private final CountryRepository countryRepository;
     private final StadiumRepository stadiumRepository;
+    private final TeamMemberService teamMemberService;
 
     private CompetitionDTO toDTO(Competition c) {
         return new CompetitionDTO(c.getId(),c.getTeamA(),c.getTeamB(),c.getStadium(),c.getScoreA(),c.getScoreB(),c.getDate(),c.getTime());
@@ -99,6 +100,8 @@ public class CompetitionService {
         competition.setScoreA(dto.scoreA());
         competition.setScoreB(dto.scoreB());
 
-        return competitionRepository.save(competition).getId();
+        Competition savedCompetition = competitionRepository.save(competition);
+        teamMemberService.recalculateScoresAfterResult(savedCompetition);
+        return savedCompetition.getId();
     }
 }

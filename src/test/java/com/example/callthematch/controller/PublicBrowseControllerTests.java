@@ -3,9 +3,6 @@ package com.example.callthematch.controller;
 import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
-import com.example.callthematch.model.Country;
-import com.example.callthematch.model.Location;
-import com.example.callthematch.model.Stadium;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
 import com.example.callthematch.service.StadiumService;
@@ -18,10 +15,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
+import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -110,26 +106,4 @@ class PublicBrowseControllerTests {
         verify(competitionService).findById(999999L);
     }
 
-    private CompetitionDTO competitionDto(Long id) {
-        Country belgium = Country.builder().id(1L).name("Belgium").landCode(32).build();
-        Country canada = Country.builder().id(2L).name("Canada").landCode(1).build();
-        Location location = Location.builder().id(1L).city("Vancouver").build();
-        Stadium stadium = Stadium.builder()
-                .id(1L)
-                .name("BC Place")
-                .location(location)
-                .code(1234)
-                .capacity(54500)
-                .build();
-
-        return new CompetitionDTO(
-                id,
-                belgium,
-                canada,
-                stadium,
-                null,
-                null,
-                LocalDate.of(2026, 5, 20),
-                LocalTime.of(18, 0));
-    }
 }

@@ -5,12 +5,7 @@ import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
-import com.example.callthematch.dto.response.CountryDTO;
-import com.example.callthematch.dto.response.StadiumDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
-import com.example.callthematch.model.Country;
-import com.example.callthematch.model.Location;
-import com.example.callthematch.model.Stadium;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
 import com.example.callthematch.service.StadiumService;
@@ -28,10 +23,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
+import static com.example.callthematch.support.TestCompetitions.competitionDto;
+import static com.example.callthematch.support.TestCompetitions.countryDtos;
+import static com.example.callthematch.support.TestCompetitions.inputCompetitionDto;
+import static com.example.callthematch.support.TestCompetitions.stadiumDtos;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -232,55 +229,4 @@ class CompetitionControllerTests {
         verify(competitionService).findInputById(999999L);
     }
 
-    private InputCompetitionDTO inputCompetitionDto(Long id) {
-        return new InputCompetitionDTO(
-                id,
-                1L,
-                2L,
-                1L,
-                1001,
-                31,
-                LocalDate.of(2026, 5, 20),
-                LocalTime.of(18, 0));
-    }
-
-    private CompetitionDTO competitionDto(Long id) {
-        return new CompetitionDTO(
-                id,
-                country(1L, "Belgium", 32),
-                country(2L, "Canada", 1),
-                stadium(),
-                null,
-                null,
-                LocalDate.of(2026, 5, 20),
-                LocalTime.of(18, 0));
-    }
-
-    private List<CountryDTO> countryDtos() {
-        return List.of(
-                new CountryDTO(1L, 32, "Belgium"),
-                new CountryDTO(2L, 1, "Canada"));
-    }
-
-    private List<StadiumDTO> stadiumDtos() {
-        return List.of(new StadiumDTO(1L, location(), "MetLife Stadium", 1001, 82500));
-    }
-
-    private Country country(Long id, String name, Integer landCode) {
-        return Country.builder().id(id).name(name).landCode(landCode).build();
-    }
-
-    private Stadium stadium() {
-        return Stadium.builder()
-                .id(1L)
-                .location(location())
-                .name("MetLife Stadium")
-                .code(1001)
-                .capacity(82500)
-                .build();
-    }
-
-    private Location location() {
-        return Location.builder().id(1L).city("New York").build();
-    }
 }

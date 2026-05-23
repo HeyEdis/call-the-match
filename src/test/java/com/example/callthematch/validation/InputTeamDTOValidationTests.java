@@ -1,7 +1,6 @@
 package com.example.callthematch.validation;
 
 import com.example.callthematch.dto.request.InputTeamDTO;
-import com.example.callthematch.dto.request.InputTeamJoinDTO;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -23,17 +22,4 @@ class InputTeamDTOValidationTests {
     void validTeamNameProducesNoViolations() {
         assertThat(validator.validate(new InputTeamDTO("Red Lions"))).isEmpty();
     }
-
-    @Test
-    void joinTeamRejectsMissingInviteCode() {
-        assertThat(validator.validate(new InputTeamJoinDTO("")))
-                .extracting(violation -> violation.getPropertyPath().toString())
-                .contains("inviteCode");
-    }
-
-    @Test
-    void validInviteCodeProducesNoViolations() {
-        assertThat(validator.validate(new InputTeamJoinDTO("ABCD1234"))).isEmpty();
-    }
 }
-

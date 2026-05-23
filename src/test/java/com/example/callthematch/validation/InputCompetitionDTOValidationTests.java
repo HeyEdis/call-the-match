@@ -47,6 +47,11 @@ class InputCompetitionDTOValidationTests {
                 .contains("checksum");
     }
 
+    @Test
+    void validFixtureProducesNoViolations() {
+        assertThat(validator.validate(fixture(1001, 31))).isEmpty();
+    }
+
     private InputCompetitionDTO fixture(Integer stadiumCode, Integer checksum) {
         return new InputCompetitionDTO(
                 null,
@@ -59,4 +64,3 @@ class InputCompetitionDTOValidationTests {
                 LocalTime.NOON);
     }
 }
-

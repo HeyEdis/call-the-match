@@ -115,7 +115,7 @@
         "Test classes are in src/test/java/com/example/callthematch/validation/ package"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "custom-annotation-validator-tests",

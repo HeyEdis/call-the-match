@@ -167,7 +167,7 @@
         "Admin gets 403"
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-hardening",
@@ -181,7 +181,7 @@
         "Scoreboard membership enforced server-side in controller/service"
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "scoring-service-tests",

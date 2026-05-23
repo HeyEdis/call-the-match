@@ -99,6 +99,18 @@ class TeamManagementMvcTests {
     }
 
     @Test
+    void memberCanOpenPrivateTeamScoreboard() throws Exception {
+        mockMvc.perform(get("/team/1/scoreboard")
+                        .with(user("user11@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("team/scoreboard"))
+                .andExpect(model().attributeExists("scoreboard"))
+                .andExpect(content().string(containsString("Team total")))
+                .andExpect(content().string(containsString("Member")))
+                .andExpect(content().string(containsString("Score")));
+    }
+
+    @Test
     void ownerSeesTeamManagementActions() throws Exception {
         mockMvc.perform(get("/team/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -121,6 +133,10 @@ class TeamManagementMvcTests {
     @Test
     void nonMemberCannotReadPrivateTeamDetail() throws Exception {
         mockMvc.perform(get("/team/1")
+                        .with(user("user2@example.com").roles("USER")))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/team/1/scoreboard")
                         .with(user("user2@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
     }

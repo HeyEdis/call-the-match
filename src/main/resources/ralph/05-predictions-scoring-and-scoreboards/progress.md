@@ -48,3 +48,13 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: `CompetitionService`, `TeamMemberService`, `ScoringService`, `MatchOutcome`, `PredictionRepository`, `TeamMemberRepository`, `TeamMemberServiceTests`, `plan.json`, `progress.md`, `TODO.md`.
 - Verification: `.\mvnw.cmd '-Dtest=TeamMemberServiceTests,ScoringServiceTests,PredictionServiceTests' test` passed. `.\mvnw.cmd test` passed with 50 tests.
 - Blockers/TODOs: none for the required Option A recalculation task. Optional per-team/per-match score detail remains deferred in `TODO.md`.
+
+### 2026-05-23 - Private scoreboard and access rules
+
+- `private-scoreboard-page` - Added a member-only `/team/{id}/scoreboard` page that shows the team total and team members sorted by score descending.
+- `security-hardening` - Explicitly restricted scoreboard and prediction routes to `ROLE_USER`; guests are redirected to login and admins receive 403 for the private participation routes.
+- What changed: `TeamController` now exposes the scoreboard route, `TeamService` returns DTO-backed scoreboard data after enforcing current-user team membership, and `TeamMemberRepository` loads team members ordered by score.
+- Decisions: Used response DTOs for the Thymeleaf model so the view does not depend directly on entities; kept membership enforcement in `TeamService` because it matches the existing team privacy behavior; kept admin blocked through the `ROLE_USER` security rule.
+- Files changed: `TeamController`, `TeamService`, `TeamMemberRepository`, `SecurityConfig`, `TeamScoreboardDTO`, `TeamMemberScoreDTO`, `templates/team/scoreboard.html`, `templates/team/show.html`, `messages.properties`, `TeamManagementMvcTests`, `AccessSecurityMvcTests`, `plan.json`, `progress.md`.
+- Verification: `.\mvnw.cmd '-Dtest=TeamManagementMvcTests,AccessSecurityMvcTests' test` passed. `.\mvnw.cmd test` passed with 52 tests.
+- Blockers/TODOs: none.

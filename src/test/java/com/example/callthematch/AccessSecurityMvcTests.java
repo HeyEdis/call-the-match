@@ -53,6 +53,10 @@ class AccessSecurityMvcTests {
         mockMvc.perform(get("/predictions/3"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(get("/team/1/scoreboard"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
@@ -124,6 +128,9 @@ class AccessSecurityMvcTests {
                 .andExpect(status().isForbidden());
 
         mockMvc.perform(get("/predictions/3").with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/team/1/scoreboard").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }
 

@@ -19,6 +19,10 @@
 <div>
     <h2>Team Score</h2>
     <p th:text="${team.score}"></p>
+    <p>
+        <a th:href="@{|/team/${team.id}/scoreboard|}"
+           th:text="#{team.scoreboard.title}">Team Scoreboard</a>
+    </p>
 </div>
 <div>
     <table>

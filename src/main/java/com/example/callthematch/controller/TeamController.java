@@ -45,6 +45,12 @@ public class TeamController {
         return "team/show";
     }
 
+    @GetMapping(value = "/{id}/scoreboard")
+    public String scoreboard(@PathVariable Long id, Model model) {
+        model.addAttribute("scoreboard", teamService.findScoreboardById(id));
+        return "team/scoreboard";
+    }
+
     @PostMapping("/{id}/invite-code")
     public String regenerateInviteCode(@PathVariable Long id, RedirectAttributes ra, Locale locale) {
         teamService.regenerateInviteCode(id);

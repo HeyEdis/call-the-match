@@ -13,6 +13,7 @@
 
 <main>
   <div class="page-header">
+    <p th:if="${successMessage}" class="success" th:text="${successMessage}"></p>
     <h1 class="page-title font-headline">Worldcup 2026</h1>
     <h2 th:text="#{schedule.title}"></h2>
     <p th:text="#{schedule.desc}"></p>

@@ -39,6 +39,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,7 +94,39 @@ class CompetitionControllerTests {
         mockMvc.perform(get("/competition/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/show"))
-                .andExpect(model().attribute("competition", competition));
+                .andExpect(model().attribute("competition", competition))
+                .andExpect(content().string(not(containsString("/competition/edit/1"))))
+                .andExpect(content().string(not(containsString("Edit match"))));
+
+        verify(competitionService).findById(1L);
+    }
+
+    @Test
+    void adminSeesEditControlOnCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
+
+        mockMvc.perform(get("/competition/1")
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("competition/show"))
+                .andExpect(content().string(containsString("/competition/edit/1")))
+                .andExpect(content().string(containsString("Edit match")));
+
+        verify(competitionService).findById(1L);
+    }
+
+    @Test
+    void userDoesNotSeeEditControlOnCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
+
+        mockMvc.perform(get("/competition/1")
+                        .with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("competition/show"))
+                .andExpect(content().string(not(containsString("/competition/edit/1"))))
+                .andExpect(content().string(not(containsString("Edit match"))));
 
         verify(competitionService).findById(1L);
     }
@@ -182,6 +215,22 @@ class CompetitionControllerTests {
     }
 
     @Test
+    void successfulAddRedirectCarriesVisibleFlashMessageToHome() throws Exception {
+        InputCompetitionDTO newCompetition = inputCompetitionDto(null);
+        when(competitionService.add(newCompetition)).thenReturn(4L);
+
+        mockMvc.perform(post("/competition/add")
+                        .with(user("admin@example.com").roles("ADMIN"))
+                        .with(csrf())
+                .flashAttr("inputCompetitionDto", newCompetition))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/home"))
+                .andExpect(flash().attribute("successMessage", "Competition 4 saved successfully"));
+
+        verify(competitionService).add(newCompetition);
+    }
+
+    @Test
     void validAdminEditSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
         InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
         when(competitionService.update(existingCompetition)).thenReturn(3L);
@@ -194,6 +243,36 @@ class CompetitionControllerTests {
                 .andExpect(redirectedUrl("/competition/3"));
 
         verify(competitionService).update(existingCompetition);
+    }
+
+    @Test
+    void successfulEditRedirectCarriesVisibleFlashMessageToDetail() throws Exception {
+        InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
+        when(competitionService.update(existingCompetition)).thenReturn(3L);
+
+        mockMvc.perform(post("/competition/edit/3")
+                        .with(user("admin@example.com").roles("ADMIN"))
+                        .with(csrf())
+                .flashAttr("inputCompetitionDto", existingCompetition))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/competition/3"))
+                .andExpect(flash().attribute("successMessage", "Competition 3 updated successfully"));
+
+        verify(competitionService).update(existingCompetition);
+    }
+
+    @Test
+    void competitionDetailRendersEditFlashMessage() throws Exception {
+        CompetitionDTO competition = competitionDto(3L);
+        when(competitionService.findById(3L)).thenReturn(competition);
+
+        mockMvc.perform(get("/competition/3")
+                        .with(user("admin@example.com").roles("ADMIN"))
+                        .flashAttr("successMessage", "Competition 3 updated successfully"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Competition 3 updated successfully")));
+
+        verify(competitionService).findById(3L);
     }
 
     @Test

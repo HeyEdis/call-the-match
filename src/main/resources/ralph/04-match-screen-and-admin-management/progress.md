@@ -139,3 +139,26 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Maven result: 37 tests run, 0 failures, 0 errors and 0 skipped.
   - Ran `git diff --check`; no whitespace errors were reported.
 - **Status**: acceptance criteria verified for the two match closure test tasks and both `"passes"` flags set to `true`.
+
+### 2026-05-24 - Render Match Flash Messages And Admin Edit Control
+
+- **Tasks completed**:
+  - `render-match-add-edit-flash-messages` - Render Match Add/Edit Flash Messages
+  - `add-admin-edit-control-on-match-detail` - Add Admin Edit Control On Match Detail
+  - `test-match-detail-admin-control-and-flash-messages` - Test Match Detail Admin Control And Flash Messages
+- **What changed**: rendered `successMessage` flash feedback on the home schedule page reached after match creation and on match detail after fixture edits. Added an ADMIN-only edit link directly under the match detail heading and kept guest/USER rendering read-only. Added MVC tests for admin edit-control visibility, guest/USER hidden control behavior, redirect flash attributes and target-page flash rendering.
+- **Decisions**: reused the existing `competition_save_success` and `competition_update_success` bundle keys for redirect feedback, and added only the focused match-detail edit label key. Direct edit route protection remains owned by the existing Spring Security route rules.
+- **Files changed**:
+  - `src/main/resources/templates/home.html`
+  - `src/main/resources/templates/competition/show.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`
+  - `src/test/java/com/example/callthematch/controller/HomeControllerTests.java`
+  - `src/main/resources/plan/04-match-screen-and-admin-management/plan.json`
+  - `src/main/resources/ralph/04-match-screen-and-admin-management/progress.md`
+- **Verification**:
+  - Initial focused test run used an unquoted PowerShell comma selector and did not start Maven.
+  - `.\mvnw.cmd '-Dtest=CompetitionControllerTests,HomeControllerTests' test` completed with `BUILD SUCCESS`: 23 tests run, 0 failures and 0 errors.
+  - `.\mvnw.cmd test` completed with `BUILD SUCCESS`: 115 tests run, 0 failures and 0 errors.
+  - Existing Hibernate missing-table DDL warnings, Lombok builder warning and Mockito dynamic-agent warnings remain noisy in the passing output.
+- **Status**: acceptance criteria verified for all three remaining match/admin tasks and their `"passes"` flags set to `true`.

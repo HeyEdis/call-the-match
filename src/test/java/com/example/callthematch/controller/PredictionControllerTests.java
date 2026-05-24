@@ -21,6 +21,7 @@ import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static com.example.callthematch.support.TestPredictions.inputPredictionDto;
 import static com.example.callthematch.support.TestPredictions.predictionOverviewDtos;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -137,14 +138,16 @@ class PredictionControllerTests {
     }
 
     @Test
-    void closedPredictionFormDisablesSubmitButton() throws Exception {
+    void closedPredictionFormHidesFormAndShowsDeadlineMessage() throws Exception {
         when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDto());
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("disabled")));
+                .andExpect(model().attribute("cutoffPassed", true))
+                .andExpect(content().string(containsString("prediction deadline")))
+                .andExpect(content().string(not(containsString("predictedScoreA"))));
     }
 
     @Test

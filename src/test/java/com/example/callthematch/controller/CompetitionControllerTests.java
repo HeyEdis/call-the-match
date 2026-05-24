@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
 
 import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static com.example.callthematch.support.TestCompetitions.countryDtos;
@@ -78,23 +77,24 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void guestCanAccessPublicCompetitionRoutes() throws Exception {
-        List<CompetitionDTO> competitions = List.of(competitionDto(1L));
-        CompetitionDTO competition = competitionDto(1L);
-        when(competitionService.getAllCompetitions()).thenReturn(competitions);
-        when(competitionService.findById(1L)).thenReturn(competition);
-
+    void guestIsRedirectedToLoginForCompetitionList() throws Exception {
         mockMvc.perform(get("/competition"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("competition/list"))
-                .andExpect(model().attribute("competitionList", competitions));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+
+        verify(competitionService, never()).getAllCompetitions();
+    }
+
+    @Test
+    void guestCanAccessCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
 
         mockMvc.perform(get("/competition/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/show"))
                 .andExpect(model().attribute("competition", competition));
 
-        verify(competitionService).getAllCompetitions();
         verify(competitionService).findById(1L);
     }
 

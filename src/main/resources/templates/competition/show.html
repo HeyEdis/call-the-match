@@ -49,6 +49,10 @@
       <a th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
          th:text="#{prediction.link}"></a>
     </p>
+    <p sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}">
+      <span th:text="#{prediction.own.score}"></span>:
+      <span th:text="|${currentUserPrediction.predictedScoreA} - ${currentUserPrediction.predictedScoreB}|"></span>
+    </p>
   </div>
 </div>
 

@@ -4,10 +4,12 @@ import com.example.callthematch.advice.CompetitionValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
+import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
+import com.example.callthematch.service.PredictionService;
 import com.example.callthematch.service.StadiumService;
 import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+
+import java.util.Optional;
 
 import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static com.example.callthematch.support.TestCompetitions.countryDtos;
@@ -68,6 +72,9 @@ class CompetitionControllerTests {
     private CountryService countryService;
 
     @MockitoBean
+    private PredictionService predictionService;
+
+    @MockitoBean
     private CompetitionValidator competitionValidator;
 
     @BeforeEach
@@ -96,9 +103,11 @@ class CompetitionControllerTests {
                 .andExpect(view().name("competition/show"))
                 .andExpect(model().attribute("competition", competition))
                 .andExpect(content().string(not(containsString("/competition/edit/1"))))
-                .andExpect(content().string(not(containsString("Edit match"))));
+                .andExpect(content().string(not(containsString("Edit match"))))
+                .andExpect(content().string(not(containsString("Your prediction"))));
 
         verify(competitionService).findById(1L);
+        verify(predictionService, never()).findCurrentUserPredictionByCompetitionId(1L);
     }
 
     @Test
@@ -114,6 +123,60 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("Edit match")));
 
         verify(competitionService).findById(1L);
+    }
+
+    @Test
+    void userSeesOwnPredictionOnCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
+        when(predictionService.findCurrentUserPredictionByCompetitionId(1L))
+                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
+
+        mockMvc.perform(get("/competition/1")
+                        .with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("competition/show"))
+                .andExpect(model().attributeExists("currentUserPrediction"))
+                .andExpect(content().string(containsString("Your prediction")))
+                .andExpect(content().string(containsString("2 - 1")))
+                .andExpect(content().string(containsString("/predictions/1")));
+
+        verify(competitionService).findById(1L);
+        verify(predictionService).findCurrentUserPredictionByCompetitionId(1L);
+    }
+
+    @Test
+    void userWithoutPredictionDoesNotSeePredictionStatusOnCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
+        when(predictionService.findCurrentUserPredictionByCompetitionId(1L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/competition/1")
+                        .with(user("user1@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("currentUserPrediction"))
+                .andExpect(content().string(not(containsString("Your prediction"))))
+                .andExpect(content().string(not(containsString("2 - 1"))))
+                .andExpect(content().string(containsString("/predictions/1")));
+
+        verify(competitionService).findById(1L);
+        verify(predictionService).findCurrentUserPredictionByCompetitionId(1L);
+    }
+
+    @Test
+    void adminDoesNotReceivePredictionStatusOnCompetitionDetail() throws Exception {
+        CompetitionDTO competition = competitionDto(1L);
+        when(competitionService.findById(1L)).thenReturn(competition);
+
+        mockMvc.perform(get("/competition/1")
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("currentUserPrediction"))
+                .andExpect(content().string(not(containsString("Your prediction"))))
+                .andExpect(content().string(not(containsString("/predictions/1"))));
+
+        verify(competitionService).findById(1L);
+        verify(predictionService, never()).findCurrentUserPredictionByCompetitionId(1L);
     }
 
     @Test

@@ -4,11 +4,13 @@ import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
+import com.example.callthematch.service.PredictionService;
 import com.example.callthematch.service.StadiumService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +33,7 @@ public class CompetitionController {
     private final CompetitionService competitionService;
     private final StadiumService stadiumService;
     private final CountryService countryService;
+    private final PredictionService predictionService;
     private final MessageSource messageSource;
 
     @GetMapping
@@ -40,9 +43,20 @@ public class CompetitionController {
     }
 
     @GetMapping(value = "/{id}")
-    public String show(@PathVariable Long id, Model model) {
+    public String show(@PathVariable Long id, Model model, Authentication authentication) {
         model.addAttribute("competition", competitionService.findById(id));
+        if (isUser(authentication)) {
+            predictionService.findCurrentUserPredictionByCompetitionId(id)
+                    .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
+        }
         return "competition/show";
+    }
+
+    private boolean isUser(Authentication authentication) {
+        return authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
     }
 
     @GetMapping(value = "/edit/{id}")

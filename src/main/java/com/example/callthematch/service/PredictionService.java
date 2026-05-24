@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +67,16 @@ public class PredictionService {
                         prediction.getPredictedScoreA(),
                         prediction.getPredictedScoreB()))
                 .orElseGet(InputPredictionDTO::new);
+    }
+
+    public Optional<InputPredictionDTO> findCurrentUserPredictionByCompetitionId(Long competitionId) {
+        MyUser user = userService.getCurrentUser();
+        Competition competition = findCompetitionById(competitionId);
+
+        return predictionRepository.findByUserAndCompetition(user, competition)
+                .map(prediction -> new InputPredictionDTO(
+                        prediction.getPredictedScoreA(),
+                        prediction.getPredictedScoreB()));
     }
 
     public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto) {

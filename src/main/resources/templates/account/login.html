@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <title th:text="#{login.label}"></title>
 </head>
@@ -10,24 +11,33 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<main>
-    <h1 th:text="#{login.label}"></h1>
-    <p th:if="${param.error}" class="error" th:text="#{login.error}"></p>
-    <p th:if="${param.logout}" th:text="#{logout.success}"></p>
-    <p th:if="${registrationSuccess}" th:text="#{registration.success}"></p>
+<main class="signin-shell">
+    <section class="signin-panel">
+        <p class="signin-brand">Call The Match</p>
+        <h1 th:text="#{login.label}"></h1>
 
-    <form th:action="@{/login}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <p>
-            <label for="email" th:text="#{label.account.email}"></label>
-            <input id="email" name="email" type="email" autocomplete="email" required/>
-        </p>
-        <p>
-            <label for="password" th:text="#{label.account.password}"></label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required/>
-        </p>
-        <button type="submit" th:text="#{login.label}"></button>
-    </form>
+        <p th:if="${param.error}" class="error signin-message" th:text="#{login.error}"></p>
+        <p th:if="${param.logout}" class="success signin-message" th:text="#{logout.success}"></p>
+        <p th:if="${registrationSuccess}" class="success signin-message" th:text="#{registration.success}"></p>
+
+        <form class="signin-form" th:action="@{/login}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <p class="signin-field">
+                <label for="email" th:text="#{label.account.email}"></label>
+                <input id="email" name="email" type="email" autocomplete="email" required/>
+            </p>
+            <p class="signin-field">
+                <label for="password" th:text="#{label.account.password}"></label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required/>
+            </p>
+            <button class="signin-submit" type="submit" th:text="#{login.label}"></button>
+        </form>
+
+        <div class="signin-divider">
+            <span>New to Call The Match?</span>
+        </div>
+        <a class="signin-secondary" th:href="@{/register}" th:text="#{registration.label}"></a>
+    </section>
 </main>
 </body>
 </html>

@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <title th:text="#{ranking.title}"></title>
 </head>
@@ -11,27 +12,67 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<main>
-    <div class="page-header">
-        <h1 class="page-title font-headline" th:text="#{ranking.heading}"></h1>
-        <p th:text="#{ranking.summary}"></p>
+<main class="ranking-shell">
+    <section class="ranking-page ranking-page-podium">
+        <div class="ranking-hero ranking-hero-centered">
+            <h1 th:text="#{ranking.heading}"></h1>
+            <p th:text="#{ranking.summary}"></p>
+        </div>
 
-        <table>
-            <tr>
-                <th th:text="#{ranking.rank}"></th>
-                <th th:text="#{label.team.name}"></th>
-                <th th:text="#{ranking.totalScore}"></th>
-                <th th:text="#{ranking.memberCount}"></th>
-            </tr>
+        <div class="ranking-podium" th:if="${!#lists.isEmpty(teamList)}">
+            <article class="ranking-podium-card is-first" th:with="team=${teamList[0]}">
+                <span class="ranking-podium-rank">#1</span>
+                <span th:text="#{ranking.rank}"></span>
+                <strong th:text="${team.name}"></strong>
+                <small>
+                    <b th:text="${team.score}"></b> <b th:text="#{ranking.totalScore}"></b>
+                    /
+                    <b th:text="${team.memberCount}"></b> <b th:text="#{ranking.memberCount}"></b>
+                </small>
+            </article>
+            <article class="ranking-podium-card" th:if="${#lists.size(teamList) > 1}" th:with="team=${teamList[1]}">
+                <span class="ranking-podium-rank">#2</span>
+                <span th:text="#{ranking.rank}"></span>
+                <strong th:text="${team.name}"></strong>
+                <small>
+                    <b th:text="${team.score}"></b> <b th:text="#{ranking.totalScore}"></b>
+                    /
+                    <b th:text="${team.memberCount}"></b> <b th:text="#{ranking.memberCount}"></b>
+                </small>
+            </article>
+            <article class="ranking-podium-card is-third" th:if="${#lists.size(teamList) > 2}" th:with="team=${teamList[2]}">
+                <span class="ranking-podium-rank">#3</span>
+                <span th:text="#{ranking.rank}"></span>
+                <strong th:text="${team.name}"></strong>
+                <small>
+                    <b th:text="${team.score}"></b> <b th:text="#{ranking.totalScore}"></b>
+                    /
+                    <b th:text="${team.memberCount}"></b> <b th:text="#{ranking.memberCount}"></b>
+                </small>
+            </article>
+        </div>
 
-            <tr th:each="team, stat : ${teamList}">
-                <td th:text="${stat.count}"></td>
-                <td th:text="${team.name}"></td>
-                <td th:text="${team.score}"></td>
-                <td th:text="${team.memberCount}"></td>
-            </tr>
-        </table>
-    </div>
+        <div class="ranking-compact-card">
+            <table class="ranking-table ranking-table-compact">
+                <thead>
+                <tr>
+                    <th th:text="#{ranking.rank}"></th>
+                    <th th:text="#{label.team.name}"></th>
+                    <th th:text="#{ranking.totalScore}"></th>
+                    <th th:text="#{ranking.memberCount}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="team, stat : ${teamList}" th:if="${stat.count > 3}">
+                    <td><span class="ranking-rank" th:text="${stat.count}"></span></td>
+                    <td class="ranking-team-name" th:text="${team.name}"></td>
+                    <td class="ranking-score" th:text="${team.score}"></td>
+                    <td th:text="${team.memberCount}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </main>
 
 </body>

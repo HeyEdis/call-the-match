@@ -38,8 +38,6 @@ public class InitDataConfig implements CommandLineRunner {
     private final CompetitionRepository competitionRepository;
     private final CountryRepository countryRepository;
     private final LocationRepository locationRepository;
-    private final PredictionRepository predictionRepository;
-
     private final StadiumRepository stadiumRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
@@ -204,7 +202,7 @@ public class InitDataConfig implements CommandLineRunner {
         var generatedTeams = new ArrayList<Team>();
         for (int i = 0; i < GENERATED_TEAM_COUNT; i++) {
             Team team = Team.builder()
-                    .name(faker.team().name() + " " + (i + 1))
+                    .name(faker.ancient().god() + " " + (i + 1))
                     .inviteCode(faker.bothify("????####").toUpperCase())
                     .owner(generatedUsers.get(i))
                     .createdAt(LocalDateTime.now())

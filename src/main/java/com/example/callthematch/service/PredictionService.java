@@ -3,6 +3,7 @@ package com.example.callthematch.service;
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.PredictionOverviewDTO;
+import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
@@ -11,6 +12,8 @@ import com.example.callthematch.model.Prediction;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.PredictionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -69,12 +72,16 @@ public class PredictionService {
                 .orElseGet(InputPredictionDTO::new);
     }
 
-    public Optional<InputPredictionDTO> findCurrentUserPredictionByCompetitionId(Long competitionId) {
+    public Optional<PredictionStatusDTO> findCurrentUserPredictionStatusByCompetitionId(Long competitionId) {
+        if (!isCurrentUser()) {
+            return Optional.empty();
+        }
+
         MyUser user = userService.getCurrentUser();
         Competition competition = findCompetitionById(competitionId);
 
         return predictionRepository.findByUserAndCompetition(user, competition)
-                .map(prediction -> new InputPredictionDTO(
+                .map(prediction -> new PredictionStatusDTO(
                         prediction.getPredictedScoreA(),
                         prediction.getPredictedScoreB()));
     }
@@ -111,6 +118,14 @@ public class PredictionService {
     private boolean isCutoffPassed(Competition competition) {
         LocalDateTime kickoff = LocalDateTime.of(competition.getDate(), competition.getTime());
         return !LocalDateTime.now().isBefore(kickoff.minusHours(1));
+    }
+
+    private boolean isCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
     }
 
     private Competition findCompetitionById(Long id) {

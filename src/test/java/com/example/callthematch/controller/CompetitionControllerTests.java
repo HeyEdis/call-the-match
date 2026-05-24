@@ -4,8 +4,8 @@ import com.example.callthematch.advice.CompetitionValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
-import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
+import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
@@ -107,7 +107,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("Your prediction"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService, never()).findCurrentUserPredictionByCompetitionId(1L);
+        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test
@@ -129,8 +129,8 @@ class CompetitionControllerTests {
     void userSeesOwnPredictionOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionByCompetitionId(1L))
-                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
+        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L))
+                .thenReturn(Optional.of(new PredictionStatusDTO(2, 1)));
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -142,14 +142,14 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionByCompetitionId(1L);
+        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test
     void userWithoutPredictionDoesNotSeePredictionStatusOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionByCompetitionId(1L)).thenReturn(Optional.empty());
+        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -160,7 +160,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionByCompetitionId(1L);
+        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test
@@ -176,7 +176,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("/predictions/1"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService, never()).findCurrentUserPredictionByCompetitionId(1L);
+        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test

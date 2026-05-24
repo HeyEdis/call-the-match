@@ -1,15 +1,21 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
+import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Prediction;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.PredictionRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,10 +24,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PredictionServiceTests {
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     void savePredictionCreatesPredictionWithCreatedAt() {
@@ -83,6 +95,52 @@ class PredictionServiceTests {
                 .isInstanceOf(PredictionCutoffPassed.class);
     }
 
+    @Test
+    void currentUserPredictionStatusReturnsPredictionForUserRole() {
+        PredictionRepository predictionRepository = mock(PredictionRepository.class);
+        CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
+        UserService userService = mock(UserService.class);
+        PredictionService predictionService = new PredictionService(
+                predictionRepository, competitionRepository, userService);
+        MyUser user = MyUser.builder().id(1L).email("user1@example.com").build();
+        Competition competition = openCompetition();
+        Prediction prediction = Prediction.builder()
+                .user(user)
+                .competition(competition)
+                .predictedScoreA(2)
+                .predictedScoreB(1)
+                .build();
+
+        authenticateAs("user1@example.com", "ROLE_USER");
+        when(userService.getCurrentUser()).thenReturn(user);
+        when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
+        when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.of(prediction));
+
+        Optional<PredictionStatusDTO> result = predictionService.findCurrentUserPredictionStatusByCompetitionId(2L);
+
+        assertThat(result).contains(new PredictionStatusDTO(2, 1));
+        verify(userService).getCurrentUser();
+        verify(predictionRepository).findByUserAndCompetition(user, competition);
+    }
+
+    @Test
+    void currentUserPredictionStatusSkipsLookupForAdminRole() {
+        PredictionRepository predictionRepository = mock(PredictionRepository.class);
+        CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
+        UserService userService = mock(UserService.class);
+        PredictionService predictionService = new PredictionService(
+                predictionRepository, competitionRepository, userService);
+
+        authenticateAs("admin@example.com", "ROLE_ADMIN");
+
+        Optional<PredictionStatusDTO> result = predictionService.findCurrentUserPredictionStatusByCompetitionId(2L);
+
+        assertThat(result).isEmpty();
+        verify(userService, never()).getCurrentUser();
+        verify(competitionRepository, never()).findById(any());
+        verify(predictionRepository, never()).findByUserAndCompetition(any(), any());
+    }
+
     private PredictionService predictionService(PredictionRepository predictionRepository) {
         return new PredictionService(
                 predictionRepository,
@@ -96,5 +154,13 @@ class PredictionServiceTests {
                 .date(LocalDate.now().plusDays(1))
                 .time(LocalTime.NOON)
                 .build();
+    }
+
+    private void authenticateAs(String name, String role) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        name,
+                        "password",
+                        List.of(new SimpleGrantedAuthority(role))));
     }
 }

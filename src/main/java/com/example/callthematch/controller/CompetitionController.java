@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
 import java.util.Locale;
 
 @Controller
@@ -43,20 +41,11 @@ public class CompetitionController {
     }
 
     @GetMapping(value = "/{id}")
-    public String show(@PathVariable Long id, Model model, Authentication authentication) {
+    public String show(@PathVariable Long id, Model model) {
         model.addAttribute("competition", competitionService.findById(id));
-        if (isUser(authentication)) {
-            predictionService.findCurrentUserPredictionByCompetitionId(id)
-                    .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
-        }
+        predictionService.findCurrentUserPredictionStatusByCompetitionId(id)
+                .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
         return "competition/show";
-    }
-
-    private boolean isUser(Authentication authentication) {
-        return authentication != null
-                && authentication.isAuthenticated()
-                && authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
     }
 
     @GetMapping(value = "/edit/{id}")

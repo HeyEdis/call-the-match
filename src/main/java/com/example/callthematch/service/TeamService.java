@@ -55,13 +55,6 @@ public class TeamService {
         return teamRepository.findById(id).orElseThrow(() -> new TeamNotFound(id));
     }
 
-    public List<TeamDTO> getAllTeams() {
-        return teamRepository.findAll()
-                .stream()
-                .map(c -> toDTO(c))
-                .toList();
-    }
-
     public List<TeamDTO> getCurrentUserTeams() {
         MyUser user = userService.getCurrentUser();
 
@@ -91,6 +84,15 @@ public class TeamService {
         Team team = findTeamById(id);
         requireCurrentUserMembership(team);
         return toScoreboardDTO(team);
+    }
+
+    public String getTeamRank(Long id) {
+        Team team = findTeamById(id);
+        if (team.getScore() == null) {
+            return "unknown";
+        }
+        long teamsAbove = teamRepository.countByScoreGreaterThan(team.getScore());
+        return String.valueOf(teamsAbove + 1);
     }
 
     public boolean isCurrentUserOwner(Long id) {

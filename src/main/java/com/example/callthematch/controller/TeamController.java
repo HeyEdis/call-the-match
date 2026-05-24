@@ -4,7 +4,6 @@ import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNameAlreadyExists;
-
 import com.example.callthematch.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class TeamController {
     public String show(@PathVariable Long id, Model model) {
         model.addAttribute("team", teamService.findById(id));
         model.addAttribute("isOwner", teamService.isCurrentUserOwner(id));
-        //model.addAttribute("rank", teamService.getTeamRank(id));
+        model.addAttribute("rank", teamService.getTeamRank(id));
         return "team/show";
     }
 

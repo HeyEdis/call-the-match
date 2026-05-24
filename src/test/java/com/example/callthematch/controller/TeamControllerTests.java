@@ -3,6 +3,7 @@ package com.example.callthematch.controller;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
+import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNameAlreadyExists;
@@ -67,6 +68,24 @@ class TeamControllerTests {
     @BeforeEach
     void setUp() {
         when(teamService.getCurrentUserTeams()).thenReturn(List.of(teamDto()));
+    }
+
+    @Test
+    void rankingShowsPublicTopTenInScoreOrder() throws Exception {
+        List<PublicRankingDTO> ranking = List.of(
+                new PublicRankingDTO("Winners", 21, 4),
+                new PublicRankingDTO("Chasers", 13, 3));
+        when(teamService.getTop10Teams()).thenReturn(ranking);
+
+        mockMvc.perform(get("/team/ranking"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("team/ranking"))
+                .andExpect(model().attribute("teamList", ranking));
+
+        assertThat(ranking).hasSizeLessThanOrEqualTo(10);
+        assertThat(ranking).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
+                Integer.compare(right, left));
+        verify(teamService).getTop10Teams();
     }
 
     @Test

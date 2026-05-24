@@ -5,15 +5,13 @@
 <nav th:fragment="navbar" class="glass-nav">
     <div class="nav-inner">
       <span>Call The Match</span>
-      <a th:href="@{/home}">Home</a>
-      <a th:href="@{/ranking}">Top 10 Teams</a>
-      <a th:href="@{/competition}">Matches</a>
+      <a sec:authorize="!hasRole('ADMIN')" th:href="@{/home}">Home</a>
+      <a sec:authorize="!hasRole('ADMIN')" th:href="@{/team/ranking}">Top 10 Teams</a>
       <a sec:authorize="hasRole('USER')" th:href="@{/team/dashboard}">My Teams</a>
       <a sec:authorize="hasRole('USER')" th:href="@{/predictions}">My Predictions</a>
-      <a sec:authorize="hasRole('ADMIN')" th:href="@{/competition/add}">Manage Matches</a>
+      <a sec:authorize="hasRole('ADMIN')" th:href="@{/competition}">Manage Matches</a>
       <a sec:authorize="isAnonymous()" th:href="@{/login}">Login</a>
       <a sec:authorize="isAnonymous()" th:href="@{/register}" class="btn-register">Register</a>
-      <span sec:authorize="isAuthenticated()" sec:authentication="name"></span>
       <span sec:authorize="hasRole('ADMIN')">ADMIN</span>
       <span sec:authorize="hasRole('USER')">USER</span>
       <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">

@@ -4,7 +4,7 @@ import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNameAlreadyExists;
-import com.example.callthematch.dto.response.TeamDTO;
+
 import com.example.callthematch.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Locale;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,13 +25,15 @@ public class TeamController {
     private final TeamService teamService;
     private final MessageSource messageSource;
 
-    @ModelAttribute("teamList")
-    public List<TeamDTO> populateTeamList() {
-        return teamService.getCurrentUserTeams();
+    @GetMapping("/ranking")
+    public String showRanking(Model model) {
+        model.addAttribute("teamList", teamService.getTop10Teams());
+        return "team/ranking";
     }
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
+        model.addAttribute("teamList", teamService.getCurrentUserTeams());
         model.addAttribute("inputTeamDto", new InputTeamDTO());
         model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
         return "team/dashboard";
@@ -42,6 +43,7 @@ public class TeamController {
     public String show(@PathVariable Long id, Model model) {
         model.addAttribute("team", teamService.findById(id));
         model.addAttribute("isOwner", teamService.isCurrentUserOwner(id));
+        //model.addAttribute("rank", teamService.getTeamRank(id));
         return "team/show";
     }
 
@@ -76,6 +78,7 @@ public class TeamController {
             RedirectAttributes redirectAttributes,
             Locale locale) {
         if (result.hasErrors()) {
+            model.addAttribute("teamList", teamService.getCurrentUserTeams());
             model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
             return "team/dashboard";
         }
@@ -85,6 +88,7 @@ public class TeamController {
         } catch (TeamNameAlreadyExists ex) {
             result.rejectValue("name", "team.name.duplicate",
                     messageSource.getMessage("team.name.duplicate", null, locale));
+            model.addAttribute("teamList", teamService.getCurrentUserTeams());
             model.addAttribute("inputTeamJoinDto", new InputTeamJoinDTO());
             return "team/dashboard";
         }
@@ -102,6 +106,7 @@ public class TeamController {
             RedirectAttributes redirectAttributes,
             Locale locale) {
         if (result.hasErrors()) {
+            model.addAttribute("teamList", teamService.getCurrentUserTeams());
             model.addAttribute("inputTeamDto", new InputTeamDTO());
             return "team/dashboard";
         }
@@ -111,6 +116,7 @@ public class TeamController {
         } catch (InviteCodeNotFound ex) {
             result.rejectValue("inviteCode", "team.inviteCode.invalid",
                     messageSource.getMessage("team.inviteCode.invalid", null, locale));
+            model.addAttribute("teamList", teamService.getCurrentUserTeams());
             model.addAttribute("inputTeamDto", new InputTeamDTO());
             return "team/dashboard";
         }

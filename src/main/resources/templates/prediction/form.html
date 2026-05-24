@@ -13,7 +13,11 @@
 <h1 th:text="#{prediction.form.label}">Prediction</h1>
 <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
 
-<div>
+<div th:if="${cutoffPassed}">
+    <p th:text="#{prediction.cutoff.closed}"></p>
+</div>
+
+<div th:unless="${cutoffPassed}">
     <form th:action="@{/predictions/{competitionId}(competitionId=${competition.id})}"
           th:object="${inputPredictionDto}" method="post">
         <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
@@ -31,8 +35,7 @@
                   th:errorclass="error" th:errors="*{predictedScoreB}"></span>
         </p>
 
-        <button type="submit" th:disabled="${cutoffPassed}"
-                th:text="#{prediction.save.submit}">Save prediction</button>
+        <button type="submit" th:text="#{prediction.save.submit}">Save prediction</button>
         <button type="reset" th:text="#{competition.add.reset}">Reset</button>
     </form>
 </div>

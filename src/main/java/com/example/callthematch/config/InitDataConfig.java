@@ -1,11 +1,19 @@
 package com.example.callthematch.config;
 
-import com.example.callthematch.model.*;
+import com.example.callthematch.model.Competition;
+import com.example.callthematch.model.Country;
+import com.example.callthematch.model.Location;
+import com.example.callthematch.model.MyUser;
+import com.example.callthematch.model.Role;
+import com.example.callthematch.model.Stadium;
+import com.example.callthematch.model.Team;
+import com.example.callthematch.model.TeamMember;
+import com.example.callthematch.model.TeamRole;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.CountryRepository;
 import com.example.callthematch.repository.LocationRepository;
 import com.example.callthematch.repository.PredictionRepository;
-import com.example.callthematch.repository.RankingRepository;
+
 import com.example.callthematch.repository.StadiumRepository;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
@@ -31,7 +39,7 @@ public class InitDataConfig implements CommandLineRunner {
     private final CountryRepository countryRepository;
     private final LocationRepository locationRepository;
     private final PredictionRepository predictionRepository;
-    private final RankingRepository rankingRepository;
+
     private final StadiumRepository stadiumRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
@@ -240,25 +248,17 @@ public class InitDataConfig implements CommandLineRunner {
         }
         teamMemberRepository.saveAll(ownerMembers);
 
-        // -- RANKINGS ----------------------------
-        var generatedRankings = new ArrayList<Ranking>();
+        // -- PERSIST TEAM SCORES ----------------------------
         for (int i = 0; i < generatedTeams.size(); i++) {
-            int wins = GENERATED_TEAM_COUNT - i;
-            int draws = i % 3;
-            int losses = i / 2;
-
-            Ranking ranking = Ranking.builder()
-                    .team(generatedTeams.get(i))
-                    .wins(wins)
-                    .draws(draws)
-                    .losses(losses)
-                    .points((wins * 3) + draws)
-                    .build();
-
-            generatedRankings.add(ranking);
+            Team team = generatedTeams.get(i);
+            int teamScore = generatedTeamMembers.stream()
+                    .filter(m -> m.getTeam().equals(team))
+                    .mapToInt(TeamMember::getScore)
+                    .sum()
+                    + ownerMembers.get(i).getScore();
+            team.setScore(teamScore);
         }
-
-        rankingRepository.saveAll(generatedRankings);
+        teamRepository.saveAll(generatedTeams);
 
         // ── 10. COMPETITIONS ─────────────────────
         Competition c1 = Competition.builder()
@@ -334,7 +334,7 @@ public class InitDataConfig implements CommandLineRunner {
         competitionRepository.saveAll(List.of(c1,c2,c3,c4,c5,c6,c7,c8));
 
         // ── 11. PREDICTIONS  ──────────────────────────────────────────
-        var allCompetitions = competitionRepository.findAll();
+        /*var allCompetitions = competitionRepository.findAll();
         var generatedPredictions = new ArrayList<Prediction>();
         for (MyUser user : generatedUsers) {
             for (Competition competition : allCompetitions) {
@@ -349,6 +349,6 @@ public class InitDataConfig implements CommandLineRunner {
             }
         }
 
-        predictionRepository.saveAll(generatedPredictions);
+        predictionRepository.saveAll(generatedPredictions);*/
     }
 }

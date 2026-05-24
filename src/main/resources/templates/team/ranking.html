@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{ranking.title}">Top 10 Teams</title>
+    <title th:text="#{ranking.title}"></title>
 </head>
 <body>
 
@@ -13,15 +13,15 @@
 
 <main>
     <div class="page-header">
-        <h1 class="page-title font-headline" th:text="#{ranking.heading}">Public Top 10 Teams</h1>
-        <p th:text="#{ranking.summary}">The teams with the highest total score.</p>
+        <h1 class="page-title font-headline" th:text="#{ranking.heading}"></h1>
+        <p th:text="#{ranking.summary}"></p>
 
         <table>
             <tr>
-                <th th:text="#{ranking.rank}">Rank</th>
-                <th th:text="#{label.team.name}">Team Name</th>
-                <th th:text="#{ranking.totalScore}">Total Score</th>
-                <th th:text="#{ranking.memberCount}">Member Count</th>
+                <th th:text="#{ranking.rank}"></th>
+                <th th:text="#{label.team.name}"></th>
+                <th th:text="#{ranking.totalScore}"></th>
+                <th th:text="#{ranking.memberCount}"></th>
             </tr>
 
             <tr th:each="team, stat : ${teamList}">

@@ -44,7 +44,7 @@
                 <form th:if="${member.role.name() != 'OWNER'}"
                       th:action="@{|/team/${team.id}/members/${member.id}/remove|}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="submit" th:text="#{team.member.remove}">Remove</button>
+                    <button type="submit" th:text="#{team.member.remove}"></button>
                 </form>
             </td>
         </tr>
@@ -57,15 +57,10 @@
     <p th:text="${team.inviteCode}"></p>
     <form th:if="${isOwner}" th:action="@{|/team/${team.id}/invite-code|}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <button type="submit" th:text="#{team.inviteCode.regenerate}">Regenerate Code</button>
+        <button type="submit" th:text="#{team.inviteCode.regenerate}"></button>
     </form>
     <p th:if="${message}" th:text="${message}"></p>
 </div>
-
-
-<!-- <a th:href="|/contacts/edit/${contact.id}|"><Button th:text="Update"></Button></a> -->
-
-
 
 </body>
 </html>

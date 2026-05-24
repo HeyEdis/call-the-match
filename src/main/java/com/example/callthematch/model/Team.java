@@ -31,6 +31,7 @@ public class Team {
     private MyUser owner;
 
     @OneToMany(mappedBy = "team")
+    @OrderBy("joinedAt ASC")
     private Set<TeamMember> members = new HashSet<>();
 
     @Column(nullable = false, unique = true)

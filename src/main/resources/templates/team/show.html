@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Team</title>
+    <title th:text="#{team.show.title}"></title>
 </head>
 <body>
 
@@ -17,21 +17,21 @@
 </div>
 
 <div>
-    <h2>Team Score</h2>
+    <h2 th:text="#{team.score.label}"></h2>
     <p th:text="${team.score}"></p>
-    <p>
-        <a th:href="@{|/team/${team.id}/scoreboard|}"
-           th:text="#{team.scoreboard.title}">Team Scoreboard</a>
-    </p>
+     <p>
+          <a th:href="@{|/team/${team.id}/scoreboard|}"
+             th:text="#{team.scoreboard.title}"></a>
+      </p>
 </div>
 <div>
     <table>
         <tr>
-            <th>Member</th>
-            <th>Role</th>
-            <th>Personal Score</th>
-            <th>Active Since</th>
-            <th th:if="${isOwner}">Actions</th>
+            <th th:text="#{label.member}"></th>
+            <th th:text="#{label.role}"></th>
+            <th th:text="#{label.personalScore}"></th>
+            <th th:text="#{label.activeSince}"></th>
+            <th th:if="${isOwner}" th:text="#{label.actions}"></th>
 
         </tr>
 
@@ -52,8 +52,8 @@
 </div>
 
 <div>
-    <h2>Recruit Members</h2>
-    <span>PRIVATE INVITE CODE</span>
+    <h2 th:text="#{team.recruitment}"></h2>
+    <span th:text="#{team.inviteCode.label}"></span>
     <p th:text="${team.inviteCode}"></p>
     <form th:if="${isOwner}" th:action="@{|/team/${team.id}/invite-code|}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

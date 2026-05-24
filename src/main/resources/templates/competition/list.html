@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Competitions</title>
+    <title th:text="#{competition.list.title}"></title>
 </head>
 <body>
 
@@ -13,18 +13,18 @@
 
 <main>
     <div class="page-header">
-        <button><a th:href="@{/competition/add}" class="button">Add</a></button>
+        <button><a th:href="@{/competition/add}" class="button" th:text="#{competition.list.addButton}"></a></button>
         <table>
             <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Team A</th>
-                <th>Team B</th>
-                <th>Stadium</th>
-                <th>City</th>
-                <th>Score</th>
-                <th>Match</th>
-                <th>Action</th>
+                <th th:text="#{label.date}"></th>
+                <th th:text="#{label.time}"></th>
+                <th th:text="#{label.teamA}"></th>
+                <th th:text="#{label.teamB}"></th>
+                <th th:text="#{label.stadium}"></th>
+                <th th:text="#{label.city}"></th>
+                <th th:text="#{label.score}"></th>
+                <th th:text="#{label.match}"></th>
+                <th th:text="#{label.action}"></th>
             </tr>
 
             <tr th:each="competition : ${competitionList}">
@@ -36,9 +36,9 @@
                 <td th:text="${competition.stadium.location.city}"></td>
                 <td th:if="${competition.scoreA != null and competition.scoreB != null}"
                     th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
-                <td th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</td>
-                <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
-                <td><a th:href="@{/competition/edit/{id}(id=${competition.id})}"><button>Edit</button></a></td>
+                <td th:unless="${competition.scoreA != null and competition.scoreB != null}" th:text="#{competition.list.tbd}"></td>
+                <td><a th:href="|/competition/${competition.id}|" th:text="#{label.match}"></a></td>
+                <td><a th:href="@{/competition/edit/{id}(id=${competition.id})}"><button th:text="#{competition.list.edit}"></button></a></td>
             </tr>
         </table>
     </div>

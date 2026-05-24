@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <link rel="stylesheet" th:href="@{/css/main.css}"/>
-  <title>Home</title>
+  <title th:text="#{home.title}"></title>
 </head>
 <body>
 
@@ -14,18 +14,18 @@
 <main>
   <div class="page-header">
     <h1 class="page-title font-headline">Worldcup 2026</h1>
-    <h2>Schedule</h2>
-    <p>Stay updated with the complete match schedule for the FIFA World Cup 2026.</p>
+    <h2 th:text="#{schedule.title}"></h2>
+    <p th:text="#{schedule.desc}"></p>
     <table>
       <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Team A</th>
-        <th>Team B</th>
-        <th>Stadium</th>
-        <th>City</th>
-        <th>Score</th>
-        <th>Match</th>
+        <th th:text="#{label.date}"></th>
+        <th th:text="#{label.time}"></th>
+        <th th:text="#{label.teamA}"></th>
+        <th th:text="#{label.teamB}"></th>
+        <th th:text="#{label.stadium}"></th>
+        <th th:text="#{label.city}"></th>
+        <th th:text="#{label.score}"></th>
+        <th th:text="#{label.match}"></th>
       </tr>
 
       <tr th:each="competition : ${competitionList}">
@@ -37,8 +37,8 @@
         <td th:text="${competition.stadium.location.city}"></td>
         <td th:if="${competition.scoreA != null and competition.scoreB != null}"
             th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
-        <td th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</td>
-        <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
+        <td th:unless="${competition.scoreA != null and competition.scoreB != null}" th:text="#{competition.list.tbd}"></td>
+        <td><a th:href="|/competition/${competition.id}|" th:text="#{label.match}"></a></td>
       </tr>
     </table>
   </div>

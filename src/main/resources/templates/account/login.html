@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{login.label}">Login</title>
+    <title th:text="#{login.label}"></title>
 </head>
 <body>
 <header>
@@ -11,7 +11,7 @@
 </header>
 
 <main>
-    <h1 th:text="#{login.label}">Login</h1>
+    <h1 th:text="#{login.label}"></h1>
     <p th:if="${param.error}" class="error" th:text="#{login.error}"></p>
     <p th:if="${param.logout}" th:text="#{logout.success}"></p>
     <p th:if="${registrationSuccess}" th:text="#{registration.success}"></p>
@@ -19,14 +19,14 @@
     <form th:action="@{/login}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <p>
-            <label for="email" th:text="#{label.account.email}">Email</label>
+            <label for="email" th:text="#{label.account.email}"></label>
             <input id="email" name="email" type="email" autocomplete="email" required/>
         </p>
         <p>
-            <label for="password" th:text="#{label.account.password}">Password</label>
+            <label for="password" th:text="#{label.account.password}"></label>
             <input id="password" name="password" type="password" autocomplete="current-password" required/>
         </p>
-        <button type="submit" th:text="#{login.label}">Login</button>
+        <button type="submit" th:text="#{login.label}"></button>
     </form>
 </main>
 </body>

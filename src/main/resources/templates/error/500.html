@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/styleNotFound.css}" />
-    <title>Server Error</title>
+    <title th:text="#{serverError.title}"></title>
 </head>
 <body>
 <div class="error-container">
     <div class="error-content">
-        <h1>500: Server Error</h1>
-        <p>Oh no, It looks like our server had a problem!</p>
-        <a th:href="@{/home}">Return to Homepage</a>
+        <h1 th:text="#{serverError.heading}"></h1>
+        <p th:text="#{serverError.message}"></p>
+        <a th:href="@{/home}" th:text="#{nav.returnHome}"></a>
     </div>
 </div>
 </body>

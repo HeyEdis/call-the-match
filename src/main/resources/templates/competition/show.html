@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Competition</title>
+    <title th:text="#{competition.show.title}"></title>
 </head>
 <body>
 <header>
@@ -12,37 +12,37 @@
 </header>
 
 <div>
-  <h1 th:text="#{competition.detail.title}">Match</h1>
+  <h1 th:text="#{competition.detail.title}"></h1>
   <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
   <div>
     <p>
-      <span th:text="#{label_competition_date}">Date</span>:
+      <span th:text="#{label.date}"></span>:
       <span th:text="${competition.date}"></span>
     </p>
     <p>
-      <span th:text="#{label_competition_time}">Time</span>:
+      <span th:text="#{label.time}"></span>:
       <span th:text="${competition.time}"></span>
     </p>
-    <p>
-      <span th:text="#{label_competition_stadium}">Stadium</span>:
+     <p>
+      <span th:text="#{label.stadium}"></span>:
       <span th:text="${competition.stadium.name}"></span>
     </p>
     <p>
-      <span th:text="#{competition.detail.location}">Location</span>:
+      <span th:text="#{competition.detail.location}"></span>:
       <span th:text="${competition.stadium.location.city}"></span>
     </p>
-    <p th:text="#{competition.detail.officialResult}">Official result</p>
+    <p th:text="#{competition.detail.officialResult}"></p>
     <p th:if="${competition.scoreA != null and competition.scoreB != null}"
        th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
     <p th:unless="${competition.scoreA != null and competition.scoreB != null}"
-       th:text="#{competition.detail.noResult}">No official result yet.</p>
+       th:text="#{competition.detail.noResult}"></p>
     <p sec:authorize="hasRole('ADMIN')">
       <a th:href="@{/competition/{id}/result(id=${competition.id})}"
-         th:text="#{competition.result.link}">Record result</a>
+         th:text="#{competition.result.link}"></a>
     </p>
     <p sec:authorize="hasRole('USER')">
       <a th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
-         th:text="#{prediction.link}">Predict score</a>
+         th:text="#{prediction.link}"></a>
     </p>
   </div>
 </div>

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{prediction.form.label}">Prediction</title>
+    <title th:text="#{prediction.form.label}"></title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="#{prediction.form.label}">Prediction</h1>
+<h1 th:text="#{prediction.form.label}"></h1>
 <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
 
 <div th:if="${cutoffPassed}">
@@ -35,8 +35,8 @@
                   th:errorclass="error" th:errors="*{predictedScoreB}"></span>
         </p>
 
-        <button type="submit" th:text="#{prediction.save.submit}">Save prediction</button>
-        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
+         <button type="submit" th:text="#{prediction.save.submit}"></button>
+         <button type="reset" th:text="#{competition.add.reset}"></button>
     </form>
 </div>
 

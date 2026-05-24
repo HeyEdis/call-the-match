@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-<title th:text="#{competition.add.label}">Add new match</title>
+<title th:text="#{competition.add.label}"></title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
-<h1 th:text="#{competition.add.label}">Add new match</h1>
-<p th:text="#{competition.add.summary}">Configure stadium logistics and match details.</p>
+<h1 th:text="#{competition.add.label}"></h1>
+<p th:text="#{competition.add.summary}"></p>
 
 <div>
     <form th:action="@{/competition/add}" th:object="${inputCompetitionDto}" method="post">
 
-        <!-- <p th:if="${#fields.hasErrors()}" class="error" th:text="#{contact_save_fail}"></p>  OR -->
         <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
 
         <p>
-            <label th:text="#{label_competition_teamA}"></label>
+            <label th:text="#{label.teamA}"></label>
             <select th:field="*{teamA}">
-                <option value="" th:text="#{competition.country.select}">Select a country</option>
+                <option value="" th:text="#{competition.country.select}"></option>
                 <option th:each="country : ${countries}" th:value="${country.id}"
                         th:text="${country.name}"></option>
             </select>
@@ -32,9 +31,9 @@
         </p>
 
         <p>
-            <label th:text="#{label_competition_teamB}"></label>
+            <label th:text="#{label.teamB}"></label>
             <select th:field="*{teamB}">
-                <option value="" th:text="#{competition.country.select}">Select a country</option>
+                <option value="" th:text="#{competition.country.select}"></option>
                 <option th:each="country : ${countries}" th:value="${country.id}"
                         th:text="${country.name}"></option>
             </select>
@@ -45,9 +44,9 @@
         </p>
 
         <p>
-            <label th:text="#{label_competition_stadium}"></label>
+            <label th:text="#{label.stadium}"></label>
             <select th:field="*{stadium}">
-                <option value="" th:text="#{competition.stadium.select}">Select a stadium</option>
+                <option value="" th:text="#{competition.stadium.select}"></option>
                 <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
                         th:attr="data-code=${stadium.code}"
                         th:text="|${stadium.location.city} - ${stadium.name}|"></option>
@@ -77,7 +76,7 @@
         </p>
 
         <p>
-            <label th:text="#{label_competition_date}"></label>
+            <label th:text="#{label.date}"></label>
             <input
                     type="date" th:field="*{date}" />
             <span
@@ -87,7 +86,7 @@
         </p>
 
         <p>
-            <label th:text="#{label_competition_time}"></label>
+            <label th:text="#{label.time}"></label>
             <input
                     type="time" th:field="*{time}" />
             <span
@@ -96,8 +95,8 @@
             </span>
         </p>
 
-        <button type="submit" th:text="#{competition.add.submit}">Save</button>
-        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
+        <button type="submit" th:text="#{competition.add.submit}"></button>
+        <button type="reset" th:text="#{competition.add.reset}"></button>
 
     </form>
 </div>

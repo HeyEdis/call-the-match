@@ -214,6 +214,26 @@ class TeamControllerTests {
     }
 
     @Test
+    void memberCanSeeInviteCodeSharePanel() throws Exception {
+        when(teamService.findById(1L)).thenReturn(teamDto());
+        when(teamService.isCurrentUserOwner(1L)).thenReturn(false);
+
+        mockMvc.perform(get("/team/1")
+                        .with(user("user11@example.com").roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("team"))
+                .andExpect(content().string(containsString("Share invite code")))
+                .andExpect(content().string(containsString("value=\"ABCD1234\"")))
+                .andExpect(content().string(containsString("readonly")))
+                .andExpect(content().string(containsString(">Copy code</button>")))
+                .andExpect(content().string(containsString("navigator.clipboard.writeText")))
+                .andExpect(content().string(not(containsString("Regenerate code</button>"))));
+
+        verify(teamService).findById(1L);
+        verify(teamService).isCurrentUserOwner(1L);
+    }
+
+    @Test
     void memberCanOpenPrivateTeamScoreboard() throws Exception {
         when(teamService.findScoreboardById(1L)).thenReturn(scoreboardDto());
 
@@ -249,11 +269,19 @@ class TeamControllerTests {
         mockMvc.perform(get("/team/dashboard"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(get("/team/1"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
     void adminIsForbiddenOnTeamRoutes() throws Exception {
         mockMvc.perform(get("/team/dashboard")
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/team/1")
                         .with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }

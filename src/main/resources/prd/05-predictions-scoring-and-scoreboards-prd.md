@@ -2,20 +2,22 @@
 
 ## Problem Statement
 
-De kern van de opdracht is dat users wedstrijden voorspellen en punten vergelijken binnen teams and in the public ranking. De repo heeft al prediction records, team member scores and ranking building blocks, but the user prediction workflow, one-hour cutoff, scoring rules and private scoreboard guarantees are not complete.
+De kern van de opdracht is dat users wedstrijden voorspellen en punten vergelijken binnen teams and in the public ranking. De repo heeft al prediction records, team member scores, ranking building blocks and a user prediction form, but the match detail page still needs to show the signed-in user's existing prediction when one exists.
 
 ## Solution
 
-Maak een user-only prediction flow with one current prediction per user and match. Laat users predictions wijzigen tot one hour before kick-off. Wanneer admin een official result saves, berekent a dedicated scoring service the prediction base points, team-member totals and team totals with model constants and unique bonuses inside each team. Team members krijgen a private scoreboard; the public ranking reuses team totals without exposing private detail.
+Maak een user-only prediction flow with one current prediction per user and match. Laat users predictions wijzigen tot one hour before kick-off. Op `/competition/{id}` ziet een signed-in user zijn bestaande prediction als een rustige statusregel/card, bijvoorbeeld label `Your prediction` plus `2 - 1`, met daarnaast de bestaande predict/edit actie. Wanneer admin een official result saves, berekent a dedicated scoring service the prediction base points, team-member totals and team totals with model constants and unique bonuses inside each team. Team members krijgen a private scoreboard; the public ranking reuses team totals without exposing private detail.
 
 ## Current Codebase State
 
 - Prediction records already link users and competitions and store predicted scores plus team-independent base points.
 - Team members already have score fields and teams already compute a team total from members.
 - Seed data already creates sample predictions.
-- There is no visible prediction controller, prediction form DTO, scoring service or cutoff enforcement yet.
+- Prediction controller, prediction form DTO, user-only routes and cutoff enforcement are present.
+- The predictions list can show a user's predictions, and the form pre-fills an existing prediction.
+- The competition detail page links to the prediction form for users, but it does not yet show the current user's existing prediction inline on that match page.
 - Public ranking already exists but still depends on score values being recalculated correctly.
-- REST controllers and WebClient are not present yet.
+- REST controllers and WebClient are present or planned separately; private prediction data remains out of public REST scope.
 
 ## School Requirements
 
@@ -24,6 +26,7 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Spring Security for user-only predictions and member-only scoreboards.
 - Jakarta Validation for prediction score input.
 - Resource bundles for user-facing errors/messages; fixed scoring values remain code constants.
+- Match detail integration that shows the authenticated user's existing prediction when present.
 - Error behavior for missing matches or forbidden private scoreboard access.
 - MVC, security and validation tests later; scoring deserves focused service tests.
 - REST/WebClient remains late unless reused read-only later.
@@ -42,7 +45,7 @@ Maak een user-only prediction flow with one current prediction per user and matc
 3. As a user, I want to change my prediction until one hour before kick-off, so that I can revise it in time.
 4. As a user, I want prediction changes blocked after the cutoff, so that the game stays fair.
 5. As a user, I want non-negative score input validation, so that invalid predictions are rejected.
-6. As a user, I want my own prediction visible from match context, so that I can check what I entered.
+6. As a user, I want my own prediction visible on the match detail page, so that I can check what I entered without opening the form first.
 7. As the application, I want exact-score predictions rewarded, so that precision matters.
 8. As the application, I want correct outcome predictions rewarded, so that winner or draw insight matters.
 9. As the application, I want unique exact-score bonuses within a team, so that unique precision earns extra points.
@@ -59,6 +62,9 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Store or enforce one prediction per authenticated user and competition.
 - Put prediction input in a request DTO with score validation.
 - Check the one-hour cutoff in service/domain logic, not only in the UI.
+- Add a service/controller read path for the current user's prediction by competition id that returns no value safely when the user has not predicted yet.
+- On `/competition/{id}`, render the current user's prediction only for role `USER` and only when one exists; guests see no private prediction context and admins do not participate.
+- Use existing resource-bundle labels such as `prediction.own.score` or add a focused key for the match-page status text.
 - Treat official result save as the recalculation trigger.
 - Use a dedicated scoring service with a small testable interface.
 - Use scoring constants `exactScore=5`, `correctOutcome=2`, `uniqueExactBonus=3` and `uniqueOutcomeBonus=1`.
@@ -77,6 +83,8 @@ Maak een user-only prediction flow with one current prediction per user and matc
 - Verify exact score, correct outcome, no-point and draw scenarios.
 - Verify unique exact and unique outcome bonus behavior, including non-unique ties.
 - Verify create/update before cutoff and rejection after cutoff.
+- Verify match detail shows the signed-in user's existing prediction and does not show another user's prediction.
+- Verify match detail omits the prediction status for guests, admins and users without a prediction.
 - Verify result save recalculation updates the relevant totals.
 - Verify prediction pages are user-only and scoreboards are member-only.
 - Verify prediction DTO validation rejects invalid score values.

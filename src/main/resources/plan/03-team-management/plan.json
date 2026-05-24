@@ -208,6 +208,36 @@
       ],
       "priority": 11,
       "passes": true
+    },
+    {
+      "id": "add-invite-code-share-panel",
+      "title": "Add Invite Code Share Panel",
+      "description": "Make the existing private team detail page satisfy the PDF requirement `code delen (geen mailservice implementeren, enkel tonen)`. Show the current invite code to team members in a clear share panel on `/team/{id}`, render it in a read-only or otherwise copyable field, and add a simple copy affordance. Keep this as a local display/copy feature only; do not add email delivery, mail templates, external share APIs or invitation persistence.",
+      "acceptance_criteria": [
+        "The private team detail page shows the current invite code to authenticated members of that team.",
+        "The invite code is rendered in a read-only or otherwise copyable field with a small copy button or equivalent simple copy affordance.",
+        "The share panel uses resource-bundle-backed visible labels where user-facing text is introduced.",
+        "The share implementation only shows or copies the code and does not add email delivery, mail templates, external share APIs or invitation persistence.",
+        "Invitecode regeneration remains owner-only and is not weakened by the member-visible share panel.",
+        "Non-members, guests and ADMIN actors do not receive private invite-code data through `/team/{id}`."
+      ],
+      "priority": 12,
+      "passes": true
+    },
+    {
+      "id": "test-invite-code-share-visibility",
+      "title": "Test Invite Code Share Visibility",
+      "description": "Add school-style MVC and security evidence for the new invite-code share panel. Verify that members can see the displayed code on the private team page, non-members cannot access it, and owner-only invitecode regeneration remains protected separately from simple code sharing.",
+      "acceptance_criteria": [
+        "MVC or security tests verify a team member can access `/team/{id}` and the model/view contains the invite-code share information.",
+        "Security or service-backed MVC tests verify a non-member cannot access another team's private invite-code share panel.",
+        "Tests verify guest access to the team detail page is blocked by the team-route security boundary.",
+        "Tests verify ADMIN does not gain team participation or private invite-code access through the share panel.",
+        "Tests verify invitecode regeneration remains owner-only and non-owner members cannot regenerate even though they can view/copy the current code.",
+        "The tests use MVC/security assertions and do not add REST controller, WebClient or e2e scope."
+      ],
+      "priority": 13,
+      "passes": true
     }
   ]
 }

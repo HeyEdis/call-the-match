@@ -227,7 +227,37 @@
       ],
       "priority": 13,
       "passes": true
+    },
+    {
+      "id": "show-current-user-prediction-on-match-detail",
+      "title": "Show Current User Prediction On Match Detail",
+      "description": "Integrate existing prediction state into the public match detail page for signed-in normal users. When a USER has already predicted the selected competition, load only that authenticated user's prediction through the service/repository boundary and render a calm match-page status such as `Your prediction: 2 - 1` near the existing prediction action. Guests, ADMIN actors and users without a prediction must not receive private prediction data.",
+      "acceptance_criteria": [
+        "The competition detail controller or service path can safely ask for the current authenticated USER's prediction by competition id.",
+        "The current-user prediction lookup never accepts a request-provided user id and never shows another user's prediction.",
+        "When the signed-in USER has an existing prediction, `/competition/{id}` renders a resource-bundle-backed label and the predicted score value.",
+        "When a signed-in USER has no prediction for the match, the page does not render a fake or private prediction value.",
+        "Guests receive no private prediction model data on public match detail.",
+        "ADMIN actors receive no prediction participation context on public match detail.",
+        "The existing predict/edit link remains available for USER actors according to the current prediction flow."
+      ],
+      "priority": 14,
+      "passes": true
+    },
+    {
+      "id": "test-match-detail-prediction-visibility",
+      "title": "Test Match Detail Prediction Visibility",
+      "description": "Add MVC/security evidence for the match-detail prediction status. Verify that a signed-in USER sees only their own existing prediction, that other users' predictions are not leaked, and that guests, ADMIN actors and users without predictions do not see private prediction status.",
+      "acceptance_criteria": [
+        "MVC or security tests verify a signed-in USER with an existing prediction sees that prediction on `/competition/{id}`.",
+        "Tests verify the displayed prediction belongs to the authenticated user and another user's prediction is not shown.",
+        "Tests verify a signed-in USER without a prediction does not see a private prediction status or fake score value.",
+        "Tests verify guests do not receive private prediction status on public match detail.",
+        "Tests verify ADMIN actors do not receive prediction participation status on public match detail.",
+        "The tests use MVC/security assertions and do not add REST controller, WebClient or e2e scope."
+      ],
+      "priority": 15,
+      "passes": true
     }
   ]
 }
-

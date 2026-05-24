@@ -236,6 +236,51 @@
       ],
       "priority": 13,
       "passes": true
+    },
+    {
+      "id": "render-match-add-edit-flash-messages",
+      "title": "Render Match Add/Edit Flash Messages",
+      "description": "Make the existing admin add/edit redirect feedback visible after successful writes. The controller already uses RedirectAttributes and resource-bundle messages; update the redirected target pages so the translated success message is rendered to the admin after adding or editing a match.",
+      "acceptance_criteria": [
+        "A successful admin add match submission redirects to the project-appropriate target page with a flash success message.",
+        "The target page reached after a successful add visibly renders the translated add success message.",
+        "A successful admin edit match submission redirects back to the edited match detail page with a flash success message.",
+        "The match detail page visibly renders the translated edit success message after redirect.",
+        "The implementation reuses existing resource bundle keys or adds focused bundle keys for user-facing success text.",
+        "Invalid add/edit submissions continue to render validation errors on the form and do not show a false success message."
+      ],
+      "priority": 14,
+      "passes": true
+    },
+    {
+      "id": "add-admin-edit-control-on-match-detail",
+      "title": "Add Admin Edit Control On Match Detail",
+      "description": "Add the required admin-only edit entry point to the public match detail screen. On `/competition/{id}`, render an edit button or link directly under the match title or the `Team A vs Team B` heading for ADMIN users only. Keep direct edit route access protected by Spring Security and do not expose fixture mutation controls to guests or normal users.",
+      "acceptance_criteria": [
+        "The public match detail page renders an edit button or link directly under the match title or `Team A vs Team B` heading for ADMIN users.",
+        "The edit control points to the existing admin edit route for the selected competition.",
+        "Guests do not see the edit control on public match detail.",
+        "Normal USER actors do not see the edit control on public match detail.",
+        "Direct edit route access remains ADMIN-only under Spring Security and does not rely only on hidden navigation.",
+        "The edit control label is backed by the resource bundle where user-facing text is introduced."
+      ],
+      "priority": 15,
+      "passes": true
+    },
+    {
+      "id": "test-match-detail-admin-control-and-flash-messages",
+      "title": "Test Match Detail Admin Control And Flash Messages",
+      "description": "Add MVC and security tests for the new match/admin deltas. Verify the admin edit control visibility on match detail, Spring Security protection for direct edit access, and visible flash message rendering after successful add/edit redirects.",
+      "acceptance_criteria": [
+        "MVC or security tests verify ADMIN sees the edit control on `/competition/{id}`.",
+        "MVC or security tests verify guests and normal USER actors do not see the edit control on `/competition/{id}`.",
+        "Security tests verify guests and normal USER actors cannot access direct edit mutation routes while ADMIN can.",
+        "MVC tests verify a successful add redirect exposes the translated success message on the redirected target page.",
+        "MVC tests verify a successful edit redirect exposes the translated success message on the edited match detail page.",
+        "The tests stay within MVC/security scope and do not add REST controller, WebClient or prediction-write coverage."
+      ],
+      "priority": 16,
+      "passes": true
     }
   ]
 }

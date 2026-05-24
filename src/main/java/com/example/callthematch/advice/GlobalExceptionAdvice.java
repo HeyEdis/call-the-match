@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionAdvice {
@@ -18,7 +20,9 @@ public class GlobalExceptionAdvice {
             StadiumNotFound.class,
             CountryNotFound.class,
             UserNotFound.class,
-            InviteCodeNotFound.class
+            InviteCodeNotFound.class,
+            NoHandlerFoundException.class,
+            NoResourceFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound() {

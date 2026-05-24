@@ -60,6 +60,7 @@ Turn the existing add entry point into a reliable admin fixture-create slice. Th
 - [ ] Required fixture inputs use existing Jakarta Validation annotations on the request DTO with `@Valid`, immediate `BindingResult` handling and Thymeleaf field errors.
 - [ ] Invalid add submissions reload select/list model data before returning the form view.
 - [ ] A valid add submission persists the fixture through the service/repository boundary and returns redirect feedback from the resource bundle.
+- [ ] The page reached after a successful add visibly renders the translated flash success message instead of only storing it in `RedirectAttributes`.
 
 ---
 
@@ -111,11 +112,13 @@ Make fixture correction a real admin vertical slice. Match screens expose an adm
 ### Acceptance Criteria
 
 - [ ] Admin users can reach an edit entry point from the match context while guests and normal users cannot mutate fixture data.
+- [ ] The public match detail page renders an admin-only edit button/link directly under the match title or `Team A vs Team B` heading.
+- [ ] Guests and normal users do not see the match-detail edit control, and direct edit-route access remains protected by Spring Security.
 - [ ] The edit form is prefilled from persisted competition data and reloads backend-backed country and stadium choices for valid and invalid submissions.
 - [ ] Edit input uses the fixture DTO validation path, including existing Jakarta annotations, validator-class rules and checksum constraint where applicable.
 - [ ] A valid edit submission updates fixture data through the service and repository layers rather than requiring reseeding.
 - [ ] Invalid edit submissions render field/form errors near inputs and keep the user on the form with selection data restored.
-- [ ] Successful edit writes use resource-bundle redirect feedback.
+- [ ] Successful edit writes use resource-bundle redirect feedback that is visibly rendered on the redirected match detail page.
 
 ---
 
@@ -168,6 +171,8 @@ Close the match/admin feature with the school-required automated evidence after 
 ### Acceptance Criteria
 
 - [ ] MVC controller tests verify public match detail model/view behavior and admin add, edit and result form success or invalid-submission outcomes.
+- [ ] MVC tests verify successful add/edit redirects expose translated flash success messages on their target pages.
+- [ ] MVC or security tests verify only admins see the edit control on match detail and only admins can reach edit mutation routes.
 - [ ] MVC tests cover friendly not-found or type-mismatch behavior for invalid match ids where it is observable at the controller boundary.
 - [ ] Security tests verify public read access plus denial of add, edit and result writes for guests and normal users while admins can use match management routes.
 - [ ] Validation tests using a Jakarta `Validator` cover existing annotation behavior for required fixture input and official result score constraints introduced by this feature.

@@ -2,21 +2,22 @@
 
 ## Problem Statement
 
-De applicatie moet wedstrijden publiek tonen en admins wedstrijddata plus officiele uitslagen laten beheren. De repo heeft al wedstrijdentiteiten, views and een gedeeltelijke add-flow, maar de rolgrens, edit/result flows and verplichte validaties zijn nog niet volledig zichtbaar.
+De applicatie moet wedstrijden publiek tonen en admins wedstrijddata plus officiele uitslagen laten beheren. De repo heeft al wedstrijdentiteiten, views and werkende add/edit/result flows, maar de matchdetailpagina mist nog een admin edit-entry onder de matchtitel en redirect-feedback wordt nog niet zichtbaar gerenderd op de doelpagina.
 
 ## Solution
 
-Lever een publieke wedstrijddetailpagina en admin-only formulieren voor toevoegen, aanpassen and officiele resultaten. Valideer verplichte matchdata, verschillende landen, de gekozen projectperiode, stadium checksum and stadium/time conflicts. Gebruik de adminflow als sterk bewijs voor MVC, validation, i18n, error handling and role-based security.
+Lever een publieke wedstrijddetailpagina en admin-only formulieren voor toevoegen, aanpassen and officiele resultaten. Valideer verplichte matchdata, verschillende landen, de gekozen projectperiode, stadium checksum and stadium/time conflicts. Toon op de wedstrijddetailpagina onder de matchtitel een admin-only edit button. Na een succesvolle add of edit moet de redirect-doelpagina een resource-bundle flash message tonen. Gebruik de adminflow als sterk bewijs voor MVC, validation, i18n, error handling and role-based security.
 
 ## Current Codebase State
 
 - Competition, country, stadium and location data already exist in the domain.
-- Match list, detail, add and edit entry points exist in MVC.
+- Match list, detail, add, edit and result entry points exist in MVC.
 - The add form already uses a request DTO with basic null and non-negative annotations.
-- Existing resource bundle keys cover several competition labels and save messages.
+- Existing resource bundle keys cover competition labels and save/update/result messages.
 - Result scores are nullable in the entity, which supports future matches without official results.
-- Country and stadium form binding still needs a reliable finished path.
-- There is no visible custom annotation, validator class, admin-only security boundary or complete official result flow yet.
+- Add/edit POST flows already add flash attributes after redirect, but the visible target templates still need to render the success message.
+- The match detail template shows the admin result link and user prediction link, but not the required admin edit button under the match title.
+- Custom validator, admin-only security boundaries and official result recalculation are now present or partially present; final tests still need to prove them.
 
 ## School Requirements
 
@@ -25,6 +26,7 @@ Lever een publieke wedstrijddetailpagina en admin-only formulieren voor toevoege
 - At least one custom annotation plus validator class in the project.
 - Validation messages and one full screen text coverage through resource bundles.
 - Redirect feedback after add/edit.
+- Admin edit entry point on the public match detail page.
 - Exception and error-page behavior for missing matches and bad ids.
 - Spring Security for admin-only match mutations.
 - MVC, security and validation tests later.
@@ -58,6 +60,9 @@ Lever een publieke wedstrijddetailpagina en admin-only formulieren voor toevoege
 ## Implementation Decisions
 
 - Keep match detail public; keep add/edit/result writes admin-only.
+- Put an admin-only edit button/link directly under the match title or the `Team A vs Team B` heading on `/competition/{id}`.
+- Render redirect flash attributes consistently on pages that receive competition add/edit redirects; the existing success keys should be visible instead of only stored in `RedirectAttributes`.
+- Redirect successful add to the project-appropriate overview page and successful edit back to the edited match detail, as long as the success message is visible after redirect.
 - Use dedicated request DTOs when fixture input and official result input need different validation rules.
 - Keep official scores nullable until an admin records a result.
 - Use the chosen project period 20 May 2026 through 6 June 2026 for match date validation.
@@ -74,6 +79,8 @@ Lever een publieke wedstrijddetailpagina en admin-only formulieren voor toevoege
 - Verify custom checksum annotation behavior.
 - Verify validator class rules for different countries, date range and same stadium/time conflicts.
 - Verify add/edit/result MVC flows for valid and invalid submissions.
+- Verify add/edit redirects expose the translated success message on the redirected page.
+- Verify admins see the edit link on match detail and users/guests do not.
 - Verify only admins can reach match mutation routes.
 - Verify public detail routes and not-found/type mismatch behavior.
 - This PRD carries required MVC, security, existing-validation, custom-annotation and validator-class test evidence.

@@ -47,7 +47,7 @@ public class TeamService {
                 .stream()
                 .map(this::toTeamMemberScoreDTO)
                 .toList();
-        return new TeamScoreboardDTO(team.getId(), team.getName(), team.getScore(), members);
+        return new TeamScoreboardDTO(team.getId(), team.getName(), team.calculateTeamScore(), members);
     }
 
     private Team findTeamById(Long id)

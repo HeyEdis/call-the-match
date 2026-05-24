@@ -20,10 +20,12 @@
 
 <table>
     <tr>
+        <th th:text="#{team.scoreboard.rank}"></th>
         <th th:text="#{team.scoreboard.member}"></th>
         <th th:text="#{team.scoreboard.score}"></th>
     </tr>
-    <tr th:each="member : ${scoreboard.members}">
+    <tr th:each="member, iterStat : ${scoreboard.members}">
+        <td th:text="${iterStat.index + 1}"></td>
         <td th:text="${member.userName}"></td>
         <td th:text="${member.score}"></td>
     </tr>

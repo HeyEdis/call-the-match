@@ -67,7 +67,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="team : ${teamList}">
-                        <td><a th:href="|/team/${team.id}|" th:text="${team.name}"></a></td>
+                        <td><a th:href="@{/team/{id}(id=${team.id})}" th:text="${team.name}"></a></td>
                         <td th:text="${team.owner.userName}"></td>
                         <td class="dashboard-score" th:text="${team.score}"></td>
                     </tr>

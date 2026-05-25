@@ -18,7 +18,7 @@
                 <p class="match-eyebrow" th:text="#{competition.detail.title}"></p>
                 <h1>
                     <span th:text="${competition.teamA.name}"></span>
-                    <small>vs</small>
+                    <small th:text="#{label.versus}"></small>
                     <span th:text="${competition.teamB.name}"></span>
                 </h1>
                 <dl>
@@ -72,7 +72,9 @@
 
                     <div class="prediction-form-actions">
                         <button class="match-primary-action" type="submit" th:text="#{prediction.save.submit}"></button>
-                        <button class="match-action-link" type="button" onclick="history.back()" th:text="#{button.cancel}"></button>
+                        <a class="match-action-link"
+                           th:href="@{/competition/{id}(id=${competition.id})}"
+                           th:text="#{button.cancel}"></a>
                     </div>
                 </form>
             </article>

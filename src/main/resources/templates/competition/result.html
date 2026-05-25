@@ -21,7 +21,11 @@
               th:action="@{/competition/{id}/result(id=${competition.id})}"
               th:object="${inputCompetitionResultDto}" method="post">
 
-            <p class="competition-result-match" th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+            <p class="competition-result-match">
+                <span th:text="${competition.teamA.name}"></span>
+                <span th:text="#{label.versus}"></span>
+                <span th:text="${competition.teamB.name}"></span>
+            </p>
             <p th:if="${errorMessage}" class="error competition-edit-message" th:text="${errorMessage}"></p>
 
             <div class="competition-edit-grid">
@@ -40,7 +44,9 @@
 
             <div class="competition-edit-actions">
                 <button class="competition-edit-save" type="submit" th:text="#{competition.add.submit}"></button>
-                <button class="competition-edit-reset" type="button" onclick="history.back()" th:text="#{button.cancel}"></button>
+                <a class="competition-edit-reset"
+                   th:href="@{/competition/{id}(id=${competition.id})}"
+                   th:text="#{button.cancel}"></a>
             </div>
         </form>
     </section>

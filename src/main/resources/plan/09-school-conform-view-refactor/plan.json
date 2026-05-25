@@ -136,7 +136,7 @@
         "Static JavaScript for stadium checksum remains a convenience only; server-side validation remains authoritative"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "team-views",
@@ -157,7 +157,7 @@
         "Visible team text, table headers, empty states, buttons, and messages use resource-bundle keys"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "prediction-views",
@@ -176,7 +176,7 @@
         "Visible prediction text, labels, buttons, and error messages use resource-bundle keys"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "error-pages-resource-bundles",

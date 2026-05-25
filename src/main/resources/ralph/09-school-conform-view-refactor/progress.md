@@ -31,3 +31,30 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
 - Verification: `.\mvnw.cmd '-Dtest=AccountControllerTests,AccessSecurityTests' test` passed with 18 tests.
 - Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - competition-admin-public-match-views
+
+- Task: Competition Admin And Public Match Views
+- What changed: replaced string-built detail links with Thymeleaf path-variable URL expressions, added the missing result action link to the admin competition list, moved visible `vs` text to the resource bundle, and replaced `history.back()` cancel buttons with route links to the competition list or match detail.
+- Decisions made: kept server-side stadium checksum validation authoritative and left the existing static checksum helper in place as client convenience only.
+- Files changed: `src/main/resources/templates/competition/list.html`, `src/main/resources/templates/competition/show.html`, `src/main/resources/templates/competition/add.html`, `src/main/resources/templates/competition/edit.html`, `src/main/resources/templates/competition/result.html`, `src/main/resources/i18n/messages.properties`, `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: `.\mvnw.cmd '-Dtest=CompetitionControllerTests,TeamControllerTests,PredictionControllerTests' test` passed with 52 tests; after adding the result action link, `.\mvnw.cmd '-Dtest=CompetitionControllerTests' test` passed with 24 tests.
+- Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - team-views
+
+- Task: Team Views
+- What changed: replaced string-built team links and POST form actions with Thymeleaf path-variable URL expressions, moved the hardcoded rank label to an existing resource-bundle key, and removed prototype comments from team views.
+- Decisions made: kept the invite-code clipboard handler inline for now because the task explicitly allows small static/convenience JavaScript and existing tests verify that behavior.
+- Files changed: `src/main/resources/templates/team/dashboard.html`, `src/main/resources/templates/team/show.html`, `src/main/resources/templates/team/scoreboard.html`, `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: `.\mvnw.cmd '-Dtest=CompetitionControllerTests,TeamControllerTests,PredictionControllerTests' test` passed with 52 tests.
+- Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - prediction-views
+
+- Task: Prediction Views
+- What changed: moved visible `vs` text to the resource bundle, removed the prototype comment from the prediction list, and replaced the prediction form `history.back()` cancel button with a normal route link to the match detail.
+- Decisions made: kept prediction form DTO binding, field errors, cutoff handling, and controller-supplied model data unchanged.
+- Files changed: `src/main/resources/templates/prediction/list.html`, `src/main/resources/templates/prediction/form.html`, `src/main/resources/i18n/messages.properties`, `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: `.\mvnw.cmd '-Dtest=CompetitionControllerTests,TeamControllerTests,PredictionControllerTests' test` passed with 52 tests.
+- Result: acceptance criteria verified; marked `passes` true.

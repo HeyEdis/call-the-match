@@ -1,14 +1,14 @@
 ﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <footer th:fragment="footer" class="footer">
-    <div class="footer-brand">⚽ Call The Match</div>
-    <div class="footer-tagline">See who's gonna predict the winner in the FIFA World Cup 2026</div>
+    <div class="footer-brand" th:text="#{footer.brand}"></div>
+    <div class="footer-tagline" th:text="#{footer.tagline}"></div>
     <div class="footer-links">
-        <a th:href="@{/competitions}">Competitions</a>
-        <a th:href="@{/templates/ranking}">Rankings</a>
-        <a th:href="@{/login}">Login</a>
-        <a th:href="@{/register}">Register</a>
+        <a th:href="@{/competitions}" th:text="#{footer.competitions}"></a>
+        <a th:href="@{/templates/ranking}" th:text="#{footer.rankings}"></a>
+        <a th:href="@{/login}" th:text="#{nav.login}"></a>
+        <a th:href="@{/register}" th:text="#{nav.register}"></a>
     </div>
-    <div class="footer-copy">© 2026 Call The Match — FIFA World Cup 2026</div>
+    <div class="footer-copy" th:text="#{footer.copy}"></div>
 </footer>
 </html>

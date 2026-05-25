@@ -160,7 +160,7 @@ a {
 .pulse-list {
     display: grid;
     gap: 0.85rem;
-    padding: 0.85rem;
+    padding: 0.85rem 0;
     background: var(--page-bg);
 }
 
@@ -575,7 +575,7 @@ a {
 }
 
 .team-dashboard-shell {
-    width: min(75vw, 1440px);
+    width: min(100%, 1920px);
     margin: 0 auto;
     background: var(--page-bg);
     color: var(--page-ink);
@@ -583,7 +583,7 @@ a {
 
 .team-dashboard-variant {
     min-height: calc(100vh - 64px);
-    padding: clamp(1.9rem, 4.5vw, 4.5rem) 0 6rem;
+    padding: clamp(1.9rem, 4.5vw, 4.5rem) clamp(1rem, 3vw, 3rem) 6rem;
 }
 
 .team-dashboard-hero {
@@ -993,16 +993,14 @@ a {
     gap: 0.75rem;
 }
 
-.invite-code-row label,
-.team-pulse-recruit label {
+.invite-code-row label {
     color: #8aa0b9;
     font: 800 0.76rem 'Inter', sans-serif;
     letter-spacing: 0.11em;
     text-transform: uppercase;
 }
 
-.invite-code-row input,
-.team-pulse-code input {
+.invite-code-row input {
     width: 100%;
     min-height: 3.6rem;
     border: 2px solid #dfe6ed;
@@ -1014,8 +1012,7 @@ a {
     letter-spacing: 0.13em;
 }
 
-.invite-code-row button,
-.team-pulse-code button {
+.invite-code-row button {
     min-height: 3.6rem;
     border: 0;
     border-radius: 999px;
@@ -1192,27 +1189,11 @@ a {
     margin-bottom: clamp(2rem, 4vw, 3.5rem);
 }
 
-.competition-list-eyebrow {
-    margin-bottom: 0.85rem;
-    color: var(--success);
-    font: 800 0.76rem 'Inter', sans-serif;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-
 .competition-list-header h1 {
     max-width: 58rem;
     color: var(--ink);
     font-size: clamp(4rem, 7vw, 7rem);
     line-height: 0.92;
-}
-
-.competition-list-header p:last-child {
-    max-width: 54rem;
-    margin-top: 1.15rem;
-    color: var(--green-muted);
-    font-size: clamp(0.98rem, 1.2vw, 1.1rem);
-    line-height: 1.65;
 }
 
 .competition-list-add {
@@ -1228,27 +1209,6 @@ a {
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
-}
-
-.competition-list-table-heading {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.competition-list-table-heading h2 {
-    color: var(--ink);
-    font: 900 clamp(1.75rem, 3vw, 2.45rem) / 0.95 'Space Grotesk', sans-serif;
-}
-
-.competition-list-table-heading span {
-    color: var(--muted);
-    font: 800 0.8rem 'Inter', sans-serif;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
 }
 
 .competition-list-table-wrap {
@@ -1504,27 +1464,6 @@ a {
 
 .prediction-list-table-section {
     padding: 0 clamp(1rem, 5vw, 6rem);
-}
-
-.prediction-list-table-heading {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.prediction-list-table-heading h2 {
-    color: var(--ink, #081226);
-    font: 900 clamp(1.75rem, 3vw, 2.45rem) / 0.95 'Space Grotesk', sans-serif;
-}
-
-.prediction-list-table-heading span {
-    color: var(--muted);
-    font: 800 0.8rem 'Inter', sans-serif;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
 }
 
 .prediction-list-table-wrap {
@@ -2044,10 +1983,6 @@ a {
 }
 
 @media (max-width: 640px) {
-    .team-dashboard-shell {
-        width: min(100%, calc(100vw - 1.7rem));
-    }
-
     .home-variant {
         padding-inline: 0.85rem;
     }
@@ -2086,8 +2021,7 @@ a {
     }
 
     .team-stitch-hero,
-    .team-stitch-content,
-    .team-show-pulse {
+    .team-stitch-content {
         padding-inline: 0.85rem;
     }
 

@@ -15,13 +15,13 @@
 <main class="home-prototype-shell">
   <p th:if="${successMessage}" class="success" th:text="${successMessage}"></p>
 
-  <section class="home-variant variant-stadium-pulse">
-    <div class="pulse-hero">
-      <div class="pulse-copy">
-        <h1>World Cup 2026 <strong>Schedule</strong></h1>
-        <p th:text="#{schedule.desc}"></p>
+    <section class="home-variant variant-stadium-pulse">
+      <div class="pulse-hero">
+        <div class="pulse-copy">
+          <h1><span th:text="#{schedule.worldCup}"></span> <strong th:text="#{schedule.title}"></strong></h1>
+          <p th:text="#{schedule.desc}"></p>
+        </div>
       </div>
-    </div>
 
     <div class="pulse-layout">
       <div class="pulse-list">
@@ -44,7 +44,7 @@
                     th:text="|${competition.scoreA} - ${competition.scoreB}|"></strong>
             <em th:unless="${competition.scoreA != null and competition.scoreB != null}" th:text="#{competition.list.tbd}"></em>
           </div>
-          <a class="match-pill" th:href="|/competition/${competition.id}|">Match</a>
+          <a class="match-pill" th:href="|/competition/${competition.id}|" th:text="#{label.match}"></a>
         </article>
       </div>
     </div>

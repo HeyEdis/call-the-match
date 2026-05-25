@@ -13,7 +13,7 @@
 
 <main class="signin-shell">
     <section class="signin-panel">
-        <p class="signin-brand">Call The Match</p>
+        <p class="signin-brand" th:text="#{brand.name}"></p>
         <h1 th:text="#{login.label}"></h1>
 
         <p th:if="${param.error}" class="error signin-message" th:text="#{login.error}"></p>
@@ -34,7 +34,7 @@
         </form>
 
         <div class="signin-divider">
-            <span>New to Call The Match?</span>
+            <span th:text="#{register.haveAccount}"></span>
         </div>
         <a class="signin-secondary" th:href="@{/register}" th:text="#{registration.label}"></a>
     </section>

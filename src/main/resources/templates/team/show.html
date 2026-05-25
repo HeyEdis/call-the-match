@@ -29,7 +29,7 @@
 
         <div class="team-stitch-content">
             <section class="team-stitch-members" aria-labelledby="teamMembersA">
-                <h2 id="teamMembersA" th:text="#{label.member} + 's'"></h2>
+                <h2 id="teamMembersA" th:text="#{team.show.members}"></h2>
                 <div class="team-stitch-table-wrap">
                     <table class="team-stitch-table">
                         <thead>
@@ -54,7 +54,7 @@
                             <td class="team-member-score" th:text="${member.score}"></td>
                             <td class="team-muted-date" th:text="${{member.joinedAt}}"></td>
                             <td th:if="${isOwner}">
-                                <span th:if="${member.role.name() == 'OWNER'}" class="team-protected">Protected</span>
+                                <span th:if="${member.role.name() == 'OWNER'}" class="team-protected" th:text="#{team.show.protected}"></span>
                                 <form th:if="${member.role.name() != 'OWNER'}"
                                       th:action="@{|/team/${team.id}/members/${member.id}/remove|}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

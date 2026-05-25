@@ -62,7 +62,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(competitionList)}">
-                        <td colspan="9">No fixtures scheduled yet.</td>
+                        <td colspan="9" th:text="#{competition.list.noFixtures}"></td>
                     </tr>
                     </tbody>
                 </table>

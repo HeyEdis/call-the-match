@@ -13,7 +13,7 @@
 
 <main class="signin-shell">
     <section class="signin-panel register-panel">
-        <h1>Create Account</h1>
+        <h1 th:text="#{register.createAccount}"></h1>
 
         <form class="signin-form" th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
             <p class="signin-field">
@@ -46,15 +46,13 @@
                 <span th:if="${#fields.hasErrors('password')}" th:errorclass="error"
                       th:errors="*{password}"></span>
             </p>
-            <button class="signin-submit" type="submit">Create account</button>
+            <button class="signin-submit" type="submit" th:text="#{register.createAccountButton}"></button>
         </form>
 
-        <p class="signin-legal">
-            By creating an account, you can join teams and start predicting match scores.
-        </p>
+        <p class="signin-legal" th:text="#{register.legal}"></p>
 
         <p class="signin-footer-link">
-            Already have an account? <a th:href="@{/login}" th:text="#{login.label}"></a>
+            <span th:text="#{register.haveAccount}"></span> <a th:href="@{/login}" th:text="#{login.label}"></a>
         </p>
     </section>
 </main>

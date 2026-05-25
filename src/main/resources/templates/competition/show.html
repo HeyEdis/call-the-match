@@ -72,7 +72,7 @@
                    th:text="#{prediction.link}"></a>
             </article>
             <article sec:authorize="hasRole('ADMIN')" class="match-final-prediction-card match-final-controls-card">
-                <strong>Match Controls</strong>
+                <strong th:text="#{competition.show.matchControls}"></strong>
                 <div class="match-final-actions">
                     <a class="match-action-link"
                        th:href="@{/competition/edit/{id}(id=${competition.id})}"

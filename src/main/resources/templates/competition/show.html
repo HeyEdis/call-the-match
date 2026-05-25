@@ -30,8 +30,8 @@
                         <dd th:text="${competition.date}"></dd>
                     </div>
                     <div>
-                        <dt th:text="#{label.stadium}"></dt>
-                        <dd th:text="${competition.stadium.name}"></dd>
+                        <dt th:text="#{label.time}"></dt>
+                        <dd th:text="${competition.time}"></dd>
                     </div>
                 </dl>
             </article>
@@ -52,38 +52,7 @@
             </aside>
         </div>
 
-        <div class="match-final-action"
-             sec:authorize="hasAnyRole('USER','ADMIN')">
-            <div>
-                <h2 sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}"
-                    th:text="#{prediction.own.score}"></h2>
-                <h2 sec:authorize="hasRole('USER')" th:unless="${currentUserPrediction != null}"
-                    th:text="#{prediction.link}"></h2>
-                <h2 sec:authorize="hasRole('ADMIN')">Match controls</h2>
-                <p th:text="#{prediction.form.help}"></p>
-            </div>
-            <div class="match-final-actions">
-                <a sec:authorize="hasRole('ADMIN')" class="match-action-link"
-                   th:href="@{/competition/edit/{id}(id=${competition.id})}"
-                   th:text="#{competition.detail.edit}"></a>
-                <a sec:authorize="hasRole('ADMIN')" class="match-action-link"
-                   th:href="@{/competition/{id}/result(id=${competition.id})}"
-                   th:text="#{competition.result.link}"></a>
-                <a sec:authorize="hasRole('USER')" class="match-primary-action"
-                   th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
-                   th:text="#{prediction.link}"></a>
-            </div>
-        </div>
-
         <div class="match-final-details">
-            <article>
-                <span th:text="#{label.date}"></span>
-                <strong th:text="${competition.date}"></strong>
-            </article>
-            <article>
-                <span th:text="#{label.time}"></span>
-                <strong th:text="${competition.time}"></strong>
-            </article>
             <article>
                 <span th:text="#{label.stadium}"></span>
                 <strong th:text="${competition.stadium.name}"></strong>
@@ -91,6 +60,27 @@
             <article>
                 <span th:text="#{competition.detail.location}"></span>
                 <strong th:text="${competition.stadium.location.city}"></strong>
+            </article>
+            <article sec:authorize="hasRole('USER')" class="match-final-prediction-card">
+                <span sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}"
+                      th:text="#{prediction.own.score}"></span>
+                <span sec:authorize="hasRole('USER')" th:unless="${currentUserPrediction != null}"
+                      ></span>
+                <strong th:text="#{prediction.form.help}"></strong>
+                <a class="match-primary-action"
+                   th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
+                   th:text="#{prediction.link}"></a>
+            </article>
+            <article sec:authorize="hasRole('ADMIN')" class="match-final-prediction-card match-final-controls-card">
+                <strong>Match Controls</strong>
+                <div class="match-final-actions">
+                    <a class="match-action-link"
+                       th:href="@{/competition/edit/{id}(id=${competition.id})}"
+                       th:text="#{competition.detail.edit}"></a>
+                    <a class="match-action-link"
+                       th:href="@{/competition/{id}/result(id=${competition.id})}"
+                       th:text="#{competition.result.link}"></a>
+                </div>
             </article>
         </div>
     </section>

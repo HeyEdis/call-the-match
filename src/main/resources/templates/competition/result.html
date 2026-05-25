@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <title th:text="#{competition.detail.officialResult}"></title>
 </head>
@@ -10,32 +11,40 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="#{competition.detail.officialResult}"></h1>
-<p th:text="#{competition.result.summary}"></p>
-<p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+<main class="competition-edit-shell">
+    <section class="competition-edit-page">
+        <header class="competition-edit-header">
+            <h1 th:text="#{competition.detail.officialResult}"></h1>
+        </header>
 
-<div>
-    <form th:action="@{/competition/{id}/result(id=${competition.id})}"
-          th:object="${inputCompetitionResultDto}" method="post">
+        <form class="competition-edit-card"
+              th:action="@{/competition/{id}/result(id=${competition.id})}"
+              th:object="${inputCompetitionResultDto}" method="post">
 
-        <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
+            <p class="competition-result-match" th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+            <p th:if="${errorMessage}" class="error competition-edit-message" th:text="${errorMessage}"></p>
 
-        <p>
-            <label th:text="#{label_competition_scoreA}"></label>
-            <input type="number" th:field="*{scoreA}" min="0"/>
-            <span th:if="${#fields.hasErrors('scoreA')}" th:errorclass="error" th:errors="*{scoreA}"></span>
-        </p>
+            <div class="competition-edit-grid">
+                <p class="competition-edit-field">
+                    <label th:text="#{label_competition_scoreA}"></label>
+                    <input type="number" th:field="*{scoreA}" min="0"/>
+                    <span th:if="${#fields.hasErrors('scoreA')}" th:errorclass="error" th:errors="*{scoreA}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_scoreB}"></label>
-            <input type="number" th:field="*{scoreB}" min="0"/>
-            <span th:if="${#fields.hasErrors('scoreB')}" th:errorclass="error" th:errors="*{scoreB}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label_competition_scoreB}"></label>
+                    <input type="number" th:field="*{scoreB}" min="0"/>
+                    <span th:if="${#fields.hasErrors('scoreB')}" th:errorclass="error" th:errors="*{scoreB}"></span>
+                </p>
+            </div>
 
-         <button type="submit" th:text="#{competition.add.submit}"></button>
-         <button type="reset" th:text="#{competition.add.reset}"></button>
-    </form>
-</div>
+            <div class="competition-edit-actions">
+                <button class="competition-edit-save" type="submit" th:text="#{competition.add.submit}"></button>
+                <button class="competition-edit-reset" type="reset" th:text="#{competition.add.reset}"></button>
+            </div>
+        </form>
+    </section>
+</main>
 
 </body>
 </html>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <title th:text="#{prediction.form.label}"></title>
 </head>
@@ -10,35 +11,74 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="#{prediction.form.label}"></h1>
-<p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
+<main class="prediction-shell">
+    <section class="prediction-variant prediction-variant-sheet">
+        <div class="prediction-sheet-grid">
+            <article class="prediction-match-card">
+                <p class="match-eyebrow" th:text="#{competition.detail.title}"></p>
+                <h1>
+                    <span th:text="${competition.teamA.name}"></span>
+                    <small>vs</small>
+                    <span th:text="${competition.teamB.name}"></span>
+                </h1>
+                <dl>
+                    <div>
+                        <dt th:text="#{label.date}"></dt>
+                        <dd th:text="${competition.date}"></dd>
+                    </div>
+                    <div>
+                        <dt th:text="#{label.time}"></dt>
+                        <dd th:text="${competition.time}"></dd>
+                    </div>
+                    <div>
+                        <dt th:text="#{label.stadium}"></dt>
+                        <dd th:text="${competition.stadium.name}"></dd>
+                    </div>
+                </dl>
+            </article>
 
-<div th:if="${cutoffPassed}">
-    <p th:text="#{prediction.cutoff.closed}"></p>
-</div>
+            <article class="prediction-entry-card">
+                <p class="match-eyebrow" th:text="#{prediction.form.label}"></p>
+                <h2 th:text="#{prediction.save.submit}"></h2>
 
-<div th:unless="${cutoffPassed}">
-    <form th:action="@{/predictions/{competitionId}(competitionId=${competition.id})}"
-          th:object="${inputPredictionDto}" method="post">
-        <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
-        <p>
-            <label th:text="|${competition.teamA.name} #{prediction.score.label}|"></label>
-            <input type="number" th:field="*{predictedScoreA}" min="0"/>
-            <span th:if="${#fields.hasErrors('predictedScoreA')}"
-                  th:errorclass="error" th:errors="*{predictedScoreA}"></span>
-        </p>
+                <div th:if="${cutoffPassed}" class="prediction-closed">
+                    <p th:text="#{prediction.cutoff.closed}"></p>
+                </div>
 
-        <p>
-            <label th:text="|${competition.teamB.name} #{prediction.score.label}|"></label>
-            <input type="number" th:field="*{predictedScoreB}" min="0"/>
-            <span th:if="${#fields.hasErrors('predictedScoreB')}"
-                  th:errorclass="error" th:errors="*{predictedScoreB}"></span>
-        </p>
+                <form th:unless="${cutoffPassed}"
+                      class="prediction-score-form"
+                      th:action="@{/predictions/{competitionId}(competitionId=${competition.id})}"
+                      th:object="${inputPredictionDto}" method="post">
+                    <p th:if="${errorMessage}" class="prediction-form-error" th:text="${errorMessage}"></p>
 
-         <button type="submit" th:text="#{prediction.save.submit}"></button>
-         <button type="reset" th:text="#{competition.add.reset}"></button>
-    </form>
-</div>
+                    <div class="prediction-score-row">
+                        <label>
+                            <span th:text="${competition.teamA.name}"></span>
+                            <input type="number" th:field="*{predictedScoreA}" min="0"/>
+                        </label>
+                        <strong>-</strong>
+                        <label>
+                            <span th:text="${competition.teamB.name}"></span>
+                            <input type="number" th:field="*{predictedScoreB}" min="0"/>
+                        </label>
+                    </div>
+
+                    <p class="prediction-field-error"
+                       th:if="${#fields.hasErrors('predictedScoreA')}"
+                       th:errors="*{predictedScoreA}"></p>
+                    <p class="prediction-field-error"
+                       th:if="${#fields.hasErrors('predictedScoreB')}"
+                       th:errors="*{predictedScoreB}"></p>
+
+                    <div class="prediction-form-actions">
+                        <button class="match-primary-action" type="submit" th:text="#{prediction.save.submit}"></button>
+                        <button class="match-action-link" type="reset" th:text="#{competition.add.reset}"></button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </section>
+</main>
 
 </body>
 </html>

@@ -193,7 +193,7 @@
         "No template relies on a missing message key"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "css-simplification-without-behavior-churn",
@@ -208,7 +208,7 @@
         "Screens remain usable on normal desktop and narrow browser widths"
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "mvc-security-validation-verification",

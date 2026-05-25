@@ -58,3 +58,31 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: `src/main/resources/templates/prediction/list.html`, `src/main/resources/templates/prediction/form.html`, `src/main/resources/i18n/messages.properties`, `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
 - Verification: `.\mvnw.cmd '-Dtest=CompetitionControllerTests,TeamControllerTests,PredictionControllerTests' test` passed with 52 tests.
 - Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - error-pages-resource-bundles
+
+- Task: Error Pages And Resource Bundles
+- What changed: no template changes needed; `error/403.html`, `error/404.html`, and `error/500.html` already use resource-bundle titles, headings, messages, and return-home navigation text.
+- Decisions made: kept `styleNotFound.css` for the error pages because it exists and changing stylesheet wiring is not required for the resource-bundle task.
+- Files changed: `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: checked `GlobalExceptionAdvice` returns the expected error views, scanned template message keys against `messages.properties` with no missing keys found, and ran `.\mvnw.cmd test` successfully with 120 tests.
+- Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - css-simplification-without-behavior-churn
+
+- Task: CSS Simplification Without Behavior Churn
+- What changed: removed stale prototype comments from `main.css`.
+- Decisions made: avoided class renames and visual churn because the existing form, table, message, navbar, and page-section styles are already covered by the templates and tests; footer styles were not introduced because the footer should not be restored.
+- Files changed: `src/main/resources/static/css/main.css`, `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: `.\mvnw.cmd test` passed with 120 tests.
+- Result: acceptance criteria verified; marked `passes` true.
+
+### 2026-05-25 - mvc-security-validation-verification
+
+- Task: MVC/Security/Validation Verification
+- What changed: ran the full automated verification suite.
+- Decisions made: did not mark this task complete because the acceptance criteria also ask for a manual smoke check across guest, user, admin, and error-page flows. AFK mode should not guess credentials or session setup for that manual pass.
+- Files changed: `src/main/resources/ralph/09-school-conform-view-refactor/TODO.md`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
+- Verification: `.\mvnw.cmd test` passed with 120 tests, covering MVC, security, validation, service, and REST GET tests.
+- Blocker: manual browser smoke remains.
+- Result: left `passes` false.

@@ -891,7 +891,7 @@ a {
     gap: 2rem;
     align-items: start;
     min-height: 24rem;
-    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem);
+    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 3rem);
     background: #00542f;
     color: var(--row-text);
 }
@@ -931,15 +931,15 @@ a {
 }
 
 .team-stitch-score strong {
-    color: var(--action-green-soft);
-    font: 900 clamp(3rem, 5vw, 5rem) / 0.9 'Space Grotesk', sans-serif;
+    color: var(--action-green);
+    font: 900 clamp(5rem, 9vw, 8rem) / 0.82 'Space Grotesk', sans-serif;
     letter-spacing: 0;
 }
 
 .team-stitch-content {
     display: grid;
     gap: clamp(3rem, 6vw, 6rem);
-    padding: clamp(3rem, 5.5vw, 6.5rem) clamp(1rem, 5vw, 6rem);
+    padding: clamp(3rem, 5.5vw, 6.5rem) clamp(1rem, 3vw, 3rem);
 }
 
 .team-stitch-members h2,
@@ -1044,15 +1044,6 @@ a {
     margin-top: 1.65rem;
 }
 
-.invite-copy-button {
-    font-size: 0;
-}
-
-.invite-copy-button::before {
-    content: "Copy";
-    font-size: 0.82rem;
-}
-
 .team-text-button {
     width: max-content;
     border: 2px solid rgba(104, 120, 143, 0.45);
@@ -1077,7 +1068,7 @@ a {
     gap: 2rem;
     align-items: center;
     min-height: 19rem;
-    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem);
+    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 3rem);
     background: #00542f;
     color: var(--row-text);
 }
@@ -1111,7 +1102,7 @@ a {
 }
 
 .team-scoreboard-content {
-    padding: clamp(3rem, 5.5vw, 5.5rem) clamp(1rem, 5vw, 6rem) 7rem;
+    padding: clamp(3rem, 5.5vw, 5.5rem) clamp(1rem, 3vw, 3rem) 7rem;
 }
 
 .team-scoreboard-content h2 {
@@ -1154,7 +1145,7 @@ a {
 /* PROTOTYPE: absorbed competition management direction using the documented table style. */
 .competition-list-page {
     min-height: calc(100vh - 64px);
-    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem) 7rem;
+    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 3rem) 7rem;
 }
 
 .competition-list-header {
@@ -1234,7 +1225,7 @@ a {
 
 .competition-edit-page {
     min-height: calc(100vh - 64px);
-    padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 5vw, 6rem) 7rem;
+    padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem) 7rem;
 }
 
 .competition-edit-header {
@@ -1370,7 +1361,7 @@ a {
 }
 
 .prediction-list-header-editorial {
-    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem) 0;
+    padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 3rem) 0;
 }
 
 .prediction-list-header-editorial p:last-child {
@@ -1382,7 +1373,7 @@ a {
 }
 
 .prediction-list-table-section {
-    padding: 0 clamp(1rem, 5vw, 6rem);
+    padding: 0 clamp(1rem, 3vw, 3rem);
 }
 
 .prediction-list-table {

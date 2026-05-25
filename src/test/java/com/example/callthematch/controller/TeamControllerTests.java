@@ -225,7 +225,7 @@ class TeamControllerTests {
                 .andExpect(content().string(containsString("Share invite code")))
                 .andExpect(content().string(containsString("value=\"ABCD1234\"")))
                 .andExpect(content().string(containsString("readonly")))
-                .andExpect(content().string(containsString(">Copy code</button>")))
+                .andExpect(content().string(containsString(">Copy</button>")))
                 .andExpect(content().string(containsString("navigator.clipboard.writeText")))
                 .andExpect(content().string(not(containsString("Regenerate code</button>"))));
 

@@ -84,8 +84,8 @@
                         </form>
                     </div>
                     <button class="invite-copy-button" type="button"
-                            th:text="#{team.inviteCode.copy}"
-                            onclick="navigator.clipboard.writeText(document.getElementById('inviteCodeA').value)"></button>
+                            onclick="navigator.clipboard.writeText(document.getElementById('inviteCodeA').value)"
+                            th:text="#{team.inviteCode.copy}"></button>
                 </div>
                 <p th:if="${message}" class="success team-show-message" th:text="${message}"></p>
             </section>

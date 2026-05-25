@@ -64,8 +64,6 @@
             <article sec:authorize="hasRole('USER')" class="match-final-prediction-card">
                 <span sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}"
                       th:text="#{prediction.own.score}"></span>
-                <span sec:authorize="hasRole('USER')" th:unless="${currentUserPrediction != null}"
-                      ></span>
                 <strong th:text="#{prediction.form.help}"></strong>
                 <a class="match-primary-action"
                    th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"

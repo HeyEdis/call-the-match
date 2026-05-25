@@ -93,6 +93,21 @@ a {
     color: #03131d;
 }
 
+.locale-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.locale-switch select {
+    border: 1px solid rgba(16, 32, 59, 0.18);
+    border-radius: 999px;
+    padding: 0.35rem 0.55rem;
+    background: #ffffff;
+    color: var(--nav-ink);
+    font: 700 0.86rem 'Inter', sans-serif;
+}
+
 .home-variant,
 .ranking-page,
 .match-page {

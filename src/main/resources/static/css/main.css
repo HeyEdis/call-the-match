@@ -1320,13 +1320,18 @@ a {
     margin-top: 1.4rem;
 }
 
-.competition-edit-actions button {
+.competition-edit-actions button,
+.competition-edit-actions a {
+    display: inline-flex;
     min-height: 3.35rem;
+    align-items: center;
+    justify-content: center;
     border-radius: 999px;
     padding: 0.75rem 1.35rem;
     cursor: pointer;
     font: 800 0.82rem 'Inter', sans-serif;
     letter-spacing: 0.08em;
+    text-decoration: none;
     text-transform: uppercase;
 }
 

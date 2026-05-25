@@ -93,12 +93,9 @@ a {
     color: #03131d;
 }
 
-.home-prototype-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-}
-
-.home-variant {
+.home-variant,
+.ranking-page,
+.match-page {
     min-height: calc(100vh - 64px);
     padding: clamp(2.5rem, 7vw, 7.5rem) clamp(1rem, 3vw, 3rem) 7.5rem;
 }
@@ -418,16 +415,24 @@ a {
     font-size: clamp(2.35rem, 6vw, 3.45rem);
 }
 
-.ranking-shell {
+.home-prototype-shell,
+.ranking-shell,
+.team-dashboard-shell,
+.team-show-prototype-shell,
+.team-scoreboard-shell,
+.competition-list-shell,
+.competition-edit-shell,
+.prediction-list-shell,
+.match-shell,
+.prediction-shell {
     width: min(100%, 1920px);
     margin: 0 auto;
     background: var(--page-bg);
     color: var(--page-ink);
 }
 
-.ranking-page {
-    min-height: calc(100vh - 64px);
-    padding: clamp(2.5rem, 7vw, 7.5rem) clamp(1rem, 3vw, 3rem) 7.5rem;
+.home-prototype-shell {
+    color: inherit;
 }
 
 .ranking-hero {
@@ -460,7 +465,8 @@ a {
     margin-left: auto;
 }
 
-.ranking-compact-card {
+.ranking-compact-card,
+.dashboard-table-wrap {
     overflow-x: auto;
     border-radius: 1.5rem;
     background: var(--page-bg);
@@ -473,7 +479,8 @@ a {
     border-spacing: 0 0.85rem;
 }
 
-.ranking-table th {
+.ranking-table th,
+.dashboard-team-table th {
     padding: 0 1.35rem 0.2rem;
     color: var(--green-muted);
     font: 800 0.72rem 'Inter', sans-serif;
@@ -572,13 +579,6 @@ a {
 
 .ranking-table-compact {
     min-width: 720px;
-}
-
-.team-dashboard-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
 }
 
 .team-dashboard-variant {
@@ -691,7 +691,9 @@ a {
     border: 2px solid #98a0aa;
 }
 
-.dashboard-field-error {
+.dashboard-field-error,
+.prediction-form-error,
+.prediction-field-error {
     color: var(--error);
     font: 700 0.9rem 'Be Vietnam Pro', sans-serif;
 }
@@ -715,26 +717,11 @@ a {
     font: 900 clamp(1.5rem, 3vw, 2.45rem) / 0.95 'Space Grotesk', sans-serif;
 }
 
-.dashboard-table-wrap {
-    overflow-x: auto;
-    border-radius: 1.5rem;
-    background: var(--page-bg);
-}
-
 .dashboard-team-table {
     width: 100%;
     min-width: 680px;
     border-collapse: separate;
     border-spacing: 0 0.85rem;
-}
-
-.dashboard-team-table th {
-    padding: 0 1.35rem 0.2rem;
-    color: var(--green-muted);
-    font: 800 0.72rem 'Inter', sans-serif;
-    letter-spacing: 0.11em;
-    text-align: left;
-    text-transform: uppercase;
 }
 
 .dashboard-team-table td {
@@ -759,12 +746,6 @@ a {
 }
 
 /* PROTOTYPE: team show Option A direction. Delete or absorb after choosing a final direction. */
-.team-show-prototype-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
 
 .team-show-variant {
     min-height: calc(100vh - 64px);
@@ -848,6 +829,62 @@ a {
     max-width: none;
 }
 
+.team-stitch-table-wrap,
+.team-scoreboard-table-wrap,
+.competition-list-table-wrap,
+.prediction-list-table-wrap {
+    overflow-x: auto;
+    border-radius: 1.15rem;
+    background: #ffffff;
+    outline: 1px solid rgba(104, 120, 143, 0.14);
+}
+
+.team-stitch-table,
+.team-scoreboard-table,
+.competition-list-table,
+.prediction-list-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.team-stitch-table th,
+.team-scoreboard-table th,
+.competition-list-table th,
+.prediction-list-table th {
+    background: #f4f7fb;
+    color: var(--muted);
+    font: 800 0.74rem 'Inter', sans-serif;
+    letter-spacing: 0.16em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.team-stitch-table td,
+.team-scoreboard-table td,
+.competition-list-table td,
+.prediction-list-table td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    color: var(--ink);
+    font-weight: 800;
+    vertical-align: middle;
+}
+
+.team-stitch-table tbody tr:last-child td,
+.team-scoreboard-table tbody tr:last-child td,
+.competition-list-table tbody tr:last-child td,
+.prediction-list-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.competition-list-header h1,
+.competition-edit-header h1,
+.prediction-list-header-editorial h1 {
+    max-width: 58rem;
+    color: var(--ink);
+    font-size: clamp(4rem, 7vw, 7rem);
+    line-height: 0.92;
+}
+
 .team-stitch-hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -913,39 +950,16 @@ a {
     text-transform: uppercase;
 }
 
-.team-stitch-table-wrap {
-    overflow-x: auto;
-    border-radius: 1.15rem;
-    background: #ffffff;
-    outline: 1px solid rgba(104, 120, 143, 0.14);
-}
-
 .team-stitch-table {
-    width: 100%;
     min-width: 840px;
-    border-collapse: collapse;
 }
 
 .team-stitch-table th {
     padding: 1.35rem 1.8rem;
-    background: #f4f7fb;
-    color: var(--muted);
-    font: 800 0.74rem 'Inter', sans-serif;
-    letter-spacing: 0.16em;
-    text-align: left;
-    text-transform: uppercase;
 }
 
 .team-stitch-table td {
     padding: 1.45rem 1.8rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-    color: var(--ink, #081226);
-    font-weight: 800;
-    vertical-align: middle;
-}
-
-.team-stitch-table tbody tr:last-child td {
-    border-bottom: 0;
 }
 
 .team-stitch-table td:first-child {
@@ -1057,13 +1071,6 @@ a {
 }
 
 /* PROTOTYPE: team scoreboard direction, matched to the accepted team show page. */
-.team-scoreboard-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
 .team-scoreboard-hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1113,27 +1120,12 @@ a {
     font: 900 clamp(1.85rem, 3vw, 2.55rem) / 0.95 'Space Grotesk', sans-serif;
 }
 
-.team-scoreboard-table-wrap {
-    overflow-x: auto;
-    background: #ffffff;
-    border-radius: 1.15rem;
-    outline: 1px solid rgba(104, 120, 143, 0.14);
-}
-
 .team-scoreboard-table {
-    width: 100%;
     min-width: 680px;
-    border-collapse: collapse;
 }
 
 .team-scoreboard-table th {
     padding: 1.35rem 1.8rem;
-    background: #f4f7fb;
-    color: var(--muted);
-    font: 800 0.74rem 'Inter', sans-serif;
-    letter-spacing: 0.16em;
-    text-align: left;
-    text-transform: uppercase;
 }
 
 .team-scoreboard-table th:last-child,
@@ -1143,14 +1135,6 @@ a {
 
 .team-scoreboard-table td {
     padding: 1.45rem 1.8rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-    color: var(--ink, #081226);
-    font-weight: 800;
-    vertical-align: middle;
-}
-
-.team-scoreboard-table tbody tr:last-child td {
-    border-bottom: 0;
 }
 
 .team-scoreboard-table td:first-child {
@@ -1164,18 +1148,10 @@ a {
 }
 
 .team-scoreboard-table td:last-child {
-    color: var(--ink, #081226);
     font: 900 clamp(1.55rem, 2.3vw, 2rem) / 1 'Space Grotesk', sans-serif;
 }
 
 /* PROTOTYPE: absorbed competition management direction using the documented table style. */
-.competition-list-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
 .competition-list-page {
     min-height: calc(100vh - 64px);
     padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem) 7rem;
@@ -1187,13 +1163,6 @@ a {
     justify-content: space-between;
     gap: 1.5rem;
     margin-bottom: clamp(2rem, 4vw, 3.5rem);
-}
-
-.competition-list-header h1 {
-    max-width: 58rem;
-    color: var(--ink);
-    font-size: clamp(4rem, 7vw, 7rem);
-    line-height: 0.92;
 }
 
 .competition-list-add {
@@ -1211,40 +1180,18 @@ a {
     white-space: nowrap;
 }
 
-.competition-list-table-wrap {
-    overflow-x: auto;
-    border-radius: 1.15rem;
-    background: #ffffff;
-    outline: 1px solid rgba(104, 120, 143, 0.14);
-}
-
 .competition-list-table {
-    width: 100%;
     min-width: 1080px;
-    border-collapse: collapse;
 }
 
 .competition-list-table th {
     padding: 1.25rem 1.35rem;
-    background: #f4f7fb;
-    color: var(--muted);
     font: 800 0.72rem 'Inter', sans-serif;
-    letter-spacing: 0.16em;
-    text-align: left;
-    text-transform: uppercase;
     white-space: nowrap;
 }
 
 .competition-list-table td {
     padding: 1.35rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-    color: var(--ink);
-    font-weight: 800;
-    vertical-align: middle;
-}
-
-.competition-list-table tbody tr:last-child td {
-    border-bottom: 0;
 }
 
 .competition-list-table td:nth-child(3),
@@ -1253,7 +1200,6 @@ a {
 }
 
 .competition-list-table td:nth-child(7) {
-    color: var(--ink);
     font: 900 1.3rem/1 'Space Grotesk', sans-serif;
 }
 
@@ -1286,13 +1232,6 @@ a {
     background: #eeeeee;
 }
 
-.competition-edit-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
 .competition-edit-page {
     min-height: calc(100vh - 64px);
     padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 5vw, 6rem) 7rem;
@@ -1301,12 +1240,6 @@ a {
 .competition-edit-header {
     max-width: 58rem;
     margin-bottom: clamp(1.25rem, 3vw, 2rem);
-}
-
-.competition-edit-header h1 {
-    color: var(--ink);
-    font-size: clamp(4rem, 7vw, 7rem);
-    line-height: 0.92;
 }
 
 .competition-edit-card {
@@ -1427,13 +1360,6 @@ a {
 }
 
 /* PROTOTYPE: accepted prediction list Option A direction. */
-.prediction-list-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
 .prediction-list-page {
     min-height: calc(100vh - 64px);
     padding-bottom: 7rem;
@@ -1445,13 +1371,6 @@ a {
 
 .prediction-list-header-editorial {
     padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 5vw, 6rem) 0;
-}
-
-.prediction-list-header-editorial h1 {
-    max-width: 58rem;
-    color: var(--page-ink);
-    font-size: clamp(4rem, 7vw, 7rem);
-    line-height: 0.92;
 }
 
 .prediction-list-header-editorial p:last-child {
@@ -1466,39 +1385,16 @@ a {
     padding: 0 clamp(1rem, 5vw, 6rem);
 }
 
-.prediction-list-table-wrap {
-    overflow-x: auto;
-    border-radius: 1.15rem;
-    background: #ffffff;
-    outline: 1px solid rgba(104, 120, 143, 0.14);
-}
-
 .prediction-list-table {
-    width: 100%;
     min-width: 820px;
-    border-collapse: collapse;
 }
 
 .prediction-list-table th {
     padding: 1.35rem 1.8rem;
-    background: #f4f7fb;
-    color: var(--muted);
-    font: 800 0.74rem 'Inter', sans-serif;
-    letter-spacing: 0.16em;
-    text-align: left;
-    text-transform: uppercase;
 }
 
 .prediction-list-table td {
     padding: 1.45rem 1.8rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-    color: var(--ink, #081226);
-    font-weight: 800;
-    vertical-align: middle;
-}
-
-.prediction-list-table tbody tr:last-child td {
-    border-bottom: 0;
 }
 
 .prediction-list-table td:first-child,
@@ -1508,7 +1404,7 @@ a {
 
 .prediction-list-table td:nth-child(3),
 .prediction-list-table td:last-child a {
-    color: var(--ink, #081226);
+    color: var(--ink);
     font: 900 clamp(1.25rem, 1.8vw, 1.7rem) / 1 'Space Grotesk', sans-serif;
     text-decoration: none;
 }
@@ -1522,18 +1418,6 @@ a {
     padding: 0.55rem 0.85rem;
     background: var(--row-green);
     color: var(--row-text);
-}
-
-.match-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
-.match-page {
-    min-height: calc(100vh - 64px);
-    padding: clamp(2.5rem, 7vw, 7.5rem) clamp(1rem, 3vw, 3rem) 7.5rem;
 }
 
 .match-message {
@@ -1556,7 +1440,6 @@ a {
 
 .match-final-hero,
 .match-final-result,
-.match-final-action,
 .match-final-details article {
     border: 1px solid #dfe6ed;
     border-radius: 1.5rem;
@@ -1575,7 +1458,10 @@ a {
 .match-final-hero dt,
 .match-final-result span,
 .match-final-prediction span,
-.match-final-details span {
+.match-final-details span,
+.prediction-match-card dt,
+.prediction-entry-card .match-eyebrow,
+.prediction-score-row span {
     color: var(--action-green-soft);
     font: 800 0.78rem 'Inter', sans-serif;
     letter-spacing: 0.18em;
@@ -1593,7 +1479,8 @@ a {
     text-transform: uppercase;
 }
 
-.match-final-hero h1 small {
+.match-final-hero h1 small,
+.prediction-match-card h1 small {
     color: #009b4c;
     font: 900 clamp(1.8rem, 3.8vw, 3rem) / 1 'Space Grotesk', sans-serif;
     letter-spacing: 0;
@@ -1656,40 +1543,11 @@ a {
     font-size: clamp(4.25rem, 9vw, 6.5rem);
 }
 
-.match-final-action {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 5.25rem;
-    padding: 4px 1.4rem;
-    background: #f4f7fb;
-}
-
-.match-final-action h2 {
-    margin: 0;
-    color: #20252b;
-    font: 900 clamp(1.45rem, 2.3vw, 2rem) / 1 'Space Grotesk', sans-serif;
-}
-
-.match-final-action p {
-    margin: 0.22rem 0 0;
-    color: #4e5660;
-    font: 600 1rem 'Be Vietnam Pro', sans-serif;
-}
-
 .match-final-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.38rem;
-}
-
-.match-final-action .match-primary-action {
-    min-width: 15.5rem;
-    min-height: 3.05rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
 }
 
 .match-final-details {
@@ -1775,13 +1633,6 @@ a {
     color: #03131d;
 }
 
-.prediction-shell {
-    width: min(100%, 1920px);
-    margin: 0 auto;
-    background: var(--page-bg);
-    color: var(--page-ink);
-}
-
 .prediction-variant {
     min-height: calc(100vh - 64px);
     padding: clamp(2.5rem, 5vw, 5rem) clamp(1rem, 3vw, 3rem) 7.5rem;
@@ -1820,13 +1671,6 @@ a {
     text-transform: uppercase;
 }
 
-.prediction-match-card h1 small {
-    color: #009b4c;
-    font: 900 clamp(1.8rem, 3.8vw, 3rem) / 1 'Space Grotesk', sans-serif;
-    letter-spacing: 0;
-    text-transform: lowercase;
-}
-
 .prediction-match-card dl {
     display: flex;
     flex-wrap: wrap;
@@ -1837,15 +1681,6 @@ a {
 .prediction-match-card div {
     display: grid;
     gap: 0.55rem;
-}
-
-.prediction-match-card dt,
-.prediction-entry-card .match-eyebrow,
-.prediction-score-row span {
-    color: var(--action-green-soft);
-    font: 800 0.78rem 'Inter', sans-serif;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
 }
 
 .prediction-match-card dd {
@@ -1925,12 +1760,6 @@ a {
     border: 2px solid #98a0aa;
 }
 
-.prediction-form-error,
-.prediction-field-error {
-    color: var(--error);
-    font: 700 0.9rem 'Be Vietnam Pro', sans-serif;
-}
-
 .prediction-closed {
     color: var(--error);
     font-weight: 800;
@@ -1957,13 +1786,7 @@ a {
         grid-template-columns: 1fr;
     }
 
-    .match-final-action {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .match-final-actions,
-    .match-final-action .match-primary-action {
+    .match-final-actions {
         width: 100%;
     }
 
@@ -2073,7 +1896,6 @@ a {
 
     .match-final-hero,
     .match-final-result,
-    .match-final-action,
     .match-final-details article {
         border-radius: 1.15rem;
     }

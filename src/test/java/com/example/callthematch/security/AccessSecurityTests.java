@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -30,11 +32,12 @@ class AccessSecurityTests {
     private MockMvc mockMvc;
 
     @Test
+    @WithAnonymousUser
     void guestCanOpenPublicAccessScreens() throws Exception {
         mockMvc.perform(get("/home"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/ranking"))
+        mockMvc.perform(get("/team/ranking"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/competition/1"))
@@ -48,6 +51,7 @@ class AccessSecurityTests {
     }
 
     @Test
+    @WithAnonymousUser
     void guestIsRedirectedFromUserTeamDashboard() throws Exception {
         mockMvc.perform(get("/team/dashboard"))
                 .andExpect(status().isFound())
@@ -63,6 +67,7 @@ class AccessSecurityTests {
     }
 
     @Test
+    @WithAnonymousUser
     void guestIsRedirectedFromAdminMatchWrites() throws Exception {
         mockMvc.perform(post("/competition/add").with(csrf()))
                 .andExpect(status().isFound())
@@ -78,13 +83,18 @@ class AccessSecurityTests {
     }
 
     @Test
-    void userCanOpenUserRoutesButNotAdminMatchManagement() throws Exception {
+    @WithMockUser(username = "user1@example.com", roles = "USER")
+    void userCanOpenUserRoutes() throws Exception {
         mockMvc.perform(get("/team/dashboard").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    @WithMockUser(username = "user1@example.com", roles = "USER")
+    void userCannotOpenAdminMatchManagement() throws Exception {
         mockMvc.perform(get("/competition/add").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
 
@@ -114,7 +124,8 @@ class AccessSecurityTests {
     }
 
     @Test
-    void adminCanOpenMatchManagementButNotParticipationRoutes() throws Exception {
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    void adminCanOpenMatchManagementRoutes() throws Exception {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk());
 
@@ -123,17 +134,25 @@ class AccessSecurityTests {
 
         mockMvc.perform(get("/competition/3/result").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    void adminCannotOpenTeamRoutes() throws Exception {
         mockMvc.perform(get("/team/dashboard").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
 
+        mockMvc.perform(get("/team/1/scoreboard").with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    void adminCannotOpenPredictionRoutes() throws Exception {
         mockMvc.perform(get("/predictions").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
 
         mockMvc.perform(get("/predictions/3").with(user("admin@example.com").roles("ADMIN")))
-                .andExpect(status().isForbidden());
-
-        mockMvc.perform(get("/team/1/scoreboard").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isForbidden());
     }
 
@@ -175,6 +194,7 @@ class AccessSecurityTests {
     }
 
     @Test
+    @WithMockUser(username = "user1@example.com", roles = "USER")
     void postWithoutCsrfReturnsForbidden() throws Exception {
         mockMvc.perform(post("/team/create")
                         .with(user("user1@example.com").roles("USER"))

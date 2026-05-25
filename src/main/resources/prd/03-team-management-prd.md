@@ -6,7 +6,7 @@ Users moeten private teams met vrienden kunnen vormen via invitecodes. De repo b
 
 ## Solution
 
-Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, automatisch eigenaar en lid wordt, invitecodes beheert, via invitecode kan joinen en alleen teams ziet waarvoor hij lid is. De teampagina blijft privaat en toont eigenaar, leden, persoonlijke scores en teamtotaal. Owner-only acties blijven beperkt tot invitecode regenereren en leden verwijderen.
+Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, automatisch eigenaar en lid wordt, invitecodes beheert, via invitecode kan joinen en alleen teams ziet waarvoor hij lid is. De teampagina blijft privaat en toont eigenaar, leden, persoonlijke scores en teamtotaal. Owner-only acties blijven beperkt tot invitecode regenereren en leden verwijderen. Voor de opdrachtregel `code delen (geen mailservice implementeren, enkel tonen)` volstaat een duidelijk invite-paneel dat de code toont in een copyable/read-only veld met een eenvoudige copy-knop.
 
 ## Current Codebase State
 
@@ -14,9 +14,10 @@ Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, auto
 - Invitecode generation already produces eight characters in the domain model.
 - Team score calculation already sums member scores.
 - A team dashboard, detail page, invitecode regeneration action and join action exist.
-- Dashboard and detail access are not yet limited to the authenticated member.
-- Join currently uses a hardcoded temporary user-id.
-- Team creation and owner-only member removal are not yet visible as complete flows.
+- Dashboard and detail access are now tied to current-user membership checks.
+- Join now resolves the authenticated user instead of relying on a temporary user id.
+- Team creation, authenticated join, private team visibility, owner checks, member removal and invitecode regeneration are present.
+- The team detail page shows the invitecode, but the "share code" requirement should be made explicit with a copyable/read-only invite field and copy button instead of only a plain paragraph.
 
 ## School Requirements
 
@@ -49,9 +50,10 @@ Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, auto
 9. As a team member, I want to see the team name, owner and member list, so that I understand the group.
 10. As a team member, I want to see each member score and the team total, so that the competition is visible.
 11. As a team owner, I want to regenerate the invite code, so that old codes can be invalidated.
-12. As a team owner, I want to remove members, so that membership can be managed.
-13. As a non-owner member, I want owner controls hidden and blocked, so that ownership is enforced.
-14. As a non-member, I want private team pages denied, so that data is not leaked.
+12. As a team member, I want the invite code shown in a copyable share panel, so that I can share it with friends without a mail service.
+13. As a team owner, I want to remove members, so that membership can be managed.
+14. As a non-owner member, I want owner controls hidden and blocked, so that ownership is enforced.
+15. As a non-member, I want private team pages denied, so that data is not leaked.
 
 ## Implementation Decisions
 
@@ -62,6 +64,7 @@ Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, auto
 - Filter dashboard data by membership.
 - Enforce member checks before showing team detail and private score data.
 - Enforce owner checks before invitecode regeneration and member removal.
+- Satisfy `code delen` by visibly showing the invite code on the private team page in a read-only/copyable field with a small copy button; do not implement email delivery, mail templates or external share integrations.
 - Use request DTO validation for create/join input where form validation is needed.
 - Use resource-bundle flash and error messages instead of hardcoded controller messages.
 - Keep team score display compatible with later scoring recalculation.
@@ -72,6 +75,7 @@ Bouw een user-only teamflow waarin een ingelogde user een uniek team maakt, auto
 - Verify owner membership is created with the team.
 - Verify guest denial, non-member denial and non-owner denial.
 - Verify team dashboard only exposes current-user memberships.
+- Verify the private team page visibly exposes the current invitecode to members and keeps regeneration owner-only.
 - Verify unique team name validation and required team inputs.
 - This PRD contributes to MVC, security and validation test categories.
 - Service tests are useful for membership rules even when final test work is late.

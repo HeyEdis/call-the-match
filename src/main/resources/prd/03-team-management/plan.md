@@ -99,16 +99,19 @@ Make team detail a private scoreboard slice for members. The detail route uses m
 
 ---
 
-## Phase 5: Owner-Only Invite And Member Controls
+## Phase 5: Invite Sharing And Owner-Only Member Controls
 
-**User stories**: `11`, `12`, `13`
+**User stories**: `11`, `12`, `13`, `14`
 
 ### What To Build
 
-Add the owner management slice on top of private detail. Owners can invalidate old invitecodes and remove members, while normal members receive a read-only team view for those controls and the service layer still blocks forged owner-only requests.
+Add the invite/share and owner management slice on top of private detail. Members can clearly see and copy the invite code for sharing without any mail service, while owners can invalidate old invitecodes and remove members. Normal members receive a read-only team view for owner controls and the service layer still blocks forged owner-only requests.
 
 ### Acceptance Criteria
 
+- [ ] The private team detail page shows the current invite code to team members in a clear share panel.
+- [ ] The invite code is rendered in a read-only/copyable field with a small copy button or equivalent simple copy affordance.
+- [ ] The share implementation only shows/copies the code; it does not add email delivery, mail templates, external share APIs or invitation persistence.
 - [ ] A team owner can regenerate the team's invitecode through a CSRF-protected MVC mutation and receives bundle-backed feedback on the private team screen.
 - [ ] Invitecode regeneration enforces owner checks and preserves invitecode uniqueness before the replacement code is used.
 - [ ] A team owner can remove a member through an owner-only MVC action that updates persisted membership data and returns to the private team view.
@@ -119,7 +122,7 @@ Add the owner management slice on top of private detail. Owners can invalidate o
 
 ## Phase 6: MVC, Security And Validation Closure Tests
 
-**User stories**: `1`-`14`
+**User stories**: `1`-`15`
 
 ### What To Build
 
@@ -131,5 +134,6 @@ Close the team feature after the private dashboard, create, join, detail and own
 - [ ] Security tests verify guest denial, normal user access to team routes, admin exclusion from team participation, non-member detail denial and non-owner owner-action denial.
 - [ ] Validation tests using a Jakarta `Validator` cover the team create and join DTO annotations introduced for required input and message behavior.
 - [ ] Service-focused tests or equivalent focused evidence cover owner membership creation, duplicate join prevention, invalid invitecode handling and uniqueness-sensitive membership rules where MVC tests would hide the business boundary.
+- [ ] MVC/security evidence verifies members can see the invite code share panel, non-members cannot, and invitecode regeneration remains owner-only.
 - [ ] Test assertions use status, view, model, redirect, binding and access outcomes instead of brittle visual assertions.
 - [ ] The closure phase does not add REST controller tests, WebClient setup or unrelated scoring recalculation work to team management.

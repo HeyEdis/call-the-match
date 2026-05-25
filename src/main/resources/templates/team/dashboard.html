@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Dashboard</title>
+    <title th:text="#{team.dashboard.title}"></title>
 </head>
 <body>
 
@@ -11,55 +12,71 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1>Squad up for the next match</h1>
-<p>Enter your squad's invite code to join existing competitions or create your own legacy from scratch.</p>
+<main class="team-dashboard-shell">
+    <section class="team-dashboard-variant">
+        <div class="team-dashboard-hero">
+            <h1 th:text="#{team.squadsUp}"></h1>
+            <p th:text="#{team.inviteCodeDesc}"></p>
+        </div>
 
-<div>
-    <form th:action="@{/team/join}" th:object="${inputTeamJoinDto}" method="post">
-        <p>
-            <label for="inviteCode" th:text="#{label.team.inviteCode}">Invite code</label>
-            <input id="inviteCode" type="text" th:field="*{inviteCode}"
-                   th:placeholder="#{team.inviteCode.placeholder}"/>
-            <span th:if="${#fields.hasErrors('inviteCode')}" th:errorclass="error"
-                  th:errors="*{inviteCode}"></span>
-        </p>
-        <button type="submit" th:text="#{team.join.submit}">Join team</button>
-    </form>
-</div>
+        <p th:if="${message}" class="success team-dashboard-message" th:text="${message}"></p>
 
-<div>
-    <h2>Create a team</h2>
-    <form th:action="@{/team/create}" th:object="${inputTeamDto}" method="post">
-        <p>
-            <label for="teamName" th:text="#{label.team.name}">Team name</label>
-            <input id="teamName" type="text" th:field="*{name}"
-                   th:placeholder="#{label.team.name}"/>
-            <span th:if="${#fields.hasErrors('name')}" th:errorclass="error"
-                  th:errors="*{name}"></span>
-        </p>
-        <button type="submit" th:text="#{team.create.submit}">Create team</button>
-    </form>
-</div>
+        <div class="team-command-grid">
+            <article class="team-command-card team-command-card-primary">
+                <h2 th:text="#{team.join.submit}"></h2>
+                <form th:action="@{/team/join}" th:object="${inputTeamJoinDto}" method="post">
+                    <div class="team-dashboard-form-row">
+                        <input id="inviteCodeA" type="text" th:field="*{inviteCode}"
+                               th:placeholder="#{team.inviteCode.placeholder}"/>
+                        <button class="match-primary-action" type="submit" th:text="#{team.join.button}"></button>
+                    </div>
+                    <p class="dashboard-field-error"
+                       th:if="${#fields.hasErrors('inviteCode')}"
+                       th:errors="*{inviteCode}"></p>
+                </form>
+            </article>
 
-<p th:if="${message}" th:text="${message}"></p>
+            <article class="team-command-card">
+                <h2 th:text="#{team.createTeam}"></h2>
+                <form th:action="@{/team/create}" th:object="${inputTeamDto}" method="post">
+                    <div class="team-dashboard-form-row">
+                        <input id="teamNameA" type="text" th:field="*{name}"
+                               th:placeholder="#{label.team.name}"/>
+                        <button class="match-action-link" type="submit" th:text="#{team.create.button}"></button>
+                    </div>
+                    <p class="dashboard-field-error"
+                       th:if="${#fields.hasErrors('name')}"
+                       th:errors="*{name}"></p>
+                </form>
+            </article>
+        </div>
 
-<div>
-    <h2>My teams</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Owner</th>
-            <th>Score</th>
-        </tr>
+        <section class="team-list-section">
+            <div class="team-list-heading">
+                <h2 th:text="#{team.myTeams}"></h2>
+            </div>
 
-        <tr th:each="team : ${teamList}">
-            <td><a th:href="|/team/${team.id}|" th:text="${team.name}"></a></td>
-            <td th:text="${team.owner.userName}"></td>
-            <td th:text="${team.score}"></td>
-        </tr>
-    </table>
-
-</div>
+            <div class="dashboard-table-wrap">
+                <table class="dashboard-team-table">
+                    <thead>
+                    <tr>
+                        <th th:text="#{label.name}"></th>
+                        <th th:text="#{label.owner}"></th>
+                        <th th:text="#{label.score}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="team : ${teamList}">
+                        <td><a th:href="|/team/${team.id}|" th:text="${team.name}"></a></td>
+                        <td th:text="${team.owner.userName}"></td>
+                        <td class="dashboard-score" th:text="${team.score}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
 
 </body>
 </html>

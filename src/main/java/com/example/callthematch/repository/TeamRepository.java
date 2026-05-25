@@ -11,4 +11,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByName(String name);
 
     boolean existsByInviteCode(String inviteCode);
+
+    long countByScoreGreaterThan(Integer score);
 }

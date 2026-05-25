@@ -4,6 +4,7 @@ import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
+import com.example.callthematch.service.PredictionService;
 import com.example.callthematch.service.StadiumService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CompetitionController {
     private final CompetitionService competitionService;
     private final StadiumService stadiumService;
     private final CountryService countryService;
+    private final PredictionService predictionService;
     private final MessageSource messageSource;
 
     @GetMapping
@@ -41,6 +43,8 @@ public class CompetitionController {
     @GetMapping(value = "/{id}")
     public String show(@PathVariable Long id, Model model) {
         model.addAttribute("competition", competitionService.findById(id));
+        predictionService.findCurrentUserPredictionStatusByCompetitionId(id)
+                .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
         return "competition/show";
     }
 

@@ -47,19 +47,12 @@ public class TeamService {
                 .stream()
                 .map(this::toTeamMemberScoreDTO)
                 .toList();
-        return new TeamScoreboardDTO(team.getId(), team.getName(), team.getScore(), members);
+        return new TeamScoreboardDTO(team.getId(), team.getName(), team.calculateTeamScore(), members);
     }
 
     private Team findTeamById(Long id)
     {
         return teamRepository.findById(id).orElseThrow(() -> new TeamNotFound(id));
-    }
-
-    public List<TeamDTO> getAllTeams() {
-        return teamRepository.findAll()
-                .stream()
-                .map(c -> toDTO(c))
-                .toList();
     }
 
     public List<TeamDTO> getCurrentUserTeams() {
@@ -91,6 +84,15 @@ public class TeamService {
         Team team = findTeamById(id);
         requireCurrentUserMembership(team);
         return toScoreboardDTO(team);
+    }
+
+    public String getTeamRank(Long id) {
+        Team team = findTeamById(id);
+        if (team.getScore() == null) {
+            return "unknown";
+        }
+        long teamsAbove = teamRepository.countByScoreGreaterThan(team.getScore());
+        return String.valueOf(teamsAbove + 1);
     }
 
     public boolean isCurrentUserOwner(Long id) {

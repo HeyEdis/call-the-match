@@ -33,11 +33,11 @@ Durable decisions that apply across all phases:
 
 ## Phase 1: Prediction Create/Update Flow
 
-**User stories**: 1, 2, 3, 5, 6
+**User stories**: 1, 2, 3, 5
 
 ### What To Build
 
-A user-only prediction form where an authenticated user submits two non-negative integer scores for a match. The system enforces one active prediction per user and competition (upsert semantics). The form is accessible from match context and shows the user's current prediction if one exists. An `InputPredictionDTO` validates scores with Jakarta `@NotNull` and `@Min(0)`. A `PredictionService` handles create/update logic. A `PredictionController` serves the Thymeleaf form and processes submissions.
+A user-only prediction form where an authenticated user submits two non-negative integer scores for a match. The system enforces one active prediction per user and competition (upsert semantics). The form is accessible from match context and pre-fills the user's current prediction if one exists. An `InputPredictionDTO` validates scores with Jakarta `@NotNull` and `@Min(0)`. A `PredictionService` handles create/update logic. A `PredictionController` serves the Thymeleaf form and processes submissions.
 
 ### Acceptance Criteria
 
@@ -52,7 +52,25 @@ A user-only prediction form where an authenticated user submits two non-negative
 
 ---
 
-## Phase 2: One-Hour Cutoff Enforcement
+## Phase 2: Current User Prediction On Match Detail
+
+**User stories**: 6
+
+### What To Build
+
+Integrate the existing prediction state into the public match detail page for signed-in normal users. When a user already has a prediction for `/competition/{id}`, the controller/service path loads only that current user's prediction and Thymeleaf renders a calm status such as `Your prediction: 2 - 1` near the existing prediction action. Guests, admins and users without a prediction do not receive private prediction data on the match page.
+
+### Acceptance Criteria
+
+- [ ] The competition detail controller/service path can safely ask for the current user's prediction by competition id when the actor has role USER.
+- [ ] The match detail model receives no private prediction value for guests, admins or users without an existing prediction.
+- [ ] The match detail template shows the signed-in user's own prediction when present, using a resource-bundle-backed label such as `Your prediction`.
+- [ ] The displayed prediction is loaded through service/repository behavior for the authenticated user and never by request-provided user id.
+- [ ] The existing predict/edit link remains available for users according to the prediction flow and does not expose admin prediction participation.
+
+---
+
+## Phase 3: One-Hour Cutoff Enforcement
 
 **User stories**: 3, 4
 
@@ -70,7 +88,7 @@ The prediction service checks whether the current time is before the match kicko
 
 ---
 
-## Phase 3: Scoring Service And Constants
+## Phase 4: Scoring Service And Constants
 
 **User stories**: 7, 8, 9, 10, 11
 
@@ -92,7 +110,7 @@ A dedicated `ScoringService` that calculates points for a single prediction give
 
 ---
 
-## Phase 4: Official Result Triggers Recalculation
+## Phase 5: Official Result Triggers Recalculation
 
 **User stories**: 16
 
@@ -112,7 +130,7 @@ When admin saves an official result for a competition (scoreA and scoreB), the s
 
 ---
 
-## Phase 5: Private Team Scoreboard
+## Phase 6: Private Team Scoreboard
 
 **User stories**: 12, 13, 14, 15
 
@@ -133,7 +151,7 @@ A member-only scoreboard page at `/team/{id}/scoreboard` displaying all team mem
 
 ---
 
-## Phase 6: Security And Access Hardening
+## Phase 7: Security And Access Hardening
 
 **User stories**: 14, 15
 
@@ -151,7 +169,7 @@ Ensure Spring Security configuration explicitly protects prediction and scoreboa
 
 ---
 
-## Phase 7: Tests (Late Closure)
+## Phase 8: Tests (Late Closure)
 
 **User stories**: All
 
@@ -166,6 +184,8 @@ Test suite covering the predictions and scoring feature across required school c
 - [ ] Security test: guest cannot access prediction routes.
 - [ ] Security test: admin cannot access prediction or scoreboard routes.
 - [ ] Security test: non-member cannot access another team's scoreboard.
+- [ ] MVC/security test: match detail shows the signed-in user's existing prediction and never shows another user's prediction.
+- [ ] MVC/security test: match detail omits private prediction status for guests, admins and users without a prediction.
 - [ ] Validation test: DTO rejects null and negative score values.
 - [ ] Service test: exact-score prediction earns 5 points.
 - [ ] Service test: correct-outcome-only prediction earns 2 points.
@@ -174,4 +194,3 @@ Test suite covering the predictions and scoring feature across required school c
 - [ ] Service test: unique outcome bonus awards +1 when outcome is unique in team.
 - [ ] Service test: no bonus when multiple members share the same prediction.
 - [ ] Service test: cutoff enforcement rejects late predictions.
-

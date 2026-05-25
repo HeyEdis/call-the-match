@@ -55,6 +55,25 @@ Each iteration appends what was done, decisions made, files changed, verificatio
   - Existing Hibernate missing-table DDL warnings and Mockito agent warnings remain noisy in the passing build output.
 - **Status**: acceptance criteria verified for these four tasks and their `"passes"` flags set to `true`.
 
+### 2026-05-24 - Add Invite Code Share Panel And Visibility Tests
+
+- **Tasks**:
+  - `add-invite-code-share-panel` - Add Invite Code Share Panel
+  - `test-invite-code-share-visibility` - Test Invite Code Share Visibility
+- **What changed**: replaced the plain invitecode paragraph on the private team detail page with an explicit share panel containing bundle-backed text, a read-only invitecode input and a simple browser clipboard copy button. Added MVC/security evidence that members see the share panel and current code, non-owner members do not see regeneration controls, guests are redirected from team detail, admins are forbidden from team detail, non-members remain denied, and non-owner regeneration stays blocked.
+- **Decisions**: kept this as a local display/copy-only feature. No email, mail templates, external share APIs, invitation persistence, REST or WebClient work was added. Invitecode regeneration remains a separate owner-only POST guarded by the existing service-layer owner check.
+- **Files changed**:
+  - `src/main/resources/templates/team/show.html`
+  - `src/main/resources/i18n/messages.properties`
+  - `src/test/java/com/example/callthematch/controller/TeamControllerTests.java`
+  - `src/main/resources/plan/03-team-management/plan.json`
+  - `src/main/resources/ralph/03-team-management/progress.md`
+- **Verification**:
+  - `.\mvnw.cmd -Dtest=TeamControllerTests test` completed with `BUILD SUCCESS`: 20 tests run, 0 failures and 0 errors.
+  - `.\mvnw.cmd test` completed with `BUILD SUCCESS`: 109 tests run, 0 failures and 0 errors.
+  - Existing Hibernate missing-table DDL warnings, Lombok builder warning and Mockito dynamic-agent warnings remain noisy in the passing build output.
+- **Status**: acceptance criteria verified for both invite-code share tasks and their `"passes"` flags set to `true`.
+
 ### 2026-05-22 - Close Team Management Tests
 
 - **Tasks**:

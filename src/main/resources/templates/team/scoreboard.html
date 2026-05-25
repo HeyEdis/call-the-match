@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{team.scoreboard.title}">Team Scoreboard</title>
+    <title th:text="#{team.scoreboard.title}"></title>
 </head>
 <body>
 
@@ -11,23 +11,41 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="${scoreboard.name}"></h1>
+<!-- PROTOTYPE: Single scoreboard direction for /team/{id}/scoreboard, matched to the accepted team page. -->
+<main class="team-scoreboard-shell">
+    <section class="team-scoreboard-hero">
+        <div>
+            <h1 th:text="${scoreboard.name}"></h1>
+        </div>
+        <div class="team-scoreboard-total">
+            <span th:text="#{team.scoreboard.total}"></span>
+            <strong th:text="${scoreboard.score}"></strong>
+        </div>
+    </section>
 
-<div>
-    <h2 th:text="#{team.scoreboard.total}">Team total</h2>
-    <p th:text="${scoreboard.score}"></p>
-</div>
+    <section class="team-scoreboard-content" aria-labelledby="teamScoreboardHeading">
+        <h2 id="teamScoreboardHeading" th:text="#{team.scoreboard.title}"></h2>
 
-<table>
-    <tr>
-        <th th:text="#{team.scoreboard.member}">Member</th>
-        <th th:text="#{team.scoreboard.score}">Score</th>
-    </tr>
-    <tr th:each="member : ${scoreboard.members}">
-        <td th:text="${member.userName}"></td>
-        <td th:text="${member.score}"></td>
-    </tr>
-</table>
+        <div class="team-scoreboard-table-wrap">
+            <table class="team-scoreboard-table">
+                <thead>
+                <tr>
+                    <th th:text="#{team.scoreboard.rank}"></th>
+                    <th th:text="#{team.scoreboard.member}"></th>
+                    <th th:text="#{team.scoreboard.score}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member, iterStat : ${scoreboard.members}">
+                    <td th:text="${#numbers.formatInteger(iterStat.index + 1, 2)}"></td>
+                    <td th:text="${member.userName}"></td>
+                    <td th:text="${member.score}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
 </body>
 </html>

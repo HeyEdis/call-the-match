@@ -2,50 +2,59 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{registration.label}">Register</title>
+    <title th:text="#{registration.label}"></title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<main>
-    <h1 th:text="#{registration.label}">Register</h1>
+<main class="signin-shell">
+    <section class="signin-panel register-panel">
+        <h1 th:text="#{register.createAccount}"></h1>
 
-    <form th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
-        <p>
-            <label for="firstName" th:text="#{label.account.firstName}">First name</label>
-            <input id="firstName" type="text" th:field="*{firstName}"/>
-            <span th:if="${#fields.hasErrors('firstName')}" th:errorclass="error"
-                  th:errors="*{firstName}"></span>
+        <form class="signin-form" th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
+            <p class="signin-field">
+                <label for="firstName" th:text="#{label.account.firstName}"></label>
+                <input id="firstName" type="text" th:field="*{firstName}" autocomplete="given-name"/>
+                <span th:if="${#fields.hasErrors('firstName')}" th:errorclass="error"
+                      th:errors="*{firstName}"></span>
+            </p>
+            <p class="signin-field">
+                <label for="lastName" th:text="#{label.account.lastName}"></label>
+                <input id="lastName" type="text" th:field="*{lastName}" autocomplete="family-name"/>
+                <span th:if="${#fields.hasErrors('lastName')}" th:errorclass="error"
+                      th:errors="*{lastName}"></span>
+            </p>
+            <p class="signin-field">
+                <label for="userName" th:text="#{label.account.userName}"></label>
+                <input id="userName" type="text" th:field="*{userName}" autocomplete="username"/>
+                <span th:if="${#fields.hasErrors('userName')}" th:errorclass="error"
+                      th:errors="*{userName}"></span>
+            </p>
+            <p class="signin-field">
+                <label for="email" th:text="#{label.account.email}"></label>
+                <input id="email" type="email" th:field="*{email}" autocomplete="email"/>
+                <span th:if="${#fields.hasErrors('email')}" th:errorclass="error"
+                      th:errors="*{email}"></span>
+            </p>
+            <p class="signin-field">
+                <label for="password" th:text="#{label.account.password}"></label>
+                <input id="password" type="password" th:field="*{password}" autocomplete="new-password"/>
+                <span th:if="${#fields.hasErrors('password')}" th:errorclass="error"
+                      th:errors="*{password}"></span>
+            </p>
+            <button class="signin-submit" type="submit" th:text="#{register.createAccountButton}"></button>
+        </form>
+
+        <p class="signin-legal" th:text="#{register.legal}"></p>
+
+        <p class="signin-footer-link">
+            <span th:text="#{register.haveAccount}"></span> <a th:href="@{/login}" th:text="#{login.label}"></a>
         </p>
-        <p>
-            <label for="lastName" th:text="#{label.account.lastName}">Last name</label>
-            <input id="lastName" type="text" th:field="*{lastName}"/>
-            <span th:if="${#fields.hasErrors('lastName')}" th:errorclass="error"
-                  th:errors="*{lastName}"></span>
-        </p>
-        <p>
-            <label for="userName" th:text="#{label.account.userName}">Username</label>
-            <input id="userName" type="text" th:field="*{userName}"/>
-            <span th:if="${#fields.hasErrors('userName')}" th:errorclass="error"
-                  th:errors="*{userName}"></span>
-        </p>
-        <p>
-            <label for="email" th:text="#{label.account.email}">Email</label>
-            <input id="email" type="email" th:field="*{email}"/>
-            <span th:if="${#fields.hasErrors('email')}" th:errorclass="error"
-                  th:errors="*{email}"></span>
-        </p>
-        <p>
-            <label for="password" th:text="#{label.account.password}">Password</label>
-            <input id="password" type="password" th:field="*{password}" autocomplete="new-password"/>
-            <span th:if="${#fields.hasErrors('password')}" th:errorclass="error"
-                  th:errors="*{password}"></span>
-        </p>
-        <button type="submit" th:text="#{registration.label}">Register</button>
-    </form>
+    </section>
 </main>
 </body>
 </html>

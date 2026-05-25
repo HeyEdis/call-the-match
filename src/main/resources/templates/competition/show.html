@@ -3,54 +3,86 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Competition</title>
+    <title th:text="#{competition.show.title}"></title>
 </head>
 <body>
 <header>
-  <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<div>
-  <h1 th:text="#{competition.detail.title}">Match</h1>
-  <p th:text="|${competition.teamA.name} vs ${competition.teamB.name}|"></p>
-  <div>
-    <p>
-      <span th:text="#{label_competition_date}">Date</span>:
-      <span th:text="${competition.date}"></span>
-    </p>
-    <p>
-      <span th:text="#{label_competition_time}">Time</span>:
-      <span th:text="${competition.time}"></span>
-    </p>
-    <p>
-      <span th:text="#{label_competition_stadium}">Stadium</span>:
-      <span th:text="${competition.stadium.name}"></span>
-    </p>
-    <p>
-      <span th:text="#{competition.detail.location}">Location</span>:
-      <span th:text="${competition.stadium.location.city}"></span>
-    </p>
-    <p th:text="#{competition.detail.officialResult}">Official result</p>
-    <p th:if="${competition.scoreA != null and competition.scoreB != null}"
-       th:text="|${competition.scoreA} - ${competition.scoreB}|"></p>
-    <p th:unless="${competition.scoreA != null and competition.scoreB != null}"
-       th:text="#{competition.detail.noResult}">No official result yet.</p>
-    <p sec:authorize="hasRole('ADMIN')">
-      <a th:href="@{/competition/edit/{id}(id=${competition.id})}"
-         th:text="#{competition.edit.label}">Edit match</a>
-    </p>
-    <p sec:authorize="hasRole('ADMIN')">
-      <a th:href="@{/competition/{id}/result(id=${competition.id})}"
-         th:text="#{competition.result.link}">Record result</a>
-    </p>
-    <p sec:authorize="hasRole('USER')">
-      <a th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
-         th:text="#{prediction.link}">Predict score</a>
-    </p>
-  </div>
-</div>
+<main class="match-shell">
+    <section class="match-page match-page-final">
+        <p th:if="${successMessage}" class="success match-message" th:text="${successMessage}"></p>
 
+        <div class="match-final-grid">
+            <article class="match-final-hero">
+                <p class="match-eyebrow" th:text="#{competition.detail.title}"></p>
+                <h1>
+                    <span th:text="${competition.teamA.name}"></span>
+                    <small>vs</small>
+                    <span th:text="${competition.teamB.name}"></span>
+                </h1>
+                <dl>
+                    <div>
+                        <dt th:text="#{label.date}"></dt>
+                        <dd th:text="${competition.date}"></dd>
+                    </div>
+                    <div>
+                        <dt th:text="#{label.time}"></dt>
+                        <dd th:text="${competition.time}"></dd>
+                    </div>
+                </dl>
+            </article>
+
+            <aside class="match-final-result">
+                <div>
+                    <span th:text="#{competition.detail.officialResult}"></span>
+                    <strong th:if="${competition.scoreA != null and competition.scoreB != null}"
+                            th:text="|${competition.scoreA} - ${competition.scoreB}|"></strong>
+                    <em th:unless="${competition.scoreA != null and competition.scoreB != null}"
+                        th:text="#{competition.detail.noResult}"></em>
+                </div>
+
+                <div sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}" class="match-final-prediction">
+                    <span th:text="#{prediction.own.score}"></span>
+                    <strong th:text="|${currentUserPrediction.predictedScoreA} - ${currentUserPrediction.predictedScoreB}|"></strong>
+                </div>
+            </aside>
+        </div>
+
+        <div class="match-final-details">
+            <article>
+                <span th:text="#{label.stadium}"></span>
+                <strong th:text="${competition.stadium.name}"></strong>
+            </article>
+            <article>
+                <span th:text="#{competition.detail.location}"></span>
+                <strong th:text="${competition.stadium.location.city}"></strong>
+            </article>
+            <article sec:authorize="hasRole('USER')" class="match-final-prediction-card">
+                <span sec:authorize="hasRole('USER')" th:if="${currentUserPrediction != null}"
+                      th:text="#{prediction.own.score}"></span>
+                <strong th:text="#{prediction.form.help}"></strong>
+                <a class="match-primary-action"
+                   th:href="@{/predictions/{competitionId}(competitionId=${competition.id})}"
+                   th:text="#{prediction.link}"></a>
+            </article>
+            <article sec:authorize="hasRole('ADMIN')" class="match-final-prediction-card match-final-controls-card">
+                <strong th:text="#{competition.show.matchControls}"></strong>
+                <div class="match-final-actions">
+                    <a class="match-action-link"
+                       th:href="@{/competition/edit/{id}(id=${competition.id})}"
+                       th:text="#{competition.detail.edit}"></a>
+                    <a class="match-action-link"
+                       th:href="@{/competition/{id}/result(id=${competition.id})}"
+                       th:text="#{competition.result.link}"></a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
 
 </body>
 </html>

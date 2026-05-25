@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/styleNotFound.css}" />
-    <title>Access denied</title>
+    <title th:text="#{accessDenied.title}"></title>
 </head>
 <body>
 <div class="error-container">
     <div class="error-content">
-        <h1>403 - Access Denied</h1>
-        <p>It seems like you don't have access to this page!</p>
-        <a th:href="@{/home}">Return to Homepage</a>
+        <h1 th:text="#{accessDenied.heading}"></h1>
+        <p th:text="#{accessDenied.message}"></p>
+        <a th:href="@{/home}" th:text="#{nav.returnHome}"></a>
     </div>
 </div>
 </body>

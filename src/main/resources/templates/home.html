@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" th:href="@{/css/main.css}"/>
-  <title>Home</title>
+  <title th:text="#{home.title}"></title>
 </head>
 <body>
 
@@ -11,40 +12,44 @@
   <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<main>
-  <div class="page-header">
-    <h1 class="page-title font-headline">Worldcup 2026</h1>
-    <h2>Schedule</h2>
-    <p>Stay updated with the complete match schedule for the FIFA World Cup 2026.</p>
-    <table>
-      <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Team A</th>
-        <th>Team B</th>
-        <th>Stadium</th>
-        <th>City</th>
-        <th>Score</th>
-        <th>Match</th>
-      </tr>
+<main class="home-prototype-shell">
+  <p th:if="${successMessage}" class="success" th:text="${successMessage}"></p>
 
-      <tr th:each="competition : ${competitionList}">
-        <td th:text="${competition.date}"></td>
-        <td th:text="${competition.time}"></td>
-        <td th:text="${competition.teamA.name}"></td>
-        <td th:text="${competition.teamB.name}"></td>
-        <td th:text="${competition.stadium.name}"></td>
-        <td th:text="${competition.stadium.location.city}"></td>
-        <td th:if="${competition.scoreA != null and competition.scoreB != null}"
-            th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
-        <td th:unless="${competition.scoreA != null and competition.scoreB != null}">TBD</td>
-        <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
-      </tr>
-    </table>
-  </div>
+    <section class="home-variant variant-stadium-pulse">
+      <div class="pulse-hero">
+        <div class="pulse-copy">
+          <h1><span th:text="#{schedule.worldCup}"></span> <strong th:text="#{schedule.title}"></strong></h1>
+          <p th:text="#{schedule.desc}"></p>
+        </div>
+      </div>
+
+    <div class="pulse-layout">
+      <div class="pulse-list">
+        <article class="pulse-row" th:each="competition : ${competitionList}">
+          <div class="pulse-date">
+            <span th:text="${competition.date}"></span>
+            <small th:text="${competition.time}"></small>
+          </div>
+          <div class="pulse-teams">
+            <strong th:text="${competition.teamA.name}"></strong>
+            <span>vs</span>
+            <strong th:text="${competition.teamB.name}"></strong>
+          </div>
+          <div class="pulse-place">
+            <span th:text="${competition.stadium.name}"></span>
+            <small th:text="${competition.stadium.location.city}"></small>
+          </div>
+          <div class="pulse-score">
+            <strong th:if="${competition.scoreA != null and competition.scoreB != null}"
+                    th:text="|${competition.scoreA} - ${competition.scoreB}|"></strong>
+            <em th:unless="${competition.scoreA != null and competition.scoreB != null}" th:text="#{competition.list.tbd}"></em>
+          </div>
+          <a class="match-pill" th:href="|/competition/${competition.id}|" th:text="#{label.match}"></a>
+        </article>
+      </div>
+    </div>
+  </section>
 </main>
-
-<!--<div th:replace="~{fragments/footer :: footer}"></div> -->
 
 </body>
 </html>

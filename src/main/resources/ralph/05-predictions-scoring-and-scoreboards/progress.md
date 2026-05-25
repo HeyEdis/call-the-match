@@ -68,3 +68,22 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Files changed: `ScoringServiceTests`, `PredictionMvcTests`, `InputPredictionDTOValidationTests`, `plan.json`, `progress.md`.
 - Verification: `.\mvnw.cmd '-Dtest=ScoringServiceTests,PredictionMvcTests,InputPredictionDTOValidationTests' test` passed with 18 tests. `.\mvnw.cmd test` passed with 61 tests.
 - Blockers/TODOs: none.
+
+### 2026-05-24 - Current User Prediction On Match Detail
+
+- `show-current-user-prediction-on-match-detail` - Added a current-user-only prediction status to public match detail for authenticated USER actors with an existing prediction.
+- `test-match-detail-prediction-visibility` - Added MVC/security evidence that the match detail page shows the signed-in user's own prediction, omits prediction status for users without one, and does not expose prediction context to guests or ADMIN actors.
+- What changed: `CompetitionController` now asks `PredictionService` for the current authenticated USER's prediction when rendering `/competition/{id}`. `PredictionService` returns an optional DTO through the current-user repository boundary, and `competition/show.html` renders `Your prediction: A - B` only when that model value exists. The existing predict/edit link remains available for USER actors.
+- Decisions: kept the lookup out of the request surface by resolving the actor through `UserService.getCurrentUser()` inside `PredictionService`; guests and ADMIN actors never call the prediction lookup. Reused the existing `prediction.own.score` bundle key for the label.
+- Files changed:
+  - `src/main/java/com/example/callthematch/controller/CompetitionController.java`
+  - `src/main/java/com/example/callthematch/service/PredictionService.java`
+  - `src/main/resources/templates/competition/show.html`
+  - `src/test/java/com/example/callthematch/controller/CompetitionControllerTests.java`
+  - `src/main/resources/plan/05-predictions-scoring-and-scoreboards/plan.json`
+  - `src/main/resources/ralph/05-predictions-scoring-and-scoreboards/progress.md`
+- Verification:
+  - `.\mvnw.cmd '-Dtest=CompetitionControllerTests' test` completed with `BUILD SUCCESS`: 24 tests run, 0 failures and 0 errors.
+  - `.\mvnw.cmd test` completed with `BUILD SUCCESS`: 118 tests run, 0 failures and 0 errors.
+  - Existing Hibernate missing-table DDL warnings, Lombok builder warning and Mockito dynamic-agent warnings remain noisy in the passing output.
+- Status: acceptance criteria verified for both remaining prediction visibility tasks and their `"passes"` flags set to `true`.

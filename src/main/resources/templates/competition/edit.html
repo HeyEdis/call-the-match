@@ -2,83 +2,92 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{competition.edit.label}">Edit match</title>
+    <title th:text="#{competition.edit.label}"></title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="#{competition.edit.label}">Edit match</h1>
-<p th:text="#{competition.edit.summary}">Correct the fixture details.</p>
+<main class="competition-edit-shell">
+    <section class="competition-edit-page">
+        <header class="competition-edit-header">
+            <h1 th:text="#{competition.edit.label}"></h1>
+        </header>
 
-<div>
-    <form th:action="@{/competition/edit/{id}(id=${inputCompetitionDto.id})}"
-          th:object="${inputCompetitionDto}" method="post">
+        <form class="competition-edit-card"
+              th:action="@{/competition/edit/{id}(id=${inputCompetitionDto.id})}"
+              th:object="${inputCompetitionDto}" method="post">
 
-        <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
-        <input type="hidden" th:field="*{id}"/>
+            <p th:if="${errorMessage}" class="error competition-edit-message" th:text="${errorMessage}"></p>
+            <input type="hidden" th:field="*{id}"/>
 
-        <p>
-            <label th:text="#{label_competition_teamA}"></label>
-            <select th:field="*{teamA}">
-                <option value="" th:text="#{competition.country.select}">Select a country</option>
-                <option th:each="country : ${countries}" th:value="${country.id}"
-                        th:text="${country.name}"></option>
-            </select>
-            <span th:if="${#fields.hasErrors('teamA')}" th:errorclass="error" th:errors="*{teamA}"></span>
-        </p>
+            <div class="competition-edit-grid">
+                <p class="competition-edit-field">
+                    <label th:text="#{label.teamA}"></label>
+                    <select th:field="*{teamA}">
+                        <option value="" th:text="#{competition.country.select}"></option>
+                        <option th:each="country : ${countries}" th:value="${country.id}"
+                                th:text="${country.name}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('teamA')}" th:errorclass="error" th:errors="*{teamA}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_teamB}"></label>
-            <select th:field="*{teamB}">
-                <option value="" th:text="#{competition.country.select}">Select a country</option>
-                <option th:each="country : ${countries}" th:value="${country.id}"
-                        th:text="${country.name}"></option>
-            </select>
-            <span th:if="${#fields.hasErrors('teamB')}" th:errorclass="error" th:errors="*{teamB}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label.teamB}"></label>
+                    <select th:field="*{teamB}">
+                        <option value="" th:text="#{competition.country.select}"></option>
+                        <option th:each="country : ${countries}" th:value="${country.id}"
+                                th:text="${country.name}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('teamB')}" th:errorclass="error" th:errors="*{teamB}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_stadium}"></label>
-            <select th:field="*{stadium}">
-                <option value="" th:text="#{competition.stadium.select}">Select a stadium</option>
-                <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
-                        th:attr="data-code=${stadium.code}"
-                        th:text="|${stadium.location.city} - ${stadium.name}|"></option>
-            </select>
-            <span th:if="${#fields.hasErrors('stadium')}" th:errorclass="error" th:errors="*{stadium}"></span>
-        </p>
+                <p class="competition-edit-field competition-edit-field-wide">
+                    <label th:text="#{label.stadium}"></label>
+                    <select th:field="*{stadium}">
+                        <option value="" th:text="#{competition.stadium.select}"></option>
+                        <option th:each="stadium : ${stadiums}" th:value="${stadium.id}"
+                                th:attr="data-code=${stadium.code}"
+                                th:text="|${stadium.location.city} - ${stadium.name}|"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('stadium')}" th:errorclass="error" th:errors="*{stadium}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_stadiumCode}"></label>
-            <input type="number" th:field="*{stadiumCode}" min="0" max="9999" readonly/>
-            <span th:if="${#fields.hasErrors('stadiumCode')}" th:errorclass="error" th:errors="*{stadiumCode}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label_competition_stadiumCode}"></label>
+                    <input type="number" th:field="*{stadiumCode}" min="0" max="9999" readonly/>
+                    <span th:if="${#fields.hasErrors('stadiumCode')}" th:errorclass="error" th:errors="*{stadiumCode}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_checksum}"></label>
-            <input type="number" th:field="*{checksum}" min="0" max="96"/>
-            <span th:if="${#fields.hasErrors('checksum')}" th:errorclass="error" th:errors="*{checksum}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label_competition_checksum}"></label>
+                    <input type="number" th:field="*{checksum}" min="0" max="96"/>
+                    <span th:if="${#fields.hasErrors('checksum')}" th:errorclass="error" th:errors="*{checksum}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_date}"></label>
-            <input type="date" th:field="*{date}"/>
-            <span th:if="${#fields.hasErrors('date')}" th:errorclass="error" th:errors="*{date}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label.date}"></label>
+                    <input type="date" th:field="*{date}"/>
+                    <span th:if="${#fields.hasErrors('date')}" th:errorclass="error" th:errors="*{date}"></span>
+                </p>
 
-        <p>
-            <label th:text="#{label_competition_time}"></label>
-            <input type="time" th:field="*{time}"/>
-            <span th:if="${#fields.hasErrors('time')}" th:errorclass="error" th:errors="*{time}"></span>
-        </p>
+                <p class="competition-edit-field">
+                    <label th:text="#{label.time}"></label>
+                    <input type="time" th:field="*{time}"/>
+                    <span th:if="${#fields.hasErrors('time')}" th:errorclass="error" th:errors="*{time}"></span>
+                </p>
+            </div>
 
-        <button type="submit" th:text="#{competition.add.submit}">Save</button>
-        <button type="reset" th:text="#{competition.add.reset}">Reset</button>
-    </form>
-</div>
+            <div class="competition-edit-actions">
+                <button class="competition-edit-save" type="submit" th:text="#{competition.add.submit}"></button>
+                <button class="competition-edit-reset" type="button" onclick="history.back()" th:text="#{button.cancel}"></button>
+            </div>
+        </form>
+    </section>
+</main>
 
 <script th:src="@{/js/matchStadiumChecksum.js}"></script>
 

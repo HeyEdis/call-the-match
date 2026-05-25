@@ -1,44 +1,57 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title th:text="#{prediction.list.title}">Predictions</title>
+    <title th:text="#{prediction.list.title}"></title>
 </head>
 <body>
 <header>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<h1 th:text="#{prediction.list.title}">Predictions</h1>
+<!-- PROTOTYPE: Accepted Option A prediction list direction. Option B was cut after review. -->
+<main class="prediction-list-shell">
 
-<table>
-    <thead>
-    <tr>
-        <th th:text="#{label_competition_teamA}">Team A</th>
-        <th th:text="#{label_competition_teamB}">Team B</th>
-        <th th:text="#{prediction.match.score}">Match score</th>
-        <th th:text="#{prediction.own.score}">Your prediction</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="prediction : ${predictionList}">
-        <td th:text="${prediction.teamA}"></td>
-        <td th:text="${prediction.teamB}"></td>
-        <td th:if="${prediction.scoreA != null and prediction.scoreB != null}"
-            th:text="|${prediction.scoreA} - ${prediction.scoreB}|"></td>
-        <td th:unless="${prediction.scoreA != null and prediction.scoreB != null}"
-            th:text="#{competition.detail.noResult}">No official result yet.</td>
-        <td>
-            <a th:href="@{/predictions/{competitionId}(competitionId=${prediction.competitionId})}"
-               th:text="|${prediction.predictedScoreA} - ${prediction.predictedScoreB}|">0 - 0</a>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(predictionList)}">
-        <td colspan="4" th:text="#{prediction.list.empty}">No predictions yet.</td>
-    </tr>
-    </tbody>
-</table>
+    <section class="prediction-list-page">
+        <header class="prediction-list-header prediction-list-header-editorial">
+            <h1 th:text="#{prediction.list.title}"></h1>
+            <p th:text="#{prediction.list.description}"></p>
+        </header>
+
+        <section class="prediction-list-table-section" aria-labelledby="predictionListHeadingA">
+            <div class="prediction-list-table-wrap">
+                <table class="prediction-list-table">
+                    <thead>
+                    <tr>
+                        <th th:text="#{label.teamA}"></th>
+                        <th th:text="#{label.teamB}"></th>
+                        <th th:text="#{prediction.match.score}"></th>
+                        <th th:text="#{prediction.own.score}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="prediction : ${predictionList}">
+                        <td th:text="${prediction.teamA}"></td>
+                        <td th:text="${prediction.teamB}"></td>
+                        <td th:if="${prediction.scoreA != null and prediction.scoreB != null}"
+                            th:text="|${prediction.scoreA} - ${prediction.scoreB}|"></td>
+                        <td th:unless="${prediction.scoreA != null and prediction.scoreB != null}"
+                            th:text="#{competition.detail.noResult}"></td>
+                        <td>
+                            <a th:href="@{/predictions/{competitionId}(competitionId=${prediction.competitionId})}"
+                               th:text="|${prediction.predictedScoreA} - ${prediction.predictedScoreB}|">0 - 0</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(predictionList)}">
+                        <td colspan="4" th:text="#{prediction.list.empty}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
 
 </body>
 </html>

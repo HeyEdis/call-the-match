@@ -2,8 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-    <title>Competitions</title>
+    <title th:text="#{competition.list.title}"></title>
 </head>
 <body>
 
@@ -11,38 +12,64 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<main>
-    <div class="page-header">
-        <button><a th:href="@{/competition/add}" class="button">Add</a></button>
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Team A</th>
-                <th>Team B</th>
-                <th>Stadium</th>
-                <th>City</th>
-                <th>Score</th>
-                <th>Match</th>
-                <th>Action</th>
-            </tr>
+<!-- PROTOTYPE: Absorbed single-direction competition management page using the documented table style. -->
+<main class="competition-list-shell">
+    <section class="competition-list-page">
+        <header class="competition-list-header">
+            <div>
+                <h1 th:text="#{competition.list.title}"></h1>
+            </div>
+            <a th:href="@{/competition/add}" class="competition-list-add" th:text="#{competition.list.addButton}"></a>
+        </header>
 
-            <tr th:each="competition : ${competitionList}">
-                <td th:text="${competition.date}"></td>
-                <td th:text="${competition.time}"></td>
-                <td th:text="${competition.teamA.name}"></td>
-                <td th:text="${competition.teamB.name}"></td>
-                <td th:text="${competition.stadium.name}"></td>
-                <td th:text="${competition.stadium.location.city}"></td>
-                <td th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
-                <td><a th:href="|/competition/${competition.id}|" th:text="'Match'"></a></td>
-                <td><button>Edit</button></td>
-            </tr>
-        </table>
-    </div>
+        <section>
+            <div class="competition-list-table-wrap">
+                <table class="competition-list-table">
+                    <thead>
+                    <tr>
+                        <th th:text="#{label.date}"></th>
+                        <th th:text="#{label.time}"></th>
+                        <th th:text="#{label.teamA}"></th>
+                        <th th:text="#{label.teamB}"></th>
+                        <th th:text="#{label.stadium}"></th>
+                        <th th:text="#{label.city}"></th>
+                        <th th:text="#{label.score}"></th>
+                        <th th:text="#{label.match}"></th>
+                        <th th:text="#{label.action}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="competition : ${competitionList}">
+                        <td th:text="${competition.date}"></td>
+                        <td th:text="${competition.time}"></td>
+                        <td th:text="${competition.teamA.name}"></td>
+                        <td th:text="${competition.teamB.name}"></td>
+                        <td th:text="${competition.stadium.name}"></td>
+                        <td th:text="${competition.stadium.location.city}"></td>
+                        <td th:if="${competition.scoreA != null and competition.scoreB != null}"
+                            th:text="|${competition.scoreA} - ${competition.scoreB}|"></td>
+                        <td th:unless="${competition.scoreA != null and competition.scoreB != null}"
+                            th:text="#{competition.list.tbd}"></td>
+                        <td>
+                            <a class="competition-list-match-link"
+                               th:href="|/competition/${competition.id}|"
+                               th:text="#{label.match}"></a>
+                        </td>
+                        <td>
+                            <a class="competition-list-edit-link"
+                               th:href="@{/competition/edit/{id}(id=${competition.id})}"
+                               th:text="#{competition.list.edit}"></a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(competitionList)}">
+                        <td colspan="9" th:text="#{competition.list.noFixtures}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
 </main>
-
-<!--<div th:replace="~{fragments/footer :: footer}"></div> -->
 
 </body>
 </html>

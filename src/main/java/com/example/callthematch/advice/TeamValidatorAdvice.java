@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.InitBinder;
 @RequiredArgsConstructor
 public class TeamValidatorAdvice {
 
-    private final ObjectProvider<InputTeamValidator> inputTeamValidator;
-    private final ObjectProvider<InputTeamJoinValidator> inputTeamJoinValidator;
+    private final InputTeamValidator inputTeamValidator;
+    private final InputTeamJoinValidator inputTeamJoinValidator;
 
     @InitBinder("inputTeamDTO")
     public void initTeamBinder(WebDataBinder binder) {
-        binder.addValidators(inputTeamValidator.getObject());
+        binder.addValidators(inputTeamValidator);
     }
 
     @InitBinder("inputTeamJoinDTO")
     public void initTeamJoinBinder(WebDataBinder binder) {
-        binder.addValidators(inputTeamJoinValidator.getObject());
+        binder.addValidators(inputTeamJoinValidator);
     }
 }

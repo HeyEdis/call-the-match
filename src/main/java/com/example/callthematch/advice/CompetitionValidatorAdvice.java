@@ -13,7 +13,7 @@ public class CompetitionValidatorAdvice {
 
     private final CompetitionValidator competitionValidator;
 
-    @InitBinder("inputCompetitionDto")
+    @InitBinder("inputCompetitionDTO")
     public void initBinder(WebDataBinder binder) {
         binder.addValidators(competitionValidator);
     }

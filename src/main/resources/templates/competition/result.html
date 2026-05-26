@@ -19,7 +19,7 @@
 
         <form class="competition-edit-card"
               th:action="@{/competition/{id}/result(id=${competition.id})}"
-              th:object="${inputCompetitionResultDto}" method="post">
+              th:object="${inputCompetitionResultDTO}" method="post">
 
             <p class="competition-result-match">
                 <span th:text="${competition.teamA.name}"></span>

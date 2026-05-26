@@ -104,10 +104,10 @@ Refactor competition list, detail, add, edit, and result templates. Preserve pub
 - [ ] `competition/list.html` uses valid route links for detail, add, edit, and result actions.
 - [ ] Public match detail remains available to guests through `competition/show.html`.
 - [ ] Admin-only controls in match detail use `sec:authorize` for visibility but remain protected by security config.
-- [ ] Add/edit forms bind to `inputCompetitionDto` with `th:object`.
+- [ ] Add/edit forms bind to `inputCompetitionDTO` with `th:object`.
 - [ ] Country and stadium select fields use `th:field` and backend-provided model data.
 - [ ] Add/edit validation errors are shown with `th:errors` near each field.
-- [ ] Result form binds to `inputCompetitionResultDto`.
+- [ ] Result form binds to `inputCompetitionResultDTO`.
 - [ ] Result form validation errors are shown with `th:errors`.
 - [ ] Match dates/times and scores are displayed using Thymeleaf formatting appropriate to the model values.
 - [ ] Visible competition text, empty states, table headers, buttons, and flash/error messages use resource-bundle keys.

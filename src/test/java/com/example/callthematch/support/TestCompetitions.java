@@ -17,11 +17,11 @@ public final class TestCompetitions {
     private TestCompetitions() {
     }
 
-    public static InputCompetitionDTO inputCompetitionDto(Long id) {
-        return inputCompetitionDto(id, 1L, 2L, LocalDate.of(2026, 5, 20));
+    public static InputCompetitionDTO inputCompetitionDTO(Long id) {
+        return inputCompetitionDTO(id, 1L, 2L, LocalDate.of(2026, 5, 20));
     }
 
-    public static InputCompetitionDTO inputCompetitionDto(Long id, Long teamA, Long teamB, LocalDate date) {
+    public static InputCompetitionDTO inputCompetitionDTO(Long id, Long teamA, Long teamB, LocalDate date) {
         return new InputCompetitionDTO(
                 id,
                 teamA,

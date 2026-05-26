@@ -52,6 +52,13 @@ class AccessSecurityTests {
 
     @Test
     @WithAnonymousUser
+    void guestCanLoadStaticJavaScriptAssets() throws Exception {
+        mockMvc.perform(get("/js/matchStadiumChecksum.js"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
     void guestIsRedirectedFromUserTeamDashboard() throws Exception {
         mockMvc.perform(get("/team/dashboard"))
                 .andExpect(status().isFound())

@@ -21,9 +21,13 @@ public class InputTeamJoinValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         InputTeamJoinDTO input = (InputTeamJoinDTO) target;
+        String inviteCode = input.inviteCode();
 
-        if (input.inviteCode() != null && !input.inviteCode().isBlank()
-                && !teamRepository.existsByInviteCode(input.inviteCode())) {
+        if(inviteCode == null || inviteCode.isBlank()) {
+            return;
+        }
+
+        if (!teamRepository.existsByInviteCode(inviteCode)) {
             errors.rejectValue("inviteCode", "team.inviteCode.invalid");
         }
     }

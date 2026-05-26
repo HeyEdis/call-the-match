@@ -15,17 +15,17 @@ public class StadiumChecksumValidator implements ConstraintValidator<ValidStadiu
 
     @Override
     public boolean isValid(InputCompetitionDTO input, ConstraintValidatorContext context) {
+
         if (input == null || input.stadiumCode() == null || input.checksum() == null) {
             return true;
         }
 
-        boolean validChecksum = input.checksum() == input.stadiumCode() % divisor;
-        if (validChecksum) {
+        if(input.checksum().equals(input.stadiumCode() % divisor)) {
             return true;
         }
 
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate("{validator.stadiumChecksum}")
+        context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
                 .addPropertyNode("checksum")
                 .addConstraintViolation();
         return false;

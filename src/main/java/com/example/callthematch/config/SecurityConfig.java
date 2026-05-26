@@ -33,6 +33,7 @@ public class SecurityConfig {
                                 "/login**",
                                 "/register**",
                                 "/css/**",
+                                "/js/**",
                                 "/api/**",
                                 "/403**",
                                 "/404**",

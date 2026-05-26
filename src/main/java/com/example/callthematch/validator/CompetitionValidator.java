@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CompetitionValidator implements Validator {
 
-    private static final LocalDate FIRST_MATCH_DATE = LocalDate.of(2026, 5, 20);
-    private static final LocalDate LAST_MATCH_DATE = LocalDate.of(2026, 6, 6);
+    private static final LocalDate EARLIEST_START_DATE = LocalDate.of(2026, 5, 20);
+    private static final LocalDate LATEST_START_DATE = LocalDate.of(2026, 6, 6);
 
     private final CompetitionRepository competitionRepository;
     private final StadiumRepository stadiumRepository;
@@ -29,27 +29,55 @@ public class CompetitionValidator implements Validator {
     public void validate(Object target, Errors errors) {
         InputCompetitionDTO input = (InputCompetitionDTO) target;
 
-        if (input.teamA() != null && input.teamB() != null
-                && input.teamA().equals(input.teamB())) {
+        validateDifferentTeams(input, errors);
+        validateDateScope(input, errors);
+        validateStadiumTimeConflict(input, errors);
+        validateSelectedStadiumCode(input, errors);
+    }
+
+    private void validateDifferentTeams(InputCompetitionDTO input, Errors errors) {
+        if (input.teamA() == null || input.teamB() == null) {
+            return;
+        }
+
+        if (input.teamA().equals(input.teamB())) {
             errors.rejectValue("teamB", "competition.teams.different");
         }
+    }
 
-        if (input.date() != null
-                && (input.date().isBefore(FIRST_MATCH_DATE) || input.date().isAfter(LAST_MATCH_DATE))) {
-            errors.rejectValue("date", "competition.date.period",
-                    new Object[] {FIRST_MATCH_DATE, LAST_MATCH_DATE}, null);
+    private void validateDateScope(InputCompetitionDTO input, Errors errors) {
+        if (input.date() == null) {
+            return;
         }
 
-        if (input.stadium() != null && input.date() != null && input.time() != null
-                && hasStadiumTimeConflict(input)) {
+        if(input.date().isBefore(EARLIEST_START_DATE)){
+            errors.rejectValue("date", "competition.date.before", new Object[] {EARLIEST_START_DATE}, null);
+        }
+
+        if (input.date().isAfter(LATEST_START_DATE)) {
+            errors.rejectValue("date", "competition.date.after", new Object[] {LATEST_START_DATE}, null);
+        }
+    }
+
+    private void validateStadiumTimeConflict(InputCompetitionDTO input, Errors errors) {
+        if (input.stadium() == null || input.date() == null || input.time() == null) {
+            return;
+        }
+
+        if (hasStadiumTimeConflict(input)) {
             errors.rejectValue("time", "competition.stadium.time.conflict");
         }
+    }
 
-        if (input.stadium() != null && input.stadiumCode() != null) {
-            stadiumRepository.findById(input.stadium())
-                    .filter(stadium -> !input.stadiumCode().equals(stadium.getCode()))
-                    .ifPresent(stadium -> errors.rejectValue("stadiumCode", "competition.stadiumCode.selected"));
+    private void validateSelectedStadiumCode(InputCompetitionDTO input, Errors errors) {
+        if (input.stadium() == null || input.stadiumCode() == null) {
+            return;
         }
+
+        stadiumRepository.findById(input.stadium())
+                .filter(stadium -> !input.stadiumCode().equals(stadium.getCode()))
+                .ifPresent(stadium ->
+                        errors.rejectValue("stadiumCode", "competition.stadiumCode.selected"));
     }
 
     private boolean hasStadiumTimeConflict(InputCompetitionDTO input) {

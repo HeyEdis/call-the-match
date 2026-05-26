@@ -21,9 +21,13 @@ public class InputTeamValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         InputTeamDTO input = (InputTeamDTO) target;
+        String name = input.name();
 
-        if (input.name() != null && !input.name().isBlank()
-                && teamRepository.existsByName(input.name())) {
+        if(name == null || name.isBlank()) {
+            return;
+        }
+
+        if (teamRepository.existsByName(name)) {
             errors.rejectValue("name", "team.name.duplicate");
         }
     }

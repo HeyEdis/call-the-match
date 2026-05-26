@@ -90,7 +90,7 @@ public class InitDataConfig implements CommandLineRunner {
         userRepository.save(admin);
         userRepository.saveAll(generatedUsers);
 
-        // ── 2. COUNTRIES ──────────────────────────────────────────────────────
+        // COUNTRIES ──────────────────────────────────────────────────────
         Country usa = Country.builder().landCode(1).name("United States").build();
         Country mexico = Country.builder().landCode(52).name("Mexico").build();
         Country canada = Country.builder().landCode(1).name("Canada").build();
@@ -150,7 +150,7 @@ public class InitDataConfig implements CommandLineRunner {
                 curacao, haiti
         ));
 
-        // ── 5. LOCATIONS ──────────────────────────────────────────────────────
+        // LOCATIONS ──────────────────────────────────────────────────────
         Location newYork = Location.builder().city("New York").build();
         Location dallas = Location.builder().city("Dallas").build();
         Location atlanta = Location.builder().city("Atlanta").build();
@@ -174,7 +174,7 @@ public class InitDataConfig implements CommandLineRunner {
                 guadalajara, monterrey, toronto, vancouver, philadelphia
         ));
 
-        // ── 6. STADIUMS ───────────────────────────────────────────────────────
+        // STADIUMS ───────────────────────────────────────────────────────
         Stadium metLife = Stadium.builder().location(newYork).name("MetLife Stadium").code(1001).capacity(82500).build();
         Stadium attStadium = Stadium.builder().location(dallas).name("AT&T Stadium").code(1003).capacity(80000).build();
         Stadium mercedesBenz = Stadium.builder().location(atlanta).name("Mercedes-Benz Stadium").code(1009).capacity(71000).build();
@@ -198,7 +198,7 @@ public class InitDataConfig implements CommandLineRunner {
                 bbva, bmo, bcPlace, lincolnFinancial
         ));
 
-        // ── 7. TEAMS ───────────────────────────────────────────
+        // TEAMS ───────────────────────────────────────────
         var generatedTeams = new ArrayList<Team>();
         for (int i = 0; i < GENERATED_TEAM_COUNT; i++) {
             Team team = Team.builder()
@@ -213,7 +213,7 @@ public class InitDataConfig implements CommandLineRunner {
 
         teamRepository.saveAll(generatedTeams);
 
-        // ── 8. TEAM MEMBERS ───────────────────────────────────────────────────
+        // TEAM MEMBERS ───────────────────────────────────────────────────
         var generatedTeamMembers = new ArrayList<TeamMember>();
         int userIndex = generatedTeams.size();
         for (Team team : generatedTeams) {
@@ -246,7 +246,7 @@ public class InitDataConfig implements CommandLineRunner {
         }
         teamMemberRepository.saveAll(ownerMembers);
 
-        // -- PERSIST TEAM SCORES ----------------------------
+        // PERSIST TEAM SCORES ----------------------------
         for (int i = 0; i < generatedTeams.size(); i++) {
             Team team = generatedTeams.get(i);
             int teamScore = generatedTeamMembers.stream()
@@ -258,11 +258,11 @@ public class InitDataConfig implements CommandLineRunner {
         }
         teamRepository.saveAll(generatedTeams);
 
-        // ── 10. COMPETITIONS ─────────────────────
+        // COMPETITIONS ─────────────────────
         Competition c1 = Competition.builder()
                 .teamA(bosnia).teamB(canada)
                 .stadium(attStadium)
-                .date(LocalDate.of(2026, 5, 12))
+                .date(LocalDate.of(2026, 5, 20))
                 .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .scoreA(3)
                 .scoreB(1)
@@ -272,7 +272,7 @@ public class InitDataConfig implements CommandLineRunner {
         Competition c2 = Competition.builder()
                 .teamA(qatar).teamB(switzerland)
                 .stadium(azteca)
-                .date(LocalDate.of(2026, 5, 18))
+                .date(LocalDate.of(2026, 5, 21))
                 .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .scoreA(2)
                 .scoreB(2)
@@ -282,7 +282,7 @@ public class InitDataConfig implements CommandLineRunner {
         Competition c3 = Competition.builder()
                 .teamA(brazil).teamB(morocco)
                 .stadium(akron)
-                .date(LocalDate.of(2026, 5, 20))
+                .date(LocalDate.of(2026, 5, 22))
                 .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .createdAt(LocalDateTime.now())
                 .scoreA(4)
@@ -324,14 +324,14 @@ public class InitDataConfig implements CommandLineRunner {
         Competition c8 = Competition.builder()
                 .teamA(ghana).teamB(panama)
                 .stadium(hardRock)
-                .date(LocalDate.of(2026, 6, 15))
+                .date(LocalDate.of(2026, 6, 4))
                 .time(LocalTime.of(13 + (r.nextInt(9)), 0))
                 .createdAt(LocalDateTime.now())
                 .build();
 
         competitionRepository.saveAll(List.of(c1,c2,c3,c4,c5,c6,c7,c8));
 
-        // ── 11. PREDICTIONS  ──────────────────────────────────────────
+        // PREDICTIONS  ──────────────────────────────────────────
         /*var allCompetitions = competitionRepository.findAll();
         var generatedPredictions = new ArrayList<Prediction>();
         for (MyUser user : generatedUsers) {

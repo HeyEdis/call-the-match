@@ -7,14 +7,10 @@ import jakarta.validation.ConstraintValidatorContext;
 public class StadiumChecksumValidator implements ConstraintValidator<ValidStadiumChecksum, InputCompetitionDTO> {
 
     private int divisor;
-    private int codeMin;
-    private int codeMax;
 
     @Override
     public void initialize(ValidStadiumChecksum constraintAnnotation) {
         divisor = constraintAnnotation.divisor();
-        codeMin = constraintAnnotation.codeMin();
-        codeMax = constraintAnnotation.codeMax();
     }
 
     @Override
@@ -23,9 +19,8 @@ public class StadiumChecksumValidator implements ConstraintValidator<ValidStadiu
             return true;
         }
 
-        boolean validCodeLength = input.stadiumCode() >= codeMin && input.stadiumCode() <= codeMax;
         boolean validChecksum = input.checksum() == input.stadiumCode() % divisor;
-        if (validCodeLength && validChecksum) {
+        if (validChecksum) {
             return true;
         }
 

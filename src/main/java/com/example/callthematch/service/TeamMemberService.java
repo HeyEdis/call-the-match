@@ -56,11 +56,7 @@ public class TeamMemberService {
         members.forEach(member -> member.setScore(recalculateMemberScore(member, members)));
         teamMemberRepository.saveAll(members);
 
-        team.setScore(members.stream()
-                .map(TeamMember::getScore)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .sum());
+        team.recalculateScore();
         teamRepository.save(team);
     }
 

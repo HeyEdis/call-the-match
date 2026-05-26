@@ -17,8 +17,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface ValidStadiumChecksum {
     String message() default "{validator.stadiumChecksum}";
     int divisor() default 97;
-    int codeMin() default 1000;
-    int codeMax() default 9999;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

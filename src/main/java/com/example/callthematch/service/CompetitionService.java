@@ -8,6 +8,8 @@ import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.CountryNotFound;
 import com.example.callthematch.exception.StadiumNotFound;
 import com.example.callthematch.model.Competition;
+import com.example.callthematch.model.Country;
+import com.example.callthematch.model.Stadium;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.CountryRepository;
 import com.example.callthematch.repository.StadiumRepository;
@@ -95,10 +97,18 @@ public class CompetitionService {
     }
 
     public Long add(InputCompetitionDTO dto) {
+
+        Country teamA = countryRepository.findById(dto.teamA())
+                .orElseThrow(() -> new CountryNotFound(dto.teamA()));
+        Country teamB = countryRepository.findById(dto.teamB())
+                .orElseThrow(() -> new CountryNotFound(dto.teamB()));
+        Stadium stadium = stadiumRepository.findById(dto.stadium())
+                .orElseThrow(() -> new StadiumNotFound(dto.stadium()));
+
         Competition competition = Competition.builder()
-                .teamA(countryRepository.findById(dto.teamA()).orElseThrow(() -> new CountryNotFound(dto.teamA())))
-                .teamB(countryRepository.findById(dto.teamB()).orElseThrow(() -> new CountryNotFound(dto.teamB())))
-                .stadium(stadiumRepository.findById(dto.stadium()).orElseThrow(() -> new StadiumNotFound(dto.stadium())))
+                .teamA(teamA)
+                .teamB(teamB)
+                .stadium(stadium)
                 .date(dto.date())
                 .time(dto.time())
                 .build();

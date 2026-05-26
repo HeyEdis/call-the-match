@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Builder
@@ -44,9 +44,13 @@ public class Team {
     private LocalDateTime updatedAt;
 
     public int calculateTeamScore() {
-        return this.score = members.stream()
+        return members.stream()
                 .mapToInt(TeamMember::getScore)
                 .sum();
+    }
+
+    public void recalculateScore() {
+        this.score = calculateTeamScore();
     }
 
     public void regenerateInviteCode(){

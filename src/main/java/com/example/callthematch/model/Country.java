@@ -6,8 +6,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "id")
 @Entity
@@ -18,12 +17,7 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-       /* @OneToMany
-    private List<GroupMember> members; */
-
     private Integer landCode;
 
     private String name;
-
-
 }

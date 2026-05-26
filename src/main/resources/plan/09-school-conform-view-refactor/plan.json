@@ -167,7 +167,7 @@
         "prediction/list.html displays predictions from backend-provided model data",
         "Prediction list links point to existing prediction form routes",
         "Empty prediction list state uses a resource-bundle key",
-        "prediction/form.html binds to inputPredictionDto with th:object",
+        "prediction/form.html binds to inputPredictionDTO with th:object",
         "Predicted score fields use th:field",
         "Field errors for predicted scores are shown with th:errors",
         "Match data on the form is display-only and contains no scoring/business logic",

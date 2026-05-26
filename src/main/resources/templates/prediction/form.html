@@ -48,7 +48,7 @@
                 <form th:unless="${cutoffPassed}"
                       class="prediction-score-form"
                       th:action="@{/predictions/{competitionId}(competitionId=${competition.id})}"
-                      th:object="${inputPredictionDto}" method="post">
+                      th:object="${inputPredictionDTO}" method="post">
                     <p th:if="${errorMessage}" class="prediction-form-error" th:text="${errorMessage}"></p>
 
                     <div class="prediction-score-row">

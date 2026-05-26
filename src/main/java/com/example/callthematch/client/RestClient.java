@@ -40,9 +40,8 @@ public class RestClient {
     public Flux<MatchRestDTO> getMatchesByDate(LocalDate date) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/api/matches")
-                        .queryParam("date", date)
-                        .build())
+                        .path("/api/{date}/matches")
+                        .build(date))
                 .retrieve()
                 .bodyToFlux(MatchRestDTO.class);
     }

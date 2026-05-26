@@ -35,13 +35,13 @@ public class PredictionController {
     @GetMapping("/{competitionId}")
     public String form(@PathVariable Long competitionId, Model model) {
         addCompetitionModel(competitionId, model);
-        model.addAttribute("inputPredictionDto", predictionService.findCurrentUserInputByCompetitionId(competitionId));
+        model.addAttribute("inputPredictionDTO", predictionService.findCurrentUserInputByCompetitionId(competitionId));
         return "prediction/form";
     }
 
     @PostMapping("/{competitionId}")
     public String save(@PathVariable Long competitionId,
-                       @Valid @ModelAttribute("inputPredictionDto") InputPredictionDTO inputPredictionDTO,
+                       @Valid InputPredictionDTO inputPredictionDTO,
                        BindingResult result, Model model, Locale locale) {
 
         addCompetitionModel(competitionId, model);

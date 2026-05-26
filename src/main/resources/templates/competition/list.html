@@ -12,7 +12,6 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<!-- PROTOTYPE: Absorbed single-direction competition management page using the documented table style. -->
 <main class="competition-list-shell">
     <section class="competition-list-page">
         <header class="competition-list-header">
@@ -36,6 +35,7 @@
                         <th th:text="#{label.score}"></th>
                         <th th:text="#{label.match}"></th>
                         <th th:text="#{label.action}"></th>
+                        <th th:text="#{competition.list.result}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -52,7 +52,7 @@
                             th:text="#{competition.list.tbd}"></td>
                         <td>
                             <a class="competition-list-match-link"
-                               th:href="|/competition/${competition.id}|"
+                               th:href="@{/competition/{id}(id=${competition.id})}"
                                th:text="#{label.match}"></a>
                         </td>
                         <td>
@@ -60,9 +60,14 @@
                                th:href="@{/competition/edit/{id}(id=${competition.id})}"
                                th:text="#{competition.list.edit}"></a>
                         </td>
+                        <td>
+                            <a class="competition-list-edit-link"
+                               th:href="@{/competition/{id}/result(id=${competition.id})}"
+                               th:text="#{competition.result.record}"></a>
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(competitionList)}">
-                        <td colspan="9" th:text="#{competition.list.noFixtures}"></td>
+                        <td colspan="10" th:text="#{competition.list.noFixtures}"></td>
                     </tr>
                     </tbody>
                 </table>

@@ -1,0 +1,230 @@
+{
+  "sources": [
+    {
+      "url": "src/main/resources/prd/09-school-conform-view-refactor-prd.md",
+      "description": "PRD for reviewing all Thymeleaf views against school examples and refactoring them to HOGENT EWD conventions."
+    },
+    {
+      "url": "src/main/resources/prd/09-school-conform-view-refactor/plan.md",
+      "description": "Approved Markdown implementation plan for the school-conform view refactor."
+    },
+    {
+      "url": "src/main/resources/templates",
+      "description": "Existing call-the-match Thymeleaf views and fragments to audit and refactor."
+    },
+    {
+      "url": "src/main/resources/i18n/messages.properties",
+      "description": "Resource bundle for labels, validation messages, flash messages, navigation text, footer text, error text, typeMismatch messages, and scoring constants."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/SKILL.md",
+      "description": "Project guidelines for HOGENT EWD school conventions."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/mvc-jpa-layering.md",
+      "description": "Local MVC, service, repository, DTO, and Thymeleaf layering guidance."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/validation-i18n-exceptions.md",
+      "description": "Local guidance for DTO validation, th:errors, resource bundles, typeMismatch, and MVC error pages."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_Flow.pdf",
+      "description": "School guideline slides for DTO-backed form processing, @Valid, BindingResult, and Thymeleaf form fields."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Web_MVC_i18n.pdf",
+      "description": "School guideline slides for resource bundles, fragments, locale switching, validation messages, and typeMismatch."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_Security.pdf",
+      "description": "School guideline slides for custom login pages, CSRF, logout, permitAll, and Spring Security forms."
+    },
+    {
+      "url": "local://Richtlijnen/Slides_Spring_MultipleRow.pdf",
+      "description": "School guideline slides for path-variable links, detail pages, not-found handling, and error/404 pages."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Multirow/Spring_Boot_list_crud-opl",
+      "description": "School CRUD view reference for list, detail, edit forms, th:href, th:field, th:errors, and formatted dates."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation",
+      "description": "School validation view reference for DTO-backed forms and field-level validation errors."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_ErrorMessages/Spring_Boot_i18n_ChangeLanguage2",
+      "description": "School i18n fragment reference for reusable Thymeleaf fragments and resource-bundle text."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Security/Spring_Boot_security_JPA",
+      "description": "School security view reference for custom login, CSRF, logout feedback, and 403 pages."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "baseline-view-audit-route-map",
+      "title": "Baseline View Audit And Route Map",
+      "description": "Create the safety map for the view refactor before changing templates. Inventory every template, fragment, route link, form action, POST form, CSRF token, th:object, th:field, th:errors, hardcoded visible string, inline JavaScript action, and existing dirty worktree file. Compare the current view structure with the school examples from Multirow, validation, i18n fragments, and security login/error views. This task must not change application behavior.",
+      "acceptance_criteria": [
+        "All templates under src/main/resources/templates are listed and grouped by feature",
+        "Every navbar, footer, table action, detail link, and form action is checked against an existing controller route",
+        "Every POST form is checked for CSRF behavior",
+        "Every validated form is checked for th:object, th:field, and nearby th:errors",
+        "Hardcoded user-facing text is listed for later movement to messages.properties",
+        "Inline onclick behavior is listed and classified as removable, acceptable, or movable to static JavaScript",
+        "Dirty worktree files are noted so useful existing changes are preserved",
+        "No application behavior is changed in this task"
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "shared-fragments-navigation",
+      "title": "Shared Fragments And Navigation",
+      "description": "Refactor shared fragments first because they affect every screen. Make navbar.html and footer.html valid Thymeleaf fragments, fix route links, preserve role-aware navigation, keep logout as a CSRF-protected POST form, and decide consistently where the footer is rendered. View-level sec:authorize may hide or show links, but real guest/user/admin access must remain enforced by Spring Security and controller/service checks.",
+      "acceptance_criteria": [
+        "fragments/navbar.html has valid Thymeleaf fragment structure and no invalid head-before-html shape",
+        "Navbar links point only to existing routes",
+        "Guest navigation shows public routes, login, and register",
+        "USER navigation shows team and prediction routes, but no admin match-management actions",
+        "ADMIN navigation shows match-management routes, but no team or prediction actions",
+        "Logout remains a POST form with CSRF",
+        "fragments/footer.html links are corrected to existing routes",
+        "Footer use is consistent; commented-out footer includes are removed or replaced by the real fragment decision",
+        "Navigation and footer text use resource-bundle keys"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "account-views",
+      "title": "Account Views",
+      "description": "Bring login and registration views in line with the school security and validation examples. Preserve the custom email login flow, registration DTO binding, CSRF behavior, field-level validation display, and login/logout/registration feedback messages. Do not change account controller or security behavior unless a view binding problem requires a small matching fix.",
+      "acceptance_criteria": [
+        "account/login.html uses the email field name expected by Spring Security",
+        "Login form includes CSRF",
+        "Login error and logout messages use resource-bundle keys",
+        "account/register.html binds to inputRegistrationDto with th:object",
+        "Registration fields use th:field",
+        "Registration validation errors are shown with th:errors near each field",
+        "Register headings, labels, button text, legal/help text, and links use resource-bundle keys",
+        "Account views keep the shared navbar and fragment behavior without exposing forbidden routes"
+      ],
+      "priority": 3,
+      "passes": true
+    },
+    {
+      "id": "competition-admin-public-match-views",
+      "title": "Competition Admin And Public Match Views",
+      "description": "Refactor competition list, detail, add, edit, and result templates. Preserve public match browsing and admin match management while making form binding, dropdowns, validation errors, i18n, route links, and official-result display match the school Thymeleaf examples. Select fields must prove real backend data flow from controller/service/model data, not hardcoded template options.",
+      "acceptance_criteria": [
+        "competition/list.html uses valid route links for detail, add, edit, and result actions",
+        "Public match detail remains available to guests through competition/show.html",
+        "Admin-only controls in match detail use sec:authorize for visibility but remain protected by security config",
+        "Add and edit forms bind to inputCompetitionDTO with th:object",
+        "Country and stadium select fields use th:field and backend-provided model data",
+        "Add and edit validation errors are shown with th:errors near each field",
+        "Result form binds to inputCompetitionResultDTO",
+        "Result form validation errors are shown with th:errors",
+        "Match dates, times, and scores are displayed using Thymeleaf formatting appropriate to the model values",
+        "Visible competition text, empty states, table headers, buttons, and flash/error messages use resource-bundle keys",
+        "Static JavaScript for stadium checksum remains a convenience only; server-side validation remains authoritative"
+      ],
+      "priority": 4,
+      "passes": true
+    },
+    {
+      "id": "team-views",
+      "title": "Team Views",
+      "description": "Refactor team dashboard, detail, edit, ranking, and private scoreboard templates. Preserve team create, join, owner actions, invite codes, member lists, public ranking, private scoreboards, and role/access visibility while making forms, loops, errors, links, and text school-conform. Tables and lists must render backend-provided model data and must not contain business calculations in Thymeleaf.",
+      "acceptance_criteria": [
+        "team/dashboard.html binds create and join forms to their request DTOs",
+        "Team create and join fields use th:field",
+        "Team create and join validation errors are shown with th:errors",
+        "Dashboard team table uses backend-provided team data and contains no business calculations",
+        "team/show.html displays team name, rank, members, owner marker, scores, and invite code from model data",
+        "Owner-only remove/regenerate controls are visible only when allowed by model/security rules",
+        "Team member removal and invite-code regeneration forms include CSRF",
+        "Invite-code copy behavior is either kept as small static JavaScript or simplified without affecting server behavior",
+        "team/ranking.html remains public and displays top teams from backend data",
+        "team/scoreboard.html remains private and displays team member scores from backend data",
+        "Team links use Thymeleaf URL expressions and existing controller routes",
+        "Visible team text, table headers, empty states, buttons, and messages use resource-bundle keys"
+      ],
+      "priority": 5,
+      "passes": true
+    },
+    {
+      "id": "prediction-views",
+      "title": "Prediction Views",
+      "description": "Refactor prediction list and prediction form templates. Preserve user-only prediction browsing and score submission while keeping DTO-backed input, validation display, match data display, route links, and closed/cutoff behavior clear and school-conform. The prediction form must use existing Jakarta validation through the request DTO and must not move scoring or cutoff business logic into the template.",
+      "acceptance_criteria": [
+        "prediction/list.html displays predictions from backend-provided model data",
+        "Prediction list links point to existing prediction form routes",
+        "Empty prediction list state uses a resource-bundle key",
+        "prediction/form.html binds to inputPredictionDto with th:object",
+        "Predicted score fields use th:field",
+        "Field errors for predicted scores are shown with th:errors",
+        "Match data on the form is display-only and contains no scoring/business logic",
+        "Closed/cutoff messaging remains visible when supplied by the controller",
+        "Cancel/back behavior avoids inline JavaScript if a normal route link can safely replace it; otherwise the behavior is isolated as small static JavaScript",
+        "Visible prediction text, labels, buttons, and error messages use resource-bundle keys"
+      ],
+      "priority": 6,
+      "passes": true
+    },
+    {
+      "id": "error-pages-resource-bundles",
+      "title": "Error Pages And Resource Bundles",
+      "description": "Normalize the MVC error pages and resource-bundle coverage after feature templates are cleaned up. Keep 403, 404, and 500 pages simple and connected to existing GlobalExceptionAdvice behavior. Move remaining user-facing hardcoded strings into messages.properties without removing existing validation, typeMismatch, flash, and scoring keys.",
+      "acceptance_criteria": [
+        "error/403.html uses resource-bundle title, heading, message, and navigation text",
+        "error/404.html uses resource-bundle title, heading, message, and navigation text",
+        "error/500.html uses resource-bundle title, heading, message, and navigation text",
+        "Existing GlobalExceptionAdvice behavior still returns the expected error views",
+        "messages.properties contains keys for every visible label/message introduced by this refactor",
+        "Existing validation and typeMismatch keys remain intact",
+        "Existing scoring constants in the resource bundle remain intact",
+        "No template relies on a missing message key"
+      ],
+      "priority": 7,
+      "passes": true
+    },
+    {
+      "id": "css-simplification-without-behavior-churn",
+      "title": "CSS Simplification Without Behavior Churn",
+      "description": "Clean the stylesheet only where it supports the school-conform view refactor. Keep readable pages, tables, forms, field errors, success messages, navbar/footer, and error pages. Avoid broad redesign, risky class churn, or changes that distract from MVC and Thymeleaf requirements.",
+      "acceptance_criteria": [
+        "Shared form, table, message, navbar, footer, and page-section styles remain readable",
+        "Prototype-only class names or comments are removed or renamed only when the template changes already make that safe",
+        "Error and success messages remain visually distinct",
+        "CSS changes do not require controller, service, repository, or DTO changes",
+        "CSS changes do not alter security, validation, or route behavior",
+        "Screens remain usable on normal desktop and narrow browser widths"
+      ],
+      "priority": 8,
+      "passes": true
+    },
+    {
+      "id": "mvc-security-validation-verification",
+      "title": "MVC/Security/Validation Verification",
+      "description": "Run the final verification pass for the refactor. Confirm templates render through the MVC layer, role visibility and protected routes still behave correctly, form validation still redisplays errors, and resource bundles resolve. Keep REST/WebClient untouched except for confirming existing public REST GET tests if security/static-route changes could affect them.",
+      "acceptance_criteria": [
+        "Targeted MVC controller tests pass after route/form/view changes",
+        "Security tests pass after navbar/login/logout changes",
+        "Validation tests pass after form field or DTO-binding changes",
+        "REST GET tests still pass if security/static route changes could affect public endpoints",
+        "Full suite passes with .\\mvnw.cmd test if time allows",
+        "Manual smoke check covers guest home/ranking/match detail, login/register, user team dashboard, user prediction form, admin competition list/add/edit/result, and error pages",
+        "Any unverified item is recorded clearly before the refactor is considered complete"
+      ],
+      "priority": 9,
+      "passes": false
+    }
+  ]
+}

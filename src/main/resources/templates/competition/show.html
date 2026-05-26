@@ -21,7 +21,7 @@
                 <p class="match-eyebrow" th:text="#{competition.detail.title}"></p>
                 <h1>
                     <span th:text="${competition.teamA.name}"></span>
-                    <small>vs</small>
+                    <small th:text="#{label.versus}"></small>
                     <span th:text="${competition.teamB.name}"></span>
                 </h1>
                 <dl>
@@ -75,9 +75,6 @@
                     <a class="match-action-link"
                        th:href="@{/competition/edit/{id}(id=${competition.id})}"
                        th:text="#{competition.detail.edit}"></a>
-                    <a class="match-action-link"
-                       th:href="@{/competition/{id}/result(id=${competition.id})}"
-                       th:text="#{competition.result.link}"></a>
                 </div>
             </article>
         </div>

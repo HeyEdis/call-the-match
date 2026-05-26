@@ -17,7 +17,7 @@
             <h1 th:text="#{competition.add.label}"></h1>
         </header>
 
-        <form class="competition-edit-card" th:action="@{/competition/add}" th:object="${inputCompetitionDto}" method="post">
+        <form class="competition-edit-card" th:action="@{/competition/add}" th:object="${inputCompetitionDTO}" method="post">
 
             <p th:if="${errorMessage}" class="error competition-edit-message" th:text="${errorMessage}"></p>
 
@@ -80,7 +80,7 @@
 
             <div class="competition-edit-actions">
                 <button class="competition-edit-save" type="submit" th:text="#{competition.add.submit}"></button>
-                <button class="competition-edit-reset" type="button" onclick="history.back()" th:text="#{button.cancel}"></button>
+                <a class="competition-edit-reset" th:href="@{/competition}" th:text="#{button.cancel}"></a>
             </div>
         </form>
     </section>

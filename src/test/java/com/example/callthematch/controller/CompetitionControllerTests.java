@@ -30,7 +30,7 @@ import java.util.Optional;
 
 import static com.example.callthematch.support.TestCompetitions.competitionDto;
 import static com.example.callthematch.support.TestCompetitions.countryDtos;
-import static com.example.callthematch.support.TestCompetitions.inputCompetitionDto;
+import static com.example.callthematch.support.TestCompetitions.inputCompetitionDTO;
 import static com.example.callthematch.support.TestCompetitions.stadiumDtos;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -224,7 +224,7 @@ class CompetitionControllerTests {
         mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
-                .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDto"))
+                .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDTO"))
                 .andExpect(content().string(containsString("data-code=\"1001\"")))
                 .andExpect(content().string(containsString("readonly")))
                 .andExpect(content().string(containsString("/js/matchStadiumChecksum.js")))
@@ -234,13 +234,13 @@ class CompetitionControllerTests {
 
     @Test
     void adminEditFormExposesCorrectModelAttributes() throws Exception {
-        InputCompetitionDTO inputCompetitionDto = inputCompetitionDto(3L);
-        when(competitionService.findInputById(3L)).thenReturn(inputCompetitionDto);
+        InputCompetitionDTO inputCompetitionDTO = inputCompetitionDTO(3L);
+        when(competitionService.findInputById(3L)).thenReturn(inputCompetitionDTO);
 
         mockMvc.perform(get("/competition/edit/3").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/edit"))
-                .andExpect(model().attribute("inputCompetitionDto", inputCompetitionDto))
+                .andExpect(model().attribute("inputCompetitionDTO", inputCompetitionDTO))
                 .andExpect(model().attributeExists("countries", "stadiums"));
 
         verify(competitionService).findInputById(3L);
@@ -248,14 +248,14 @@ class CompetitionControllerTests {
 
     @Test
     void adminResultFormExposesCorrectModelAttributes() throws Exception {
-        InputCompetitionResultDTO inputCompetitionResultDto = new InputCompetitionResultDTO(2, 1);
+        InputCompetitionResultDTO inputCompetitionResultDTO = new InputCompetitionResultDTO(2, 1);
         when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
-        when(competitionService.findInputResultById(3L)).thenReturn(inputCompetitionResultDto);
+        when(competitionService.findInputResultById(3L)).thenReturn(inputCompetitionResultDTO);
 
         mockMvc.perform(get("/competition/3/result").with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/result"))
-                .andExpect(model().attribute("inputCompetitionResultDto", inputCompetitionResultDto))
+                .andExpect(model().attribute("inputCompetitionResultDTO", inputCompetitionResultDTO))
                 .andExpect(model().attributeExists("competition"));
 
         verify(competitionService).findById(3L);
@@ -264,13 +264,13 @@ class CompetitionControllerTests {
 
     @Test
     void validAdminAddSubmissionCallsServiceAndRedirectsToHome() throws Exception {
-        InputCompetitionDTO newCompetition = inputCompetitionDto(null);
+        InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
         when(competitionService.add(newCompetition)).thenReturn(4L);
 
         mockMvc.perform(post("/competition/add")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionDto", newCompetition))
+                        .flashAttr("inputCompetitionDTO", newCompetition))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
 
@@ -279,13 +279,13 @@ class CompetitionControllerTests {
 
     @Test
     void successfulAddRedirectCarriesVisibleFlashMessageToHome() throws Exception {
-        InputCompetitionDTO newCompetition = inputCompetitionDto(null);
+        InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
         when(competitionService.add(newCompetition)).thenReturn(4L);
 
         mockMvc.perform(post("/competition/add")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                .flashAttr("inputCompetitionDto", newCompetition))
+                .flashAttr("inputCompetitionDTO", newCompetition))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"))
                 .andExpect(flash().attribute("successMessage", "Competition 4 saved successfully"));
@@ -295,13 +295,13 @@ class CompetitionControllerTests {
 
     @Test
     void validAdminEditSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
-        InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
+        InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
         when(competitionService.update(existingCompetition)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/edit/3")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionDto", existingCompetition))
+                        .flashAttr("inputCompetitionDTO", existingCompetition))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
 
@@ -310,13 +310,13 @@ class CompetitionControllerTests {
 
     @Test
     void successfulEditRedirectCarriesVisibleFlashMessageToDetail() throws Exception {
-        InputCompetitionDTO existingCompetition = inputCompetitionDto(3L);
+        InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
         when(competitionService.update(existingCompetition)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/edit/3")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                .flashAttr("inputCompetitionDto", existingCompetition))
+                .flashAttr("inputCompetitionDTO", existingCompetition))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"))
                 .andExpect(flash().attribute("successMessage", "Competition 3 updated successfully"));
@@ -346,7 +346,7 @@ class CompetitionControllerTests {
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionResultDto", resultDto))
+                        .flashAttr("inputCompetitionResultDTO", resultDto))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
 
@@ -358,12 +358,12 @@ class CompetitionControllerTests {
         mockMvc.perform(post("/competition/add")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionDto", new InputCompetitionDTO()))
+                        .flashAttr("inputCompetitionDTO", new InputCompetitionDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
                 .andExpect(model().attributeExists("countries", "stadiums"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputCompetitionDto", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
+                        "inputCompetitionDTO", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
 
         verify(competitionService, never()).add(any(InputCompetitionDTO.class));
     }
@@ -373,12 +373,12 @@ class CompetitionControllerTests {
         mockMvc.perform(post("/competition/edit/3")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionDto", new InputCompetitionDTO()))
+                        .flashAttr("inputCompetitionDTO", new InputCompetitionDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/edit"))
                 .andExpect(model().attributeExists("countries", "stadiums"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputCompetitionDto", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
+                        "inputCompetitionDTO", "teamA", "teamB", "stadium", "stadiumCode", "checksum", "date", "time"));
 
         verify(competitionService, never()).update(any(InputCompetitionDTO.class));
     }
@@ -390,11 +390,11 @@ class CompetitionControllerTests {
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
                         .with(csrf())
-                        .flashAttr("inputCompetitionResultDto", new InputCompetitionResultDTO()))
+                        .flashAttr("inputCompetitionResultDTO", new InputCompetitionResultDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/result"))
                 .andExpect(model().attributeExists("competition"))
-                .andExpect(model().attributeHasFieldErrors("inputCompetitionResultDto", "scoreA", "scoreB"));
+                .andExpect(model().attributeHasFieldErrors("inputCompetitionResultDTO", "scoreA", "scoreB"));
 
         verify(competitionService, never()).updateResult(any(), any(InputCompetitionResultDTO.class));
     }

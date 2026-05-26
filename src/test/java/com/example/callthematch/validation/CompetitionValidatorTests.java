@@ -12,7 +12,7 @@ import org.springframework.validation.Errors;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static com.example.callthematch.support.TestCompetitions.inputCompetitionDto;
+import static com.example.callthematch.support.TestCompetitions.inputCompetitionDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,7 @@ class CompetitionValidatorTests {
 
     @Test
     void fixtureRejectsSameTeamAsOpponent() {
-        InputCompetitionDTO input = inputCompetitionDto(null, 1L, 1L, LocalDate.of(2026, 5, 20));
+        InputCompetitionDTO input = inputCompetitionDTO(null, 1L, 1L, LocalDate.of(2026, 5, 20));
         Errors errors = validate(input);
 
         assertThat(errors.hasFieldErrors("teamB")).isTrue();
@@ -33,7 +33,7 @@ class CompetitionValidatorTests {
 
     @Test
     void fixtureRejectsDateOutsideProjectPeriod() {
-        InputCompetitionDTO input = inputCompetitionDto(null, 1L, 2L, LocalDate.of(2026, 5, 19));
+        InputCompetitionDTO input = inputCompetitionDTO(null, 1L, 2L, LocalDate.of(2026, 5, 19));
         Errors errors = validate(input);
 
         assertThat(errors.hasFieldErrors("date")).isTrue();
@@ -41,7 +41,7 @@ class CompetitionValidatorTests {
 
     @Test
     void fixtureRejectsPersistedStadiumTimeConflict() {
-        InputCompetitionDTO input = inputCompetitionDto(null, 1L, 2L, LocalDate.of(2026, 5, 20));
+        InputCompetitionDTO input = inputCompetitionDTO(null, 1L, 2L, LocalDate.of(2026, 5, 20));
         when(competitionRepository.existsByStadiumIdAndDateAndTime(1L, input.date(), input.time()))
                 .thenReturn(true);
 
@@ -52,7 +52,7 @@ class CompetitionValidatorTests {
 
     @Test
     void fixtureRejectsCodeThatDoesNotBelongToSelectedStadium() {
-        InputCompetitionDTO input = inputCompetitionDto(null, 1L, 2L, LocalDate.of(2026, 5, 20));
+        InputCompetitionDTO input = inputCompetitionDTO(null, 1L, 2L, LocalDate.of(2026, 5, 20));
         when(stadiumRepository.findById(1L))
                 .thenReturn(Optional.of(Stadium.builder().code(1010).build()));
 
@@ -62,7 +62,7 @@ class CompetitionValidatorTests {
     }
 
     private Errors validate(InputCompetitionDTO input) {
-        Errors errors = new BeanPropertyBindingResult(input, "inputCompetitionDto");
+        Errors errors = new BeanPropertyBindingResult(input, "inputCompetitionDTO");
         competitionValidator.validate(input, errors);
         return errors;
     }

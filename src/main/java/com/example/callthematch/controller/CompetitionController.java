@@ -52,28 +52,27 @@ public class CompetitionController {
     public String edit(@PathVariable Long id, Model model) {
         model.addAttribute("stadiums", stadiumService.getAllStadiums());
         model.addAttribute("countries", countryService.getAllCountries());
-        model.addAttribute("inputCompetitionDto", competitionService.findInputById(id));
+        model.addAttribute("inputCompetitionDTO", competitionService.findInputById(id));
         return "competition/edit";
     }
 
     @GetMapping(value = "/add")
     public String addForm(Model model) {
-
         model.addAttribute("stadiums", stadiumService.getAllStadiums());
         model.addAttribute("countries", countryService.getAllCountries());
-        model.addAttribute("inputCompetitionDto", new InputCompetitionDTO());
+        model.addAttribute("inputCompetitionDTO", new InputCompetitionDTO());
         return "competition/add";
     }
 
     @GetMapping(value = "/{id}/result")
     public String resultForm(@PathVariable Long id, Model model) {
         model.addAttribute("competition", competitionService.findById(id));
-        model.addAttribute("inputCompetitionResultDto", competitionService.findInputResultById(id));
+        model.addAttribute("inputCompetitionResultDTO", competitionService.findInputResultById(id));
         return "competition/result";
     }
 
     @PostMapping(value = "/add")
-    public String add(@Valid @ModelAttribute("inputCompetitionDto") InputCompetitionDTO inputCompetitionDTO,
+    public String add(@Valid InputCompetitionDTO inputCompetitionDTO,
                       BindingResult result, Model model,
                       Locale locale, RedirectAttributes ra) {
 
@@ -98,7 +97,7 @@ public class CompetitionController {
 
     @PostMapping(value = "/edit/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("inputCompetitionDto") InputCompetitionDTO inputCompetitionDTO,
+                         @Valid InputCompetitionDTO inputCompetitionDTO,
                          BindingResult result, Model model,
                          Locale locale, RedirectAttributes ra) {
 
@@ -123,8 +122,7 @@ public class CompetitionController {
 
     @PostMapping(value = "/{id}/result")
     public String updateResult(@PathVariable Long id,
-                               @Valid @ModelAttribute("inputCompetitionResultDto")
-                               InputCompetitionResultDTO inputCompetitionResultDTO,
+                               @Valid InputCompetitionResultDTO inputCompetitionResultDTO,
                                BindingResult result, Model model,
                                Locale locale, RedirectAttributes ra) {
 

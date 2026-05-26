@@ -1,7 +1,6 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
-import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.service.PredictionService;
 import jakarta.validation.Valid;
@@ -34,7 +33,8 @@ public class PredictionController {
 
     @GetMapping("/{competitionId}")
     public String form(@PathVariable Long competitionId, Model model) {
-        addCompetitionModel(competitionId, model);
+        model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+        model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
         model.addAttribute("inputPredictionDTO", predictionService.findCurrentUserInputByCompetitionId(competitionId));
         return "prediction/form";
     }
@@ -44,25 +44,22 @@ public class PredictionController {
                        @Valid InputPredictionDTO inputPredictionDTO,
                        BindingResult result, Model model, Locale locale) {
 
-        addCompetitionModel(competitionId, model);
-
         if (result.hasErrors()) {
+            model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+            model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
             return "prediction/form";
         }
 
         try {
             predictionService.saveCurrentUserPrediction(competitionId, inputPredictionDTO);
         } catch (PredictionCutoffPassed ex) {
+            model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+            model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
             model.addAttribute("errorMessage",
                     messageSource.getMessage("prediction.cutoff.passed", null, locale));
             return "prediction/form";
         }
 
         return "redirect:/competition/{competitionId}";
-    }
-
-    private void addCompetitionModel(Long competitionId, Model model) {
-        model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
-        model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
     }
 }

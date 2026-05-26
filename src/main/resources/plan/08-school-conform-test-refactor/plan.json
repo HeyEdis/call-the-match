@@ -70,7 +70,7 @@
       "description": "Convert the simplest MVC controller tests first: account registration/login and public home/ranking browsing. Use focused @WebMvcTest slices with mocked services and explicit controller assertions while preserving the current behavior for register, login, home and ranking. Public competition detail coverage belongs with CompetitionControllerTests.",
       "acceptance_criteria": [
         "AccountControllerTests uses school-style MVC slice testing where practical",
-        "Register GET asserts status, view name and inputRegistrationDto model attribute",
+        "Register GET asserts status, view name and inputRegistrationDTO model attribute",
         "Login GET asserts status and view name",
         "Valid registration submits a DTO/form request and verifies the registration service is called",
         "Invalid registration returns the register view with field errors and verifies the registration service is not called",

@@ -25,20 +25,20 @@ public class AccountController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        model.addAttribute("inputRegistrationDto", new InputRegistrationDTO());
+        model.addAttribute("inputRegistrationDTO", new InputRegistrationDTO());
         return "account/register";
     }
 
     @PostMapping("/register")
     public String validateRegistration(
-            @Valid @ModelAttribute("inputRegistrationDto") InputRegistrationDTO inputRegistrationDto,
+            @Valid InputRegistrationDTO inputRegistrationDTO,
             BindingResult result,
             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "account/register";
         }
 
-        userService.register(inputRegistrationDto);
+        userService.register(inputRegistrationDTO);
         redirectAttributes.addFlashAttribute("registrationSuccess", true);
         return "redirect:/login";
     }

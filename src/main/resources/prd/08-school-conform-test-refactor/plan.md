@@ -59,7 +59,7 @@ Convert the simplest MVC controller tests first: account registration/login and 
 ### Acceptance Criteria
 
 - [ ] `AccountControllerTests` uses school-style MVC slice testing where practical.
-- [ ] Register GET asserts status, view name, and `inputRegistrationDto` model attribute.
+- [ ] Register GET asserts status, view name, and `inputRegistrationDTO` model attribute.
 - [ ] Login GET asserts status and view name.
 - [ ] Valid registration submits a DTO/form request and verifies the registration service is called.
 - [ ] Invalid registration returns the register view, field errors, and verifies the registration service is not called.

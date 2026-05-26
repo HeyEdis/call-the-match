@@ -83,7 +83,7 @@ Bring login and registration views in line with the school security and validati
 - [ ] `account/login.html` uses the email field name expected by Spring Security.
 - [ ] Login form includes CSRF.
 - [ ] Login error and logout messages use resource-bundle keys.
-- [ ] `account/register.html` binds to `inputRegistrationDto` with `th:object`.
+- [ ] `account/register.html` binds to `inputRegistrationDTO` with `th:object`.
 - [ ] Registration fields use `th:field`.
 - [ ] Registration validation errors are shown with `th:errors` near each field.
 - [ ] Register headings, labels, button text, legal/help text, and links use resource-bundle keys.

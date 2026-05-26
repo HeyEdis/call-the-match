@@ -29,7 +29,7 @@
 
 ## Form Binding And Validation
 
-- `account/register.html` uses `inputRegistrationDto`, `th:field`, and nearby `th:errors`.
+- `account/register.html` uses `inputRegistrationDTO`, `th:field`, and nearby `th:errors`.
 - `competition/add.html` and `competition/edit.html` use `inputCompetitionDTO`, `th:field`, and field-level `th:errors`.
 - `competition/result.html` uses `inputCompetitionResultDTO`, `th:field`, and field-level `th:errors`.
 - `team/dashboard.html` uses `inputTeamJoinDTO` and `inputTeamDTO`, `th:field`, and field-level `th:errors`.

@@ -51,7 +51,7 @@ class AccountControllerTests {
         mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
-                .andExpect(model().attributeExists("inputRegistrationDto"));
+                .andExpect(model().attributeExists("inputRegistrationDTO"));
     }
 
     @Test
@@ -63,7 +63,7 @@ class AccountControllerTests {
 
     @Test
     void validRegistrationRedirectsToLoginView() throws Exception {
-        InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
+        InputRegistrationDTO inputRegistrationDTO = new InputRegistrationDTO(
                 "Test",
                 "User",
                 "testuser_unique1",
@@ -72,16 +72,16 @@ class AccountControllerTests {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .flashAttr("inputRegistrationDto", inputRegistrationDto))
+                        .flashAttr("inputRegistrationDTO", inputRegistrationDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
 
-        verify(userService).register(inputRegistrationDto);
+        verify(userService).register(inputRegistrationDTO);
     }
 
     @Test
     void invalidRegistrationReturnsRegisterViewWithFieldErrors() throws Exception {
-        InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
+        InputRegistrationDTO inputRegistrationDTO = new InputRegistrationDTO(
                 "",
                 "",
                 "",
@@ -90,11 +90,11 @@ class AccountControllerTests {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .flashAttr("inputRegistrationDto", inputRegistrationDto))
+                        .flashAttr("inputRegistrationDTO", inputRegistrationDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputRegistrationDto",
+                        "inputRegistrationDTO",
                         "firstName", "lastName", "userName", "email", "password"));
 
         verify(userService, never()).register(any(InputRegistrationDTO.class));

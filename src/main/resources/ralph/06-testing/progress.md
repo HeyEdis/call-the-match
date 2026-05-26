@@ -58,7 +58,7 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 - Created `src/test/java/com/example/callthematch/controller/AccountControllerTests.java`
 
 **Tests added:**
-- `getRegisterReturnsFormWithModel` – GET /register → 200, view `account/register`, model has `inputRegistrationDto`
+- `getRegisterReturnsFormWithModel` – GET /register → 200, view `account/register`, model has `inputRegistrationDTO`
 - `getLoginReturnsLoginView` – GET /login → 200, view `account/login`
 - `postRegisterWithValidDataRedirectsToLogin` – POST /register valid params → 302 redirect to /login
 - `postRegisterWithInvalidDataReturnsRegisterViewWithFieldErrors` – POST /register blank/invalid → 200, view `account/register`, field errors

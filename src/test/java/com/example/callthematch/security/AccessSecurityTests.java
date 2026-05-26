@@ -168,7 +168,7 @@ class AccessSecurityTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputRegistrationDto",
+                        "inputRegistrationDTO",
                         "firstName",
                         "lastName",
                         "userName",

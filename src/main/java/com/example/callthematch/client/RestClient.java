@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class RestClient {
 
-    private static final String SERVER_URI = "http://localhost:8080";
+    private static final String SERVER_URI = "http://localhost:8080/api";
 
     private final WebClient webClient = WebClient.builder()
             .baseUrl(SERVER_URI)
@@ -28,19 +28,12 @@ public class RestClient {
                 .doOnError(e -> System.out.println(e.getMessage()))
                 .onErrorResume(e -> Mono.empty())
                 .block();
-
-        System.out.println("\n------- GET UNKNOWN STADIUM CAPACITY -------");
-        getStadiumCapacity(999L)
-                .doOnNext(this::printStadiumCapacity)
-                .doOnError(e -> System.out.println(e.getMessage()))
-                .onErrorResume(e -> Mono.empty())
-                .block();
     }
 
     public Flux<MatchRestDTO> getMatchesByDate(LocalDate date) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/api/{date}/matches")
+                        .path("/{date}/matches")
                         .build(date))
                 .retrieve()
                 .bodyToFlux(MatchRestDTO.class);
@@ -49,7 +42,7 @@ public class RestClient {
     public Mono<StadiumCapacityDTO> getStadiumCapacity(Long stadiumId) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/api/stadiums/{id}/capacity")
+                        .path("/stadiums/{id}/capacity")
                         .build(stadiumId))
                 .retrieve()
                 .bodyToMono(StadiumCapacityDTO.class);

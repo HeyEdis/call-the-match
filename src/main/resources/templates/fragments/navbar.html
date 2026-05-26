@@ -4,7 +4,7 @@
 <nav th:fragment="navbar" class="glass-nav">
     <div class="nav-inner">
       <span th:text="#{brand.name}"></span>
-      <a sec:authorize="!hasRole('ADMIN')" th:href="@{/home}" th:text="#{nav.home}"></a>
+      <a th:href="@{/home}" th:text="#{nav.home}"></a>
       <a th:href="@{/team/ranking}" th:text="#{nav.topTeams}"></a>
       <a sec:authorize="hasRole('USER')" th:href="@{/team/dashboard}" th:text="#{nav.myTeams}"></a>
       <a sec:authorize="hasRole('USER')" th:href="@{/predictions}" th:text="#{nav.myPredictions}"></a>

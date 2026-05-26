@@ -32,7 +32,7 @@
 - `account/register.html` uses `inputRegistrationDto`, `th:field`, and nearby `th:errors`.
 - `competition/add.html` and `competition/edit.html` use `inputCompetitionDTO`, `th:field`, and field-level `th:errors`.
 - `competition/result.html` uses `inputCompetitionResultDTO`, `th:field`, and field-level `th:errors`.
-- `team/dashboard.html` uses `inputTeamJoinDto` and `inputTeamDto`, `th:field`, and field-level `th:errors`.
+- `team/dashboard.html` uses `inputTeamJoinDTO` and `inputTeamDTO`, `th:field`, and field-level `th:errors`.
 - `prediction/form.html` uses `inputPredictionDTO`, `th:field`, and field-level `th:errors`.
 - `account/login.html` is not DTO-backed, uses `name="email"` and `name="password"` as expected by Spring Security.
 

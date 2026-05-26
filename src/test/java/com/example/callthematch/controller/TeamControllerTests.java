@@ -1,14 +1,16 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.config.SecurityConfig;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
 import com.example.callthematch.dto.response.TeamDTO;
-import com.example.callthematch.exception.InviteCodeNotFound;
-import com.example.callthematch.exception.TeamNameAlreadyExists;
+import com.example.callthematch.repository.TeamRepository;
 import com.example.callthematch.service.TeamService;
 import com.example.callthematch.validator.CompetitionValidator;
+import com.example.callthematch.validator.InputTeamJoinValidator;
+import com.example.callthematch.validator.InputTeamValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TeamController.class)
 @AutoConfigureMockMvc(addFilters = true)
-@Import(SecurityConfig.class)
+@Import({
+        SecurityConfig.class,
+        TeamValidatorAdvice.class,
+        InputTeamValidator.class,
+        InputTeamJoinValidator.class
+})
 @ImportAutoConfiguration({
         SecurityAutoConfiguration.class,
         ServletWebSecurityAutoConfiguration.class,
@@ -64,6 +71,9 @@ class TeamControllerTests {
 
     @MockitoBean
     private CompetitionValidator competitionValidator;
+
+    @MockitoBean
+    private TeamRepository teamRepository;
 
     @BeforeEach
     void setUp() {
@@ -97,7 +107,7 @@ class TeamControllerTests {
                         .with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeExists("teamList", "inputTeamDto", "inputTeamJoinDto"))
+                .andExpect(model().attributeExists("teamList", "inputTeamDTO", "inputTeamJoinDTO"))
                 .andExpect(model().attribute("teamList", teams));
 
         assertThat(teams).hasSize(1);
@@ -111,10 +121,10 @@ class TeamControllerTests {
         mockMvc.perform(post("/team/create")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", new InputTeamDTO()))
+                        .flashAttr("inputTeamDTO", new InputTeamDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamDto", "name"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamDTO", "name"));
 
         verify(teamService, never()).createTeam(any(InputTeamDTO.class));
     }
@@ -124,55 +134,55 @@ class TeamControllerTests {
         mockMvc.perform(post("/team/join")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", new InputTeamJoinDTO()))
+                        .flashAttr("inputTeamJoinDTO", new InputTeamJoinDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDto", "inviteCode"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDTO", "inviteCode"));
 
         verify(teamService, never()).joinTeamWithInviteCode(any());
     }
 
     @Test
     void validCreateRedirectsToDashboardAndCallsService() throws Exception {
-        InputTeamDTO inputTeamDto = new InputTeamDTO("MVC Team Test");
-        doNothing().when(teamService).createTeam(inputTeamDto);
+        InputTeamDTO inputTeamDTO = new InputTeamDTO("MVC Team Test");
+        doNothing().when(teamService).createTeam(inputTeamDTO);
 
         mockMvc.perform(post("/team/create")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", inputTeamDto))
+                        .flashAttr("inputTeamDTO", inputTeamDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/dashboard"));
 
-        verify(teamService).createTeam(inputTeamDto);
+        verify(teamService).createTeam(inputTeamDTO);
     }
 
     @Test
     void duplicateTeamNameReturnsDashboardFieldError() throws Exception {
-        InputTeamDTO inputTeamDto = new InputTeamDTO("Existing Team");
-        doThrow(new TeamNameAlreadyExists(inputTeamDto.name()))
-                .when(teamService).createTeam(inputTeamDto);
+        InputTeamDTO inputTeamDTO = new InputTeamDTO("Existing Team");
+        when(teamRepository.existsByName(inputTeamDTO.name())).thenReturn(true);
 
         mockMvc.perform(post("/team/create")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", inputTeamDto))
+                        .flashAttr("inputTeamDTO", inputTeamDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamDto", "name"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamDTO", "name"));
 
-        verify(teamService).createTeam(inputTeamDto);
+        verify(teamService, never()).createTeam(any(InputTeamDTO.class));
     }
 
     @Test
     void validJoinRedirectsToDashboardAndCallsService() throws Exception {
-        InputTeamJoinDTO inputTeamJoinDto = new InputTeamJoinDTO("ABCD1234");
-        doNothing().when(teamService).joinTeamWithInviteCode(inputTeamJoinDto.inviteCode());
+        InputTeamJoinDTO inputTeamJoinDTO = new InputTeamJoinDTO("ABCD1234");
+        when(teamRepository.existsByInviteCode(inputTeamJoinDTO.inviteCode())).thenReturn(true);
+        doNothing().when(teamService).joinTeamWithInviteCode(inputTeamJoinDTO.inviteCode());
 
         mockMvc.perform(post("/team/join")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", inputTeamJoinDto))
+                        .flashAttr("inputTeamJoinDTO", inputTeamJoinDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/dashboard"));
 
@@ -181,19 +191,18 @@ class TeamControllerTests {
 
     @Test
     void invalidInviteCodeReturnsDashboardError() throws Exception {
-        InputTeamJoinDTO inputTeamJoinDto = new InputTeamJoinDTO("UNKNOWN1");
-        doThrow(new InviteCodeNotFound(inputTeamJoinDto.inviteCode()))
-                .when(teamService).joinTeamWithInviteCode(inputTeamJoinDto.inviteCode());
+        InputTeamJoinDTO inputTeamJoinDTO = new InputTeamJoinDTO("UNKNOWN1");
+        when(teamRepository.existsByInviteCode(inputTeamJoinDTO.inviteCode())).thenReturn(false);
 
         mockMvc.perform(post("/team/join")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", inputTeamJoinDto))
+                        .flashAttr("inputTeamJoinDTO", inputTeamJoinDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDto", "inviteCode"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDTO", "inviteCode"));
 
-        verify(teamService).joinTeamWithInviteCode("UNKNOWN1");
+        verify(teamService, never()).joinTeamWithInviteCode(any());
     }
 
     @Test

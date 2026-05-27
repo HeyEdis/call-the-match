@@ -29,8 +29,8 @@ public class PredictionController {
     private final CompetitionService competitionService;
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("predictionList", predictionService.getCurrentUserPredictions());
+    public String list(Model model, Principal principal) {
+        model.addAttribute("predictionList", predictionService.getCurrentUserPredictions(principal.getName()));
         return "prediction/list";
     }
 
@@ -45,16 +45,16 @@ public class PredictionController {
     @PostMapping("/{competitionId}")
     public String save(@PathVariable Long competitionId,
                        @Valid InputPredictionDTO inputPredictionDTO,
-                       BindingResult result, Model model, Locale locale) {
+                       BindingResult result, Model model, Locale locale, Principal principal) {
 
         if (result.hasErrors()) {
-            model.addAttribute("competition", competitionService.findById(competitionId));;
+            model.addAttribute("competition", competitionService.findById(competitionId));
             model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
             return "prediction/form";
         }
 
         try {
-            predictionService.saveCurrentUserPrediction(competitionId, inputPredictionDTO);
+            predictionService.saveCurrentUserPrediction(competitionId, inputPredictionDTO, principal.getName());
         } catch (PredictionCutoffPassed ex) {
             model.addAttribute("competition", competitionService.findById(competitionId));;
             model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));

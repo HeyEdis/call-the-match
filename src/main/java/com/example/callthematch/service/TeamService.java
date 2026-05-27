@@ -79,7 +79,7 @@ public class TeamService {
 
     public TeamDetailDTO findDetailById(Long id, String email) {
         Team team = findTeamById(id);
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         requireMembership(team, user);
 
@@ -90,7 +90,7 @@ public class TeamService {
     }
 
     public List<TeamDTO> getCurrentUserTeams(String email) {
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         return teamMemberRepository.findAllByUserId(user.getId())
                 .stream()
@@ -108,7 +108,7 @@ public class TeamService {
 
     public TeamDTO findById(Long id, String email) {
         Team team = findTeamById(id);
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         requireMembership(team, user);
         return toDTO(team);
@@ -116,7 +116,7 @@ public class TeamService {
 
     public TeamScoreboardDTO findScoreboardById(Long id, String email) {
         Team team = findTeamById(id);
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         requireMembership(team, user);
         return toScoreboardDTO(team);
@@ -128,7 +128,7 @@ public class TeamService {
             throw new TeamNameAlreadyExists(inputTeamDTO.name());
         }
 
-        MyUser owner = userService.findByUsername(email);
+        MyUser owner = userService.findByEmail(email);
         LocalDateTime createdAt = LocalDateTime.now();
         Team team = Team.builder()
                 .name(inputTeamDTO.name())
@@ -154,7 +154,7 @@ public class TeamService {
 
     public void regenerateInviteCode(Long id, String email) {
         Team team = findTeamById(id);
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         requireOwner(team, user);
 
@@ -167,7 +167,7 @@ public class TeamService {
 
     public void removeMember(Long teamId, Long memberId, String email) {
         Team team = findTeamById(teamId);
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         requireOwner(team, user);
 
@@ -185,7 +185,7 @@ public class TeamService {
         Team team = teamRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new InviteCodeNotFound(inviteCode));
 
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
 
         if (teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
             return;

@@ -47,8 +47,8 @@ public class PredictionService {
         return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
     }
 
-    public List<PredictionOverviewDTO> getCurrentUserPredictions() {
-        MyUser user = userService.getCurrentUser();
+    public List<PredictionOverviewDTO> getCurrentUserPredictions(String email) {
+        MyUser user = userService.findByEmail(email);
         return predictionRepository.findAllByUserOrderByCompetitionDateAscCompetitionTimeAsc(user)
                 .stream()
                 .map(this::toOverviewDTO)
@@ -56,15 +56,15 @@ public class PredictionService {
     }
 
     public Optional<PredictionStatusDTO> findPredictionStatusByCompetitionIdAndEmail(Long competitionId, String email) {
-        MyUser user = userService.findByUsername(email);
+        MyUser user = userService.findByEmail(email);
         Competition competition = findCompetitionById(competitionId);
 
         return predictionRepository.findByUserAndCompetition(user, competition)
                 .map(this::toStatusDTO);
     }
 
-    public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto) {
-        MyUser user = userService.getCurrentUser();
+    public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto, String email) {
+        MyUser user = userService.findByEmail(email);
         Competition competition = findCompetitionById(competitionId);
 
         savePrediction(user, competition, dto);

@@ -1,12 +1,11 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputRegistrationDTO;
+import com.example.callthematch.exception.EmailNotFound;
 import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Role;
 import com.example.callthematch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +18,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MyUser findByUsername(String email) {
+    public MyUser findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found: ".formatted(email)));
-    }
-
-    public MyUser getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        return userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+                .orElseThrow(() -> new EmailNotFound(email));
     }
 
     public void register(InputRegistrationDTO dto) {

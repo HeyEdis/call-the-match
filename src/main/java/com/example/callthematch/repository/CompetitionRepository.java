@@ -17,7 +17,7 @@ public interface CompetitionRepository extends JpaRepository<Competition, Long> 
 
     boolean existsByStadiumIdAndDateAndTimeAndIdNot(
             Long stadiumId,
-            java.time.LocalDate date,
-            java.time.LocalTime time,
+            LocalDate date,
+            LocalTime time,
             Long id);
 }

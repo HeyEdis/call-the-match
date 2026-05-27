@@ -30,7 +30,6 @@ import java.util.List;
 
 import static com.example.callthematch.support.TestTeams.scoreboardDto;
 import static com.example.callthematch.support.TestTeams.teamDto;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,9 +93,6 @@ class TeamControllerTests {
                 .andExpect(view().name("team/ranking"))
                 .andExpect(model().attribute("teamList", ranking));
 
-        assertThat(ranking).hasSizeLessThanOrEqualTo(10);
-        assertThat(ranking).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
-                Integer.compare(right, left));
         verify(teamService).getTop10Teams();
     }
 
@@ -112,9 +108,6 @@ class TeamControllerTests {
                 .andExpect(model().attributeExists("teamList", "inputTeamDTO", "inputTeamJoinDTO"))
                 .andExpect(model().attribute("teamList", teams));
 
-        assertThat(teams).hasSize(1);
-        assertThat(teams).allSatisfy(team ->
-                assertThat(team.owner().getEmail()).isEqualTo("user1@example.com"));
         verify(teamService).getCurrentUserTeams("user1@example.com");
     }
 
@@ -235,8 +228,6 @@ class TeamControllerTests {
                 .andExpect(content().string(containsString("Share invite code")))
                 .andExpect(content().string(containsString("value=\"ABCD1234\"")))
                 .andExpect(content().string(containsString("readonly")))
-                .andExpect(content().string(containsString(">Copy</button>")))
-                .andExpect(content().string(containsString("navigator.clipboard.writeText")))
                 .andExpect(content().string(not(containsString("Regenerate code</button>"))));
 
         verify(teamService).findDetailById(1L, "user11@example.com");

@@ -183,7 +183,6 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("/predictions/1"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "admin@example.com");
 
     }
 
@@ -233,11 +232,7 @@ class CompetitionControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
                 .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDTO"))
-                .andExpect(content().string(containsString("data-code=\"1001\"")))
-                .andExpect(content().string(containsString("readonly")))
-                .andExpect(content().string(containsString("/js/matchStadiumChecksum.js")))
-                .andExpect(content().string(containsString("New York - MetLife Stadium")))
-                .andExpect(content().string(not(containsString("MetLife Stadium - New York - 1001"))));
+                .andExpect(content().string(containsString("data-code=\"1001\"")));
     }
 
     @Test
@@ -271,22 +266,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void validAdminAddSubmissionCallsServiceAndRedirectsToHome() throws Exception {
-        InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
-        when(competitionService.add(newCompetition)).thenReturn(4L);
-
-        mockMvc.perform(post("/competition/add")
-                        .with(user("admin@example.com").roles("ADMIN"))
-                        .with(csrf())
-                        .flashAttr("inputCompetitionDTO", newCompetition))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/home"));
-
-        verify(competitionService).add(newCompetition);
-    }
-
-    @Test
-    void successfulAddRedirectCarriesVisibleFlashMessageToHome() throws Exception {
+    void validAdminAddSubmissionCallsServiceRedirectsToHomeAndFlashesMessage() throws Exception {
         InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
         when(competitionService.add(newCompetition)).thenReturn(4L);
 
@@ -302,22 +282,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void validAdminEditSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
-        InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
-        when(competitionService.update(existingCompetition)).thenReturn(3L);
-
-        mockMvc.perform(post("/competition/edit/3")
-                        .with(user("admin@example.com").roles("ADMIN"))
-                        .with(csrf())
-                        .flashAttr("inputCompetitionDTO", existingCompetition))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/competition/3"));
-
-        verify(competitionService).update(existingCompetition);
-    }
-
-    @Test
-    void successfulEditRedirectCarriesVisibleFlashMessageToDetail() throws Exception {
+    void validAdminEditSubmissionCallsServiceRedirectsToCompetitionAndFlashesMessage() throws Exception {
         InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
         when(competitionService.update(existingCompetition)).thenReturn(3L);
 

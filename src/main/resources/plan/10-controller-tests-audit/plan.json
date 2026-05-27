@@ -75,7 +75,7 @@
         "The deleted src/main/resources/prd/10-accountability-audit-conversation-mode-prd.md and unrelated untracked handoff files are not restored, rewritten, or removed"
       ],
       "priority": 1,
-      "passes": false
+      "passes": true
     },
     {
       "id": "trim-team-controller-assertions",
@@ -90,7 +90,7 @@
         ".\\mvnw.cmd -q \"-Dtest=TeamControllerTests\" test passes"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": "combine-competition-success-tests",
@@ -105,7 +105,7 @@
         ".\\mvnw.cmd -q \"-Dtest=CompetitionControllerTests\" test passes"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": "reduce-brittle-rendered-markup-checks",
@@ -120,7 +120,7 @@
         "The changed Home, Locale, Competition, and Team controller tests pass"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "clean-prediction-controller-slice",
@@ -135,7 +135,7 @@
         ".\\mvnw.cmd -q \"-Dtest=PredictionControllerTests\" test passes"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "resolve-admin-prediction-status-assertion",
@@ -150,7 +150,7 @@
         ".\\mvnw.cmd -q \"-Dtest=CompetitionControllerTests,AccessSecurityTests\" test passes if production behavior changes"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "final-controller-rest-verification",
@@ -166,7 +166,7 @@
         "The final explanation maps the result back to MVC controller tests, REST controller tests, and security boundary preservation"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     }
   ]
 }

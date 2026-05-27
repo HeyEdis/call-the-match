@@ -65,16 +65,4 @@ class HomeControllerTests {
         verify(competitionService).getAllCompetitions();
     }
 
-    @Test
-    void homePageRendersLocaleSwitcherFragment() throws Exception {
-        when(competitionService.getAllCompetitions()).thenReturn(List.of());
-
-        mockMvc.perform(get("/home"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("action=\"/changeLocale\"")))
-                .andExpect(content().string(containsString("name=\"lang\"")));
-
-        verify(competitionService).getAllCompetitions();
-    }
-
 }

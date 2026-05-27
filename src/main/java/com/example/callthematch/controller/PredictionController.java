@@ -2,6 +2,7 @@ package com.example.callthematch.controller;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
+import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.PredictionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.Locale;
 
 @Controller
@@ -24,6 +26,7 @@ public class PredictionController {
 
     private final PredictionService predictionService;
     private final MessageSource messageSource;
+    private final CompetitionService competitionService;
 
     @GetMapping
     public String list(Model model) {
@@ -32,10 +35,10 @@ public class PredictionController {
     }
 
     @GetMapping("/{competitionId}")
-    public String form(@PathVariable Long competitionId, Model model) {
-        model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+    public String form(@PathVariable Long competitionId, Model model, Principal principal) {
+        model.addAttribute("competition", competitionService.findById(competitionId));
         model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
-        model.addAttribute("inputPredictionDTO", predictionService.findCurrentUserInputByCompetitionId(competitionId));
+        model.addAttribute("inputPredictionDTO", predictionService.findPredictionStatusByCompetitionIdAndEmail(competitionId, principal.getName()));
         return "prediction/form";
     }
 
@@ -45,7 +48,7 @@ public class PredictionController {
                        BindingResult result, Model model, Locale locale) {
 
         if (result.hasErrors()) {
-            model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+            model.addAttribute("competition", competitionService.findById(competitionId));;
             model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
             return "prediction/form";
         }
@@ -53,7 +56,7 @@ public class PredictionController {
         try {
             predictionService.saveCurrentUserPrediction(competitionId, inputPredictionDTO);
         } catch (PredictionCutoffPassed ex) {
-            model.addAttribute("competition", predictionService.findCompetitionDTOById(competitionId));
+            model.addAttribute("competition", competitionService.findById(competitionId));;
             model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
             model.addAttribute("errorMessage",
                     messageSource.getMessage("prediction.cutoff.passed", null, locale));

@@ -3,6 +3,7 @@ package com.example.callthematch.controller;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
+import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.PredictionService;
 import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,9 @@ class PredictionControllerTests {
     private PredictionService predictionService;
 
     @MockitoBean
+    private CompetitionService competitionService;
+
+    @MockitoBean
     private CompetitionValidator competitionValidator;
 
     @Test
@@ -74,8 +78,7 @@ class PredictionControllerTests {
 
     @Test
     void predictionFormRendersMatchAndPrefillsExistingPrediction() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
-        when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDTO());
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(false);
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
@@ -86,8 +89,7 @@ class PredictionControllerTests {
                 .andExpect(content().string(containsString("Canada")))
                 .andExpect(content().string(containsString("value=\"2\"")));
 
-        verify(predictionService).findCompetitionDTOById(3L);
-        verify(predictionService).findCurrentUserInputByCompetitionId(3L);
+        verify(competitionService).findById(3L);
         verify(predictionService).isCutoffPassed(3L);
     }
 
@@ -106,7 +108,7 @@ class PredictionControllerTests {
 
     @Test
     void invalidPredictionReturnsFieldErrorsAndDoesNotSave() throws Exception {
-        when(predictionService.findCompetitionDTOById(5L)).thenReturn(competitionDto(5L));
+        when(competitionService.findById(5L)).thenReturn(competitionDto(5L));
         when(predictionService.isCutoffPassed(5L)).thenReturn(false);
 
         mockMvc.perform(post("/predictions/5")
@@ -123,7 +125,7 @@ class PredictionControllerTests {
 
     @Test
     void validPredictionRedirectsAndCallsService() throws Exception {
-        when(predictionService.findCompetitionDTOById(5L)).thenReturn(competitionDto(5L));
+        when(competitionService.findById(5L)).thenReturn(competitionDto(5L));
         when(predictionService.isCutoffPassed(5L)).thenReturn(false);
 
         mockMvc.perform(post("/predictions/5")
@@ -139,8 +141,7 @@ class PredictionControllerTests {
 
     @Test
     void closedPredictionFormHidesFormAndShowsDeadlineMessage() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
-        when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDTO());
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
@@ -152,7 +153,7 @@ class PredictionControllerTests {
 
     @Test
     void postToPastCutoffPredictionShowsCutoffError() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
         doThrow(new PredictionCutoffPassed())
                 .when(predictionService).saveCurrentUserPrediction(3L, inputPredictionDTO());

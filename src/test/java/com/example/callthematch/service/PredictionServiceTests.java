@@ -116,7 +116,7 @@ class PredictionServiceTests {
         when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
         when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.of(prediction));
 
-        Optional<PredictionStatusDTO> result = predictionService.findCurrentUserPredictionStatusByCompetitionId(2L);
+        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"user1@example.com");
 
         assertThat(result).contains(new PredictionStatusDTO(2, 1));
         verify(userService).getCurrentUser();
@@ -133,7 +133,7 @@ class PredictionServiceTests {
 
         authenticateAs("admin@example.com", "ROLE_ADMIN");
 
-        Optional<PredictionStatusDTO> result = predictionService.findCurrentUserPredictionStatusByCompetitionId(2L);
+        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"admin@example.com");
 
         assertThat(result).isEmpty();
         verify(userService, never()).getCurrentUser();

@@ -72,7 +72,7 @@ Known current observations from the codebase:
 - `CompetitionValidator` is split into smaller guard-first validation methods for teams, date scope, stadium/time conflicts, and selected stadium code.
 - `Team` exposes separate score calculation and score recalculation methods.
 
-At PRD creation time, `git status --short` reported no dirty files.
+At final verification time, `git status --short` reported only this PRD as modified.
 
 ## School Requirements
 

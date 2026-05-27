@@ -107,7 +107,6 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("Your prediction"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test
@@ -129,7 +128,7 @@ class CompetitionControllerTests {
     void userSeesOwnPredictionOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L))
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"))
                 .thenReturn(Optional.of(new PredictionStatusDTO(2, 1)));
 
         mockMvc.perform(get("/competition/1")
@@ -142,14 +141,14 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com");
     }
 
     @Test
     void userWithoutPredictionDoesNotSeePredictionStatusOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L)).thenReturn(Optional.empty());
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"));
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -160,7 +159,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L,"user1@example.com");
     }
 
     @Test
@@ -176,7 +175,8 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("/predictions/1"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L,"user1@example.com");
+
     }
 
     @Test

@@ -48,6 +48,20 @@ class InputCompetitionDTOValidationTests {
     }
 
     @Test
+    void negativeStadiumCodeFailsAnnotationValidation() {
+        assertThat(validator.validate(fixture(-1, 31)))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("stadiumCode");
+    }
+
+    @Test
+    void negativeChecksumFailsAnnotationValidation() {
+        assertThat(validator.validate(fixture(1001, -1)))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("checksum");
+    }
+
+    @Test
     void validFixtureProducesNoViolations() {
         assertThat(validator.validate(fixture(1001, 31))).isEmpty();
     }

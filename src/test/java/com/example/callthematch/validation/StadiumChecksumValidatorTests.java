@@ -36,7 +36,7 @@ class StadiumChecksumValidatorTests {
                 mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class);
 
         lenient().when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
-        lenient().when(context.getDefaultConstraintMessageTemplate()).thenReturn("{competition.checksum.valid}");
+        lenient().when(context.getDefaultConstraintMessageTemplate()).thenReturn("{validator.stadiumChecksum}");
         lenient().when(builder.addPropertyNode(anyString())).thenReturn(nodeBuilder);
         lenient().when(nodeBuilder.addConstraintViolation()).thenReturn(context);
     }

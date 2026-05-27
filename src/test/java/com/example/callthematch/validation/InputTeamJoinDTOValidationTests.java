@@ -19,8 +19,21 @@ class InputTeamJoinDTOValidationTests {
     }
 
     @Test
+    void nullInviteCodeFailsValidation() {
+        assertThat(validator.validate(new InputTeamJoinDTO(null)))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("inviteCode");
+    }
+
+    @Test
+    void whitespaceOnlyInviteCodeFailsValidation() {
+        assertThat(validator.validate(new InputTeamJoinDTO("   ")))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("inviteCode");
+    }
+
+    @Test
     void validInviteCodeProducesNoViolations() {
         assertThat(validator.validate(new InputTeamJoinDTO("ABCD1234"))).isEmpty();
     }
 }
-

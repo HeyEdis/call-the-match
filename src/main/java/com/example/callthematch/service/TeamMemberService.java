@@ -26,20 +26,6 @@ public class TeamMemberService {
     private final PredictionRepository predictionRepository;
     private final ScoringService scoringService;
 
-    @Transactional
-    public void recalculateScoresAfterResult(Competition competition) {
-        if (competition.getScoreA() == null || competition.getScoreB() == null) {
-            return;
-        }
-
-        List<Prediction> competitionPredictions = predictionRepository.findAllByCompetition(competition);
-        competitionPredictions.forEach(prediction -> prediction.setPointsEarned(
-                scoringService.calculateBasePoints(prediction, competition.getScoreA(), competition.getScoreB())));
-        predictionRepository.saveAll(competitionPredictions);
-
-        findAffectedTeams(competitionPredictions).forEach(this::recalculateTeamScores);
-    }
-
     private Set<Team> findAffectedTeams(List<Prediction> predictions) {
         Set<Team> teams = new HashSet<>();
         predictions.stream()
@@ -53,11 +39,18 @@ public class TeamMemberService {
 
     private void recalculateTeamScores(Team team) {
         List<TeamMember> members = teamMemberRepository.findAllByTeam(team);
+
         members.forEach(member -> member.setScore(recalculateMemberScore(member, members)));
         teamMemberRepository.saveAll(members);
 
-        team.recalculateScore();
+        team.setScore(calculateTeamScore(members));
         teamRepository.save(team);
+    }
+
+    private int calculateTeamScore(List<TeamMember> members) {
+        return members.stream()
+                .mapToInt(TeamMember::getScore)
+                .sum();
     }
 
     private int recalculateMemberScore(TeamMember member, List<TeamMember> teamMembers) {
@@ -80,5 +73,17 @@ public class TeamMemberService {
                 .toList();
     }
 
+    @Transactional
+    public void recalculateScoresAfterResult(Competition competition) {
+        if (competition.getScoreA() == null || competition.getScoreB() == null) {
+            return;
+        }
 
+        List<Prediction> competitionPredictions = predictionRepository.findAllByCompetition(competition);
+        competitionPredictions.forEach(prediction -> prediction.setPointsEarned(
+                scoringService.calculateBasePoints(prediction, competition.getScoreA(), competition.getScoreB())));
+        predictionRepository.saveAll(competitionPredictions);
+
+        findAffectedTeams(competitionPredictions).forEach(this::recalculateTeamScores);
+    }
 }

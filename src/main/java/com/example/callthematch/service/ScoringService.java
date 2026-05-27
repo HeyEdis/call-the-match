@@ -46,36 +46,56 @@ public class ScoringService {
     }
 
     private int uniqueOutcomeBonus(Prediction prediction, List<Prediction> teamPredictions) {
+        MatchOutcome predictedOutcome = outcome(prediction);
+
         long sameOutcome = teamPredictions.stream()
-                .filter(teamPrediction -> outcome(teamPrediction.getPredictedScoreA(), teamPrediction.getPredictedScoreB())
-                        == outcome(prediction.getPredictedScoreA(), prediction.getPredictedScoreB()))
+                .filter(teamPrediction -> outcome(teamPrediction) == predictedOutcome)
                 .count();
+
         return sameOutcome == 1 ? ScoringPoints.UNIQUE_OUTCOME_BONUS : 0;
     }
 
-    private boolean isExactScore(Prediction prediction, Integer officialScoreA, Integer officialScoreB) {
-        return prediction.getPredictedScoreA().equals(officialScoreA)
-                && prediction.getPredictedScoreB().equals(officialScoreB);
+    private boolean hasSameScore(Integer firstScoreA, Integer firstScoreB,
+                                 Integer secondScoreA, Integer secondScoreB) {
+        return firstScoreA.equals(secondScoreA)
+                && firstScoreB.equals(secondScoreB);
     }
 
     private boolean hasCorrectOutcome(Prediction prediction, Integer officialScoreA, Integer officialScoreB) {
-        return outcome(prediction.getPredictedScoreA(), prediction.getPredictedScoreB())
-                == outcome(officialScoreA, officialScoreB);
+        return outcome(prediction) == outcome(officialScoreA, officialScoreB);
+    }
+
+    private boolean isExactScore(Prediction prediction, Integer officialScoreA, Integer officialScoreB) {
+        return hasSameScore(
+                prediction.getPredictedScoreA(),
+                prediction.getPredictedScoreB(),
+                officialScoreA,
+                officialScoreB);
     }
 
     private boolean hasSamePredictionScore(Prediction first, Prediction second) {
-        return first.getPredictedScoreA().equals(second.getPredictedScoreA())
-                && first.getPredictedScoreB().equals(second.getPredictedScoreB());
+        return hasSameScore(
+                first.getPredictedScoreA(),
+                first.getPredictedScoreB(),
+                second.getPredictedScoreA(),
+                second.getPredictedScoreB());
+    }
+
+    private MatchOutcome outcome(Prediction prediction) {
+        return outcome(prediction.getPredictedScoreA(), prediction.getPredictedScoreB());
     }
 
     private MatchOutcome outcome(Integer scoreA, Integer scoreB) {
         int comparison = scoreA.compareTo(scoreB);
+
         if (comparison > 0) {
             return MatchOutcome.TEAM_A_WIN;
         }
+
         if (comparison < 0) {
             return MatchOutcome.TEAM_B_WIN;
         }
+
         return MatchOutcome.DRAW;
     }
 

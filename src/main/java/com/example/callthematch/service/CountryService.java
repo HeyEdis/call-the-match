@@ -20,7 +20,7 @@ public class CountryService {
     }
 
     public List<CountryDTO> getAllCountries() {
-        return countryRepository.findAll()
+        return countryRepository.findAllByOrderByNameAsc()
                 .stream()
                 .map(this::toDTO)
                 .toList();

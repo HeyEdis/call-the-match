@@ -17,7 +17,7 @@ public class StadiumService {
     private final StadiumRepository stadiumRepository;
 
     private StadiumDTO toDTO(Stadium s) {
-        return new StadiumDTO(s.getId(), s.getLocation(),s.getName(),s.getCode());
+        return new StadiumDTO(s.getId(), s.getLocation(),s.getName(),s.getCode(),s.getCapacity());
     }
 
     private Stadium findById(Long id)
@@ -26,7 +26,7 @@ public class StadiumService {
     }
 
     private StadiumCapacityDTO toCapacityDTO(Stadium s) {
-        return new StadiumCapacityDTO(s.getId(), s.getName(), s.getCapacity());
+        return new StadiumCapacityDTO(s.getName(),s.getCapacity());
     }
 
     public StadiumCapacityDTO findCapacityById(Long id) {

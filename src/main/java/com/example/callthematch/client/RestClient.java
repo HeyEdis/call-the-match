@@ -63,8 +63,7 @@ public class RestClient {
 
     private void printStadiumCapacity(StadiumCapacityDTO stadium) {
         System.out.printf(
-                "ID=%s, Stadium=%s, Capacity=%s%n",
-                stadium.id(),
+                "Stadium=%s, Capacity=%s%n",
                 stadium.name(),
                 stadium.capacity());
     }

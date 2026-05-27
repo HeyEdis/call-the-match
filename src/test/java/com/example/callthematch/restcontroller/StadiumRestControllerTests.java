@@ -43,11 +43,10 @@ class StadiumRestControllerTests {
     @Test
     void getStadiumCapacityReturnsCapacityForValidId() throws Exception {
         Mockito.when(stadiumService.findCapacityById(1L))
-                .thenReturn(new StadiumCapacityDTO(1L, "BC Place", 54500));
+                .thenReturn(new StadiumCapacityDTO("BC Place", 54500));
 
         mockMvc.perform(get("/api/stadiums/1/capacity"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("BC Place"))
                 .andExpect(jsonPath("$.capacity").value(54500));
 

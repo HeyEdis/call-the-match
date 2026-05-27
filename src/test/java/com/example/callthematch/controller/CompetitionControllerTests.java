@@ -1,6 +1,7 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.advice.CompetitionValidatorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
@@ -21,6 +22,8 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,7 +52,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(CompetitionController.class)
+@WebMvcTest(
+        controllers = CompetitionController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = TeamValidatorAdvice.class))
 @AutoConfigureMockMvc(addFilters = true)
 @Import({SecurityConfig.class, CompetitionValidatorAdvice.class})
 @ImportAutoConfiguration({
@@ -148,7 +155,8 @@ class CompetitionControllerTests {
     void userWithoutPredictionDoesNotSeePredictionStatusOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"));
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -159,7 +167,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L,"user1@example.com");
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com");
     }
 
     @Test
@@ -175,7 +183,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("/predictions/1"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L,"user1@example.com");
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "admin@example.com");
 
     }
 

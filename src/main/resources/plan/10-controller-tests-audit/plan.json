@@ -1,0 +1,172 @@
+{
+  "sources": [
+    {
+      "url": "src/main/resources/prd/10-controller-tests-audit-prd.md",
+      "description": "PRD for cleaning up controller and REST controller tests after the controller-tests audit."
+    },
+    {
+      "url": "src/main/resources/prd/10-controller-tests-audit/plan.md",
+      "description": "Approved Markdown implementation plan for the controller tests audit cleanup."
+    },
+    {
+      "url": "src/main/resources/handoff/controller-tests-audit-handoff.md",
+      "description": "Handoff containing the original controller test audit findings, verification commands, and recommended cleanup sequence."
+    },
+    {
+      "url": "src/test/java/com/example/callthematch/controller",
+      "description": "Existing MVC controller tests to audit and refactor."
+    },
+    {
+      "url": "src/test/java/com/example/callthematch/restcontroller",
+      "description": "Existing REST controller tests that must remain school-conform."
+    },
+    {
+      "url": "src/test/java/com/example/callthematch/security/AccessSecurityTests.java",
+      "description": "Security route-matrix test class that should keep broad guest/user/admin access coverage."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/SKILL.md",
+      "description": "Project guidelines for HOGENT EWD school conventions."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/testing.md",
+      "description": "Local testing guidance for MVC controller, REST controller, security, and validation tests."
+    },
+    {
+      "url": "src/main/resources/prd/06-testing-prd.md",
+      "description": "Existing testing PRD describing required school test categories."
+    },
+    {
+      "url": "src/main/resources/prd/08-school-conform-test-refactor-prd.md",
+      "description": "Broader school-conform test refactor PRD that this narrower controller audit plan complements."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation/src/test/java/com/example/spring_boot_validation/controller/RegistrationControllerTest.java",
+      "description": "School-style MVC controller test example using WebMvcTest, MockMvc, mocked service, field errors, and verify never."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Security/Spring_Boot_security_roles/src/test/java/com/example/spring_boot_security_roles/controller/SecurityTest.java",
+      "description": "School-style security test example using WithMockUser, form login helpers, forbidden checks, and redirects."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_REST/Spring_Boot_rest_fruit_start/src/test/java/com/example/spring_boot_rest_fruit_start/controller/FruitRestControllerTest.java",
+      "description": "School-style REST controller test example using WebMvcTest, MockMvc, jsonPath, status checks, and service verification."
+    },
+    {
+      "url": "local://Notes/08-05-26-REST.md",
+      "description": "Lesson note that controller tests must account for validator advice when it is imported into the MVC slice."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "baseline-controller-test-boundary",
+      "title": "Baseline Controller Test Boundary",
+      "description": "Run and record the controller-focused baseline before changing tests. Confirm which MVC controller tests, REST controller tests, and security tests are in scope, and preserve the separation of responsibilities from the PRD: controller tests assert observable web behavior, service tests own business rules, validator tests own validation details, and AccessSecurityTests owns the broad guest/user/admin route matrix. Do not touch production code or unrelated dirty worktree files in this task.",
+      "acceptance_criteria": [
+        "The controller-focused baseline command from the PRD is run before any test edits",
+        "The result of the baseline run is recorded in the implementation notes or progress log",
+        "AccountControllerTests, CompetitionControllerTests, HomeControllerTests, LocaleControllerTests, PredictionControllerTests, TeamControllerTests, CompetitionRestControllerTests, and StadiumRestControllerTests are confirmed as the in-scope test classes",
+        "AccessSecurityTests is confirmed as the home for broad guest/user/admin route matrix coverage",
+        "No production code is changed in this task",
+        "The deleted src/main/resources/prd/10-accountability-audit-conversation-mode-prd.md and unrelated untracked handoff files are not restored, rewritten, or removed"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "trim-team-controller-assertions",
+      "title": "Trim Team Controller Assertions",
+      "description": "Refactor TeamControllerTests so controller tests no longer prove service-owned ranking, sorting, top-10 limiting, or current-user filtering rules. Keep the tests focused on MockMvc status, view names, model attributes, redirects, validation redisplay, and TeamService delegation. Service-owned sorting, filtering, membership, ownership, and scoring behavior should remain in service tests.",
+      "acceptance_criteria": [
+        "rankingShowsPublicTopTenInScoreOrder no longer asserts top-10 size or score ordering of the mocked fixture",
+        "The ranking test still asserts successful status, team/ranking view, teamList model data, and teamService.getTop10Teams delegation",
+        "dashboardShowsOnlyCurrentUsersTeamsAndFormModels no longer inspects owner email values inside the returned fixture",
+        "The dashboard test still asserts form model objects, current-user team model data, and teamService.getCurrentUserTeams with the authenticated principal email",
+        "Team create and join invalid tests still assert redisplay and verify that service mutation calls are never made",
+        ".\\mvnw.cmd -q \"-Dtest=TeamControllerTests\" test passes"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "combine-competition-success-tests",
+      "title": "Combine Competition Success Tests",
+      "description": "Merge duplicate happy-path tests in CompetitionControllerTests so add and edit submissions each have one focused test. Each combined test should verify the relevant CompetitionService call, redirect target, and successMessage flash attribute without duplicating the same controller path across multiple tests. Preserve invalid add, edit, and result behavior checks.",
+      "acceptance_criteria": [
+        "The add success-path tests are combined into one focused test",
+        "The combined add test verifies competitionService.add, redirect to /home, and a successMessage flash attribute",
+        "The edit success-path tests are combined into one focused test",
+        "The combined edit test verifies competitionService.update, redirect to /competition/3, and a successMessage flash attribute",
+        "Invalid add, edit, and result tests still assert redisplay, field errors or error model data where applicable, and no unintended service mutation calls",
+        ".\\mvnw.cmd -q \"-Dtest=CompetitionControllerTests\" test passes"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": "reduce-brittle-rendered-markup-checks",
+      "title": "Reduce Brittle Rendered Markup Checks",
+      "description": "Trim exact HTML and JavaScript assertions that make controller tests fragile. Keep meaningful rendered-output checks only when they directly prove controller behavior or a school/project requirement, such as backend-provided model data reaching the view. Do not move browser or template implementation details into controller tests.",
+      "acceptance_criteria": [
+        "HomeControllerTests.homePageRendersLocaleSwitcherFragment is removed or reduced unless the locale switcher fragment is treated as an explicit acceptance requirement",
+        "LocaleControllerTests.changeLocaleRedirectsToReferer remains the controller-level proof for locale redirect behavior",
+        "CompetitionControllerTests.adminAddFormExposesModelAndRendersStadiumsCorrectly keeps model assertions and at most one meaningful rendered data-flow check",
+        "Exact text order, JavaScript path, and broad HTML string assertions are removed from the competition add-form test where they do not prove controller behavior",
+        "TeamControllerTests.memberCanSeeInviteCodeSharePanel keeps invite-code/member visibility behavior but removes clipboard or JavaScript implementation assertions",
+        "The changed Home, Locale, Competition, and Team controller tests pass"
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": "clean-prediction-controller-slice",
+      "title": "Clean Prediction Controller Slice",
+      "description": "Clean PredictionControllerTests so its WebMvcTest slice depends only on what prediction controller behavior needs. Remove unrelated validator mocks when possible or exclude unrelated validator advice using the same style already used by nearby controller tests. Preserve coverage for list, form, save, validation redisplay, cutoff handling, guest redirect, and admin forbidden behavior.",
+      "acceptance_criteria": [
+        "Unrelated validator mocks are removed when PredictionControllerTests can load without them",
+        "If validator advice must be excluded, the exclusion follows the style already used by HomeControllerTests or AccountControllerTests",
+        "Prediction tests still assert view names, model data, redirects, validation redisplay, cutoff behavior, and service calls",
+        "Invalid prediction submission still verifies no unintended save call",
+        "Guest and admin behavior remains covered either in PredictionControllerTests when controller-specific or in AccessSecurityTests when route-matrix-specific",
+        ".\\mvnw.cmd -q \"-Dtest=PredictionControllerTests\" test passes"
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": "resolve-admin-prediction-status-assertion",
+      "title": "Resolve Admin Prediction Status Assertion",
+      "description": "Resolve the questionable CompetitionControllerTests assertion around admin users and prediction status lookup. This task may be test-only, by removing the brittle verification that admins trigger prediction status lookup while preserving rendered admin behavior, or it may include a small production behavior fix so admins no longer request prediction status on competition detail. Preserve normal USER prediction-status behavior on competition detail.",
+      "acceptance_criteria": [
+        "The implementation explicitly chooses whether this task is test-only or includes a production controller change",
+        "If test-only, the brittle verification that admin detail view calls prediction status lookup is removed while preserving the rendered admin outcome assertion",
+        "If production behavior is changed, admins do not request prediction status on competition detail",
+        "If production behavior is changed, CompetitionControllerTests verifies prediction status is not requested for admin users",
+        "USER behavior on competition detail still verifies prediction status lookup when it affects rendered output",
+        ".\\mvnw.cmd -q \"-Dtest=CompetitionControllerTests,AccessSecurityTests\" test passes if production behavior changes"
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": "final-controller-rest-verification",
+      "title": "Final Controller And REST Verification",
+      "description": "Run the final controller-focused verification command and confirm the suite remains school-conform. MVC controller tests should assert observable web behavior, REST controller tests should keep their WebMvcTest plus jsonPath style, and broad security coverage should remain in AccessSecurityTests. Do not introduce WebClient tests, new REST mutation endpoints, or unrelated production changes.",
+      "acceptance_criteria": [
+        ".\\mvnw.cmd -q \"-Dtest=AccountControllerTests,CompetitionControllerTests,PredictionControllerTests,TeamControllerTests,HomeControllerTests,LocaleControllerTests,CompetitionRestControllerTests,StadiumRestControllerTests\" test passes",
+        "All MVC controller tests in the command pass",
+        "All REST controller tests in the command pass",
+        "REST tests still use WebMvcTest, MockMvc, jsonPath, and service verification",
+        "No WebClient tests or new REST mutation endpoints are introduced",
+        "The final diff contains only the intended test cleanup and planning work",
+        "The final explanation maps the result back to MVC controller tests, REST controller tests, and security boundary preservation"
+      ],
+      "priority": 7,
+      "passes": false
+    }
+  ]
+}

@@ -11,18 +11,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.testSecurityContext;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.logout;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -92,26 +89,29 @@ class AccessSecurityTests {
     @Test
     @WithMockUser(username = "user1@example.com", roles = "USER")
     void userCanOpenUserRoutes() throws Exception {
-        mockMvc.perform(get("/team/dashboard").with(user("user1@example.com").roles("USER")))
+        mockMvc.perform(get("/team/dashboard")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
+        mockMvc.perform(get("/predictions/3")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "user1@example.com", roles = "USER")
     void userCannotOpenAdminMatchManagement() throws Exception {
-        mockMvc.perform(get("/competition/add").with(user("user1@example.com").roles("USER")))
+        mockMvc.perform(get("/competition/add")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
 
         mockMvc.perform(post("/competition/edit/3")
-                        .with(user("user1@example.com").roles("USER"))
+                        .with(testSecurityContext())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
 
         mockMvc.perform(post("/competition/3/result")
-                        .with(user("user1@example.com").roles("USER"))
+                        .with(testSecurityContext())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }
@@ -122,6 +122,8 @@ class AccessSecurityTests {
                         .userParameter("email")
                         .user("user1@example.com")
                         .password("password"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/home"))
                 .andExpect(authenticated().withUsername("user1@example.com"))
                 .andReturn();
 
@@ -133,54 +135,75 @@ class AccessSecurityTests {
     @Test
     @WithMockUser(username = "admin@example.com", roles = "ADMIN")
     void adminCanOpenMatchManagementRoutes() throws Exception {
-        mockMvc.perform(get("/competition/add").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/competition/add")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/competition/edit/3").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/competition/edit/3")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/competition/3/result").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/competition/3/result")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "admin@example.com", roles = "ADMIN")
     void adminCannotOpenTeamRoutes() throws Exception {
-        mockMvc.perform(get("/team/dashboard").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/team/dashboard")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/team/1/scoreboard").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/team/1/scoreboard")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(username = "admin@example.com", roles = "ADMIN")
     void adminCannotOpenPredictionRoutes() throws Exception {
-        mockMvc.perform(get("/predictions").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/predictions")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/predictions/3").with(user("admin@example.com").roles("ADMIN")))
+        mockMvc.perform(get("/predictions/3")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void invalidRegistrationReturnsFieldErrors() throws Exception {
-        mockMvc.perform(post("/register")
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    void adminCannotSubmitTeamFlow() throws Exception {
+        mockMvc.perform(post("/team/create")
+                        .with(testSecurityContext())
                         .with(csrf())
-                        .param("firstName", "")
-                        .param("lastName", "")
-                        .param("userName", "")
-                        .param("email", "invalid")
-                        .param("password", "short"))
+                        .param("name", "Admin Team"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void guestCanOpenPublicRestEndpoint() throws Exception {
+        mockMvc.perform(get("/api/2026-05-20/matches"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/register"))
-                .andExpect(model().attributeHasFieldErrors(
-                        "inputRegistrationDTO",
-                        "firstName",
-                        "lastName",
-                        "userName",
-                        "email",
-                        "password"));
+                .andExpect(unauthenticated());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void guestErrorPagePathsAreNotInterceptedByLogin() throws Exception {
+        mockMvc.perform(get("/403"))
+                .andExpect(status().isNotFound())
+                .andExpect(unauthenticated());
+
+        mockMvc.perform(get("/404"))
+                .andExpect(status().isNotFound())
+                .andExpect(unauthenticated());
+
+        mockMvc.perform(get("/500"))
+                .andExpect(status().isNotFound())
+                .andExpect(unauthenticated());
     }
 
     @Test
@@ -204,7 +227,7 @@ class AccessSecurityTests {
     @WithMockUser(username = "user1@example.com", roles = "USER")
     void postWithoutCsrfReturnsForbidden() throws Exception {
         mockMvc.perform(post("/team/create")
-                        .with(user("user1@example.com").roles("USER"))
+                        .with(testSecurityContext())
                         .param("name", "SomeTeam"))
                 .andExpect(status().isForbidden());
     }

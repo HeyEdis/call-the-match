@@ -1,17 +1,46 @@
 package com.example.callthematch.service;
 
+import com.example.callthematch.dto.request.InputPredictionDTO;
+import com.example.callthematch.exception.PredictionCutoffPassed;
+import com.example.callthematch.model.Competition;
+import com.example.callthematch.model.MyUser;
+import com.example.callthematch.model.Prediction;
+import com.example.callthematch.repository.CompetitionRepository;
+import com.example.callthematch.repository.PredictionRepository;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class PredictionServiceTests {
 
-   /* @Test
+    @Mock
+    private PredictionRepository predictionRepository;
+
+    @Mock
+    private CompetitionRepository competitionRepository;
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private PredictionService predictionService;
+
+    @Test
     void savePredictionCreatesPredictionWithCreatedAt() {
-        PredictionRepository predictionRepository = mock(PredictionRepository.class);
-        PredictionService predictionService = predictionService(predictionRepository);
         MyUser user = MyUser.builder().id(1L).build();
         Competition competition = openCompetition();
 
@@ -30,8 +59,6 @@ class PredictionServiceTests {
 
     @Test
     void savePredictionUpdatesExistingPrediction() {
-        PredictionRepository predictionRepository = mock(PredictionRepository.class);
-        PredictionService predictionService = predictionService(predictionRepository);
         MyUser user = MyUser.builder().id(1L).build();
         Competition competition = openCompetition();
         Prediction existingPrediction = Prediction.builder()
@@ -54,8 +81,6 @@ class PredictionServiceTests {
 
     @Test
     void savePredictionRejectsPredictionAfterOneHourCutoff() {
-        PredictionRepository predictionRepository = mock(PredictionRepository.class);
-        PredictionService predictionService = predictionService(predictionRepository);
         MyUser user = MyUser.builder().id(1L).build();
         Competition competition = Competition.builder()
                 .id(2L)
@@ -70,11 +95,6 @@ class PredictionServiceTests {
 
     @Test
     void currentUserPredictionStatusReturnsPredictionForUserRole() {
-        PredictionRepository predictionRepository = mock(PredictionRepository.class);
-        CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
-        UserService userService = mock(UserService.class);
-        PredictionService predictionService = new PredictionService(
-                predictionRepository, competitionRepository, userService);
         MyUser user = MyUser.builder().id(1L).email("user1@example.com").build();
         Competition competition = openCompetition();
         Prediction prediction = Prediction.builder()
@@ -88,20 +108,15 @@ class PredictionServiceTests {
         when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
         when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.of(prediction));
 
-        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"user1@example.com");
+        Optional<InputPredictionDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"user1@example.com");
 
-        assertThat(result).contains(new PredictionStatusDTO(2, 1));
+        assertThat(result).contains(new InputPredictionDTO(2, 1));
         verify(userService).findByEmail("user1@example.com");
         verify(predictionRepository).findByUserAndCompetition(user, competition);
     }
 
     @Test
     void currentUserPredictionStatusReturnsEmptyWhenUserHasNoPrediction() {
-        PredictionRepository predictionRepository = mock(PredictionRepository.class);
-        CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
-        UserService userService = mock(UserService.class);
-        PredictionService predictionService = new PredictionService(
-                predictionRepository, competitionRepository, userService);
         MyUser user = MyUser.builder().id(1L).email("user1@example.com").build();
         Competition competition = openCompetition();
 
@@ -109,19 +124,12 @@ class PredictionServiceTests {
         when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
         when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.empty());
 
-        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L, "user1@example.com");
+        Optional<InputPredictionDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L, "user1@example.com");
 
         assertThat(result).isEmpty();
         verify(userService).findByEmail("user1@example.com");
         verify(competitionRepository).findById(2L);
         verify(predictionRepository).findByUserAndCompetition(user, competition);
-    }
-
-    private PredictionService predictionService(PredictionRepository predictionRepository) {
-        return new PredictionService(
-                predictionRepository,
-                mock(CompetitionRepository.class),
-                mock(UserService.class));
     }
 
     private Competition openCompetition() {
@@ -130,6 +138,6 @@ class PredictionServiceTests {
                 .date(LocalDate.now().plusDays(1))
                 .time(LocalTime.NOON)
                 .build();
-    }*/
+    }
 
 }

@@ -3,6 +3,7 @@ package com.example.callthematch.restcontroller;
 import com.example.callthematch.advice.CompetitionValidatorAdvice;
 import com.example.callthematch.advice.GlobalExceptionAdvice;
 import com.example.callthematch.advice.RestErrorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.controller.StadiumRestController;
 import com.example.callthematch.dto.response.StadiumCapacityDTO;
 import com.example.callthematch.exception.StadiumNotFound;
@@ -25,7 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         controllers = StadiumRestController.class,
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
-                classes = {GlobalExceptionAdvice.class, CompetitionValidatorAdvice.class}))
+                classes = {
+                        GlobalExceptionAdvice.class,
+                        CompetitionValidatorAdvice.class,
+                        TeamValidatorAdvice.class
+                }))
 @Import(RestErrorAdvice.class)
 class StadiumRestControllerTests {
 
@@ -62,4 +67,3 @@ class StadiumRestControllerTests {
         Mockito.verify(stadiumService).findCapacityById(999L);
     }
 }
-

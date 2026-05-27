@@ -68,7 +68,7 @@ Nieuwe test `src/test/java/com/example/callthematch/controller/AccountController
 
 ### Acceptance Criteria
 
-- [ ] GET `/register` retourneert status 200, view `account/register`, model bevat `inputRegistrationDto`.
+- [ ] GET `/register` retourneert status 200, view `account/register`, model bevat `inputRegistrationDTO`.
 - [ ] GET `/login` retourneert status 200, view `account/login`.
 - [ ] POST `/register` met geldige data redirectt naar `/login`.
 - [ ] POST `/register` met ongeldige data retourneert view `account/register` met field errors.

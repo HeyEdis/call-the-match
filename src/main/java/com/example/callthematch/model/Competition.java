@@ -43,4 +43,5 @@ public class Competition {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
 }

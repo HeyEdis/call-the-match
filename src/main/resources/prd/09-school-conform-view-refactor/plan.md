@@ -83,7 +83,7 @@ Bring login and registration views in line with the school security and validati
 - [ ] `account/login.html` uses the email field name expected by Spring Security.
 - [ ] Login form includes CSRF.
 - [ ] Login error and logout messages use resource-bundle keys.
-- [ ] `account/register.html` binds to `inputRegistrationDto` with `th:object`.
+- [ ] `account/register.html` binds to `inputRegistrationDTO` with `th:object`.
 - [ ] Registration fields use `th:field`.
 - [ ] Registration validation errors are shown with `th:errors` near each field.
 - [ ] Register headings, labels, button text, legal/help text, and links use resource-bundle keys.
@@ -153,7 +153,7 @@ Refactor prediction list and prediction form templates. Preserve user-only predi
 - [ ] `prediction/list.html` displays predictions from backend-provided model data.
 - [ ] Prediction list links point to existing prediction form routes.
 - [ ] Empty prediction list state uses a resource-bundle key.
-- [ ] `prediction/form.html` binds to `inputPredictionDto` with `th:object`.
+- [ ] `prediction/form.html` binds to `inputPredictionDTO` with `th:object`.
 - [ ] Predicted score fields use `th:field`.
 - [ ] Field errors for predicted scores are shown with `th:errors`.
 - [ ] Match data on the form is display-only and contains no scoring/business logic.

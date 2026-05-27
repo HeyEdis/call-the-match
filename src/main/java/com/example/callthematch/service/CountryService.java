@@ -1,7 +1,6 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.response.CountryDTO;
-import com.example.callthematch.exception.CountryNotFound;
 import com.example.callthematch.model.Country;
 import com.example.callthematch.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +18,10 @@ public class CountryService {
         return new CountryDTO(c.getId(), c.getLandCode(), c.getName());
     }
 
-
-    private Country findCountryById(Long id)
-    {
-        return countryRepository.findById(id).orElseThrow(() -> new CountryNotFound(id));
-    }
-
-    public CountryDTO findById(Long id) {
-        return toDTO(findCountryById(id));
-    }
-
     public List<CountryDTO> getAllCountries() {
-        return countryRepository.findAll()
+        return countryRepository.findAllByOrderByNameAsc()
                 .stream()
-                .map(c -> toDTO(c))
+                .map(this::toDTO)
                 .toList();
     }
 }

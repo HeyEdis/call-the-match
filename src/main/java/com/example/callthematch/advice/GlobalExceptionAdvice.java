@@ -1,5 +1,6 @@
 package com.example.callthematch.advice;
 
+import com.example.callthematch.controller.*;
 import com.example.callthematch.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,7 +11,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {
+        AccountController.class,
+        CompetitionController.class,
+        HomeController.class,
+        LocaleController.class,
+        PredictionController.class,
+        TeamController.class
+})
 public class GlobalExceptionAdvice {
 
     @ExceptionHandler({
@@ -19,10 +27,8 @@ public class GlobalExceptionAdvice {
             TeamNotFound.class,
             StadiumNotFound.class,
             CountryNotFound.class,
-            UserNotFound.class,
             InviteCodeNotFound.class,
-            NoHandlerFoundException.class,
-            NoResourceFoundException.class
+            UserNotFound.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound() {
@@ -35,7 +41,7 @@ public class GlobalExceptionAdvice {
         return "error/403";
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleServerError() {
         return "error/500";

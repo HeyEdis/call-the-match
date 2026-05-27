@@ -27,8 +27,6 @@ class StadiumChecksumValidatorTests {
 
         ValidStadiumChecksum annotation = mock(ValidStadiumChecksum.class);
         when(annotation.divisor()).thenReturn(97);
-        when(annotation.codeMin()).thenReturn(1000);
-        when(annotation.codeMax()).thenReturn(9999);
         validator.initialize(annotation);
 
         context = mock(ConstraintValidatorContext.class);
@@ -38,6 +36,7 @@ class StadiumChecksumValidatorTests {
                 mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class);
 
         lenient().when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
+        lenient().when(context.getDefaultConstraintMessageTemplate()).thenReturn("{validator.stadiumChecksum}");
         lenient().when(builder.addPropertyNode(anyString())).thenReturn(nodeBuilder);
         lenient().when(nodeBuilder.addConstraintViolation()).thenReturn(context);
     }
@@ -80,4 +79,3 @@ class StadiumChecksumValidatorTests {
                 LocalDate.of(2026, 5, 20), LocalTime.NOON);
     }
 }
-

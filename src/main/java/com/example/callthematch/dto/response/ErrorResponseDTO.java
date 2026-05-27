@@ -1,6 +1,6 @@
 package com.example.callthematch.dto.response;
 
-public record ErrorResponse(
+public record ErrorResponseDTO(
         int status,
         String message,
         String timestamp) {

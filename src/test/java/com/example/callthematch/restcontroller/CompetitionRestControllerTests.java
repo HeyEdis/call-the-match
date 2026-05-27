@@ -3,6 +3,7 @@ package com.example.callthematch.restcontroller;
 import com.example.callthematch.advice.CompetitionValidatorAdvice;
 import com.example.callthematch.advice.GlobalExceptionAdvice;
 import com.example.callthematch.advice.RestErrorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.controller.CompetitionRestController;
 import com.example.callthematch.dto.response.MatchRestDTO;
 import com.example.callthematch.formatter.DateFormatter;
@@ -33,7 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         controllers = CompetitionRestController.class,
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
-                classes = {GlobalExceptionAdvice.class, CompetitionValidatorAdvice.class}))
+                classes = {
+                        GlobalExceptionAdvice.class,
+                        CompetitionValidatorAdvice.class,
+                        TeamValidatorAdvice.class
+                }))
 @Import(RestErrorAdvice.class)
 class CompetitionRestControllerTests {
 
@@ -63,7 +68,7 @@ class CompetitionRestControllerTests {
                         1)
         ));
 
-        mockMvc.perform(get("/api/matches").param("date", "2026-05-20"))
+        mockMvc.perform(get("/api/2026-05-20/matches"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -84,7 +89,7 @@ class CompetitionRestControllerTests {
         Mockito.when(dateFormatter.parse(eq("2026-05-20"), any(Locale.class))).thenReturn(MATCH_DATE);
         Mockito.when(competitionService.findRestMatchesByDate(MATCH_DATE)).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/matches").param("date", "2026-05-20"))
+        mockMvc.perform(get("/api/2026-05-20/matches"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
@@ -98,7 +103,7 @@ class CompetitionRestControllerTests {
         Mockito.when(dateFormatter.parse(eq("invalid"), any(Locale.class)))
                 .thenThrow(new DateTimeParseException("Invalid date", "invalid", 0));
 
-        mockMvc.perform(get("/api/matches").param("date", "invalid"))
+        mockMvc.perform(get("/api/invalid/matches"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.message").exists())
@@ -107,4 +112,3 @@ class CompetitionRestControllerTests {
         Mockito.verify(dateFormatter).parse(eq("invalid"), any(Locale.class));
     }
 }
-

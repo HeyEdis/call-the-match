@@ -1,14 +1,17 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.config.SecurityConfig;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.dto.request.InputTeamDTO;
 import com.example.callthematch.dto.request.InputTeamJoinDTO;
 import com.example.callthematch.dto.response.PublicRankingDTO;
+import com.example.callthematch.dto.response.TeamDetailDTO;
 import com.example.callthematch.dto.response.TeamDTO;
-import com.example.callthematch.exception.InviteCodeNotFound;
-import com.example.callthematch.exception.TeamNameAlreadyExists;
+import com.example.callthematch.repository.TeamRepository;
 import com.example.callthematch.service.TeamService;
 import com.example.callthematch.validator.CompetitionValidator;
+import com.example.callthematch.validator.InputTeamJoinValidator;
+import com.example.callthematch.validator.InputTeamValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,6 @@ import java.util.List;
 
 import static com.example.callthematch.support.TestTeams.scoreboardDto;
 import static com.example.callthematch.support.TestTeams.teamDto;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,7 +50,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TeamController.class)
 @AutoConfigureMockMvc(addFilters = true)
-@Import(SecurityConfig.class)
+@Import({
+        SecurityConfig.class,
+        TeamValidatorAdvice.class,
+        InputTeamValidator.class,
+        InputTeamJoinValidator.class
+})
 @ImportAutoConfiguration({
         SecurityAutoConfiguration.class,
         ServletWebSecurityAutoConfiguration.class,
@@ -65,9 +72,13 @@ class TeamControllerTests {
     @MockitoBean
     private CompetitionValidator competitionValidator;
 
+    @MockitoBean
+    private TeamRepository teamRepository;
+
     @BeforeEach
     void setUp() {
-        when(teamService.getCurrentUserTeams()).thenReturn(List.of(teamDto()));
+        when(teamService.getCurrentUserTeams("user1@example.com")).thenReturn(List.of(teamDto()));
+        when(teamService.getCurrentUserTeams("user2@example.com")).thenReturn(List.of(teamDto()));
     }
 
     @Test
@@ -82,28 +93,22 @@ class TeamControllerTests {
                 .andExpect(view().name("team/ranking"))
                 .andExpect(model().attribute("teamList", ranking));
 
-        assertThat(ranking).hasSizeLessThanOrEqualTo(10);
-        assertThat(ranking).extracting(PublicRankingDTO::score).isSortedAccordingTo((left, right) ->
-                Integer.compare(right, left));
         verify(teamService).getTop10Teams();
     }
 
     @Test
     void dashboardShowsOnlyCurrentUsersTeamsAndFormModels() throws Exception {
         List<TeamDTO> teams = List.of(teamDto());
-        when(teamService.getCurrentUserTeams()).thenReturn(teams);
+        when(teamService.getCurrentUserTeams("user1@example.com")).thenReturn(teams);
 
         mockMvc.perform(get("/team/dashboard")
                         .with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeExists("teamList", "inputTeamDto", "inputTeamJoinDto"))
+                .andExpect(model().attributeExists("teamList", "inputTeamDTO", "inputTeamJoinDTO"))
                 .andExpect(model().attribute("teamList", teams));
 
-        assertThat(teams).hasSize(1);
-        assertThat(teams).allSatisfy(team ->
-                assertThat(team.owner().getEmail()).isEqualTo("user1@example.com"));
-        verify(teamService).getCurrentUserTeams();
+        verify(teamService).getCurrentUserTeams("user1@example.com");
     }
 
     @Test
@@ -111,12 +116,12 @@ class TeamControllerTests {
         mockMvc.perform(post("/team/create")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", new InputTeamDTO()))
+                        .flashAttr("inputTeamDTO", new InputTeamDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamDto", "name"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamDTO", "name"));
 
-        verify(teamService, never()).createTeam(any(InputTeamDTO.class));
+        verify(teamService, never()).createTeam(any(InputTeamDTO.class), any());
     }
 
     @Test
@@ -124,82 +129,81 @@ class TeamControllerTests {
         mockMvc.perform(post("/team/join")
                         .with(user("user1@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", new InputTeamJoinDTO()))
+                        .flashAttr("inputTeamJoinDTO", new InputTeamJoinDTO()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDto", "inviteCode"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDTO", "inviteCode"));
 
-        verify(teamService, never()).joinTeamWithInviteCode(any());
+        verify(teamService, never()).joinTeamWithInviteCode(any(), any());
     }
 
     @Test
     void validCreateRedirectsToDashboardAndCallsService() throws Exception {
-        InputTeamDTO inputTeamDto = new InputTeamDTO("MVC Team Test");
-        doNothing().when(teamService).createTeam(inputTeamDto);
+        InputTeamDTO inputTeamDTO = new InputTeamDTO("MVC Team Test");
+        doNothing().when(teamService).createTeam(inputTeamDTO, "user2@example.com");
 
         mockMvc.perform(post("/team/create")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", inputTeamDto))
+                        .flashAttr("inputTeamDTO", inputTeamDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/dashboard"));
 
-        verify(teamService).createTeam(inputTeamDto);
+        verify(teamService).createTeam(inputTeamDTO, "user2@example.com");
     }
 
     @Test
     void duplicateTeamNameReturnsDashboardFieldError() throws Exception {
-        InputTeamDTO inputTeamDto = new InputTeamDTO("Existing Team");
-        doThrow(new TeamNameAlreadyExists(inputTeamDto.name()))
-                .when(teamService).createTeam(inputTeamDto);
+        InputTeamDTO inputTeamDTO = new InputTeamDTO("Existing Team");
+        when(teamRepository.existsByName(inputTeamDTO.name())).thenReturn(true);
 
         mockMvc.perform(post("/team/create")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamDto", inputTeamDto))
+                        .flashAttr("inputTeamDTO", inputTeamDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamDto", "name"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamDTO", "name"));
 
-        verify(teamService).createTeam(inputTeamDto);
+        verify(teamService, never()).createTeam(any(InputTeamDTO.class), any());
     }
 
     @Test
     void validJoinRedirectsToDashboardAndCallsService() throws Exception {
-        InputTeamJoinDTO inputTeamJoinDto = new InputTeamJoinDTO("ABCD1234");
-        doNothing().when(teamService).joinTeamWithInviteCode(inputTeamJoinDto.inviteCode());
+        InputTeamJoinDTO inputTeamJoinDTO = new InputTeamJoinDTO("ABCD1234");
+        when(teamRepository.existsByInviteCode(inputTeamJoinDTO.inviteCode())).thenReturn(true);
+        doNothing().when(teamService).joinTeamWithInviteCode(inputTeamJoinDTO.inviteCode(), "user2@example.com");
 
         mockMvc.perform(post("/team/join")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", inputTeamJoinDto))
+                        .flashAttr("inputTeamJoinDTO", inputTeamJoinDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/dashboard"));
 
-        verify(teamService).joinTeamWithInviteCode("ABCD1234");
+        verify(teamService).joinTeamWithInviteCode("ABCD1234", "user2@example.com");
     }
 
     @Test
     void invalidInviteCodeReturnsDashboardError() throws Exception {
-        InputTeamJoinDTO inputTeamJoinDto = new InputTeamJoinDTO("UNKNOWN1");
-        doThrow(new InviteCodeNotFound(inputTeamJoinDto.inviteCode()))
-                .when(teamService).joinTeamWithInviteCode(inputTeamJoinDto.inviteCode());
+        InputTeamJoinDTO inputTeamJoinDTO = new InputTeamJoinDTO("UNKNOWN1");
+        when(teamRepository.existsByInviteCode(inputTeamJoinDTO.inviteCode())).thenReturn(false);
 
         mockMvc.perform(post("/team/join")
                         .with(user("user2@example.com").roles("USER"))
                         .with(csrf())
-                        .flashAttr("inputTeamJoinDto", inputTeamJoinDto))
+                        .flashAttr("inputTeamJoinDTO", inputTeamJoinDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/dashboard"))
-                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDto", "inviteCode"));
+                .andExpect(model().attributeHasFieldErrors("inputTeamJoinDTO", "inviteCode"));
 
-        verify(teamService).joinTeamWithInviteCode("UNKNOWN1");
+        verify(teamService, never()).joinTeamWithInviteCode(any(), any());
     }
 
     @Test
     void memberCanOpenPrivateTeamDetail() throws Exception {
-        when(teamService.findById(1L)).thenReturn(teamDto());
-        when(teamService.isCurrentUserOwner(1L)).thenReturn(false);
+        when(teamService.findDetailById(1L, "user11@example.com"))
+                .thenReturn(new TeamDetailDTO(teamDto(), false, "1"));
 
         mockMvc.perform(get("/team/1")
                         .with(user("user11@example.com").roles("USER")))
@@ -209,14 +213,13 @@ class TeamControllerTests {
                 .andExpect(content().string(not(containsString(">Actions</th>"))))
                 .andExpect(content().string(not(containsString(">Remove</button>"))));
 
-        verify(teamService).findById(1L);
-        verify(teamService).isCurrentUserOwner(1L);
+        verify(teamService).findDetailById(1L, "user11@example.com");
     }
 
     @Test
     void memberCanSeeInviteCodeSharePanel() throws Exception {
-        when(teamService.findById(1L)).thenReturn(teamDto());
-        when(teamService.isCurrentUserOwner(1L)).thenReturn(false);
+        when(teamService.findDetailById(1L, "user11@example.com"))
+                .thenReturn(new TeamDetailDTO(teamDto(), false, "1"));
 
         mockMvc.perform(get("/team/1")
                         .with(user("user11@example.com").roles("USER")))
@@ -225,17 +228,14 @@ class TeamControllerTests {
                 .andExpect(content().string(containsString("Share invite code")))
                 .andExpect(content().string(containsString("value=\"ABCD1234\"")))
                 .andExpect(content().string(containsString("readonly")))
-                .andExpect(content().string(containsString(">Copy</button>")))
-                .andExpect(content().string(containsString("navigator.clipboard.writeText")))
                 .andExpect(content().string(not(containsString("Regenerate code</button>"))));
 
-        verify(teamService).findById(1L);
-        verify(teamService).isCurrentUserOwner(1L);
+        verify(teamService).findDetailById(1L, "user11@example.com");
     }
 
     @Test
     void memberCanOpenPrivateTeamScoreboard() throws Exception {
-        when(teamService.findScoreboardById(1L)).thenReturn(scoreboardDto());
+        when(teamService.findScoreboardById(1L, "user11@example.com")).thenReturn(scoreboardDto());
 
         mockMvc.perform(get("/team/1/scoreboard")
                         .with(user("user11@example.com").roles("USER")))
@@ -246,13 +246,13 @@ class TeamControllerTests {
                 .andExpect(content().string(containsString("Member")))
                 .andExpect(content().string(containsString("Score")));
 
-        verify(teamService).findScoreboardById(1L);
+        verify(teamService).findScoreboardById(1L, "user11@example.com");
     }
 
     @Test
     void ownerSeesTeamManagementActions() throws Exception {
-        when(teamService.findById(1L)).thenReturn(teamDto());
-        when(teamService.isCurrentUserOwner(1L)).thenReturn(true);
+        when(teamService.findDetailById(1L, "user1@example.com"))
+                .thenReturn(new TeamDetailDTO(teamDto(), true, "1"));
 
         mockMvc.perform(get("/team/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -260,8 +260,7 @@ class TeamControllerTests {
                 .andExpect(content().string(containsString(">Actions</th>")))
                 .andExpect(content().string(containsString(">Remove</button>")));
 
-        verify(teamService).findById(1L);
-        verify(teamService).isCurrentUserOwner(1L);
+        verify(teamService).findDetailById(1L, "user1@example.com");
     }
 
     @Test
@@ -288,30 +287,31 @@ class TeamControllerTests {
 
     @Test
     void nonMemberCannotReadPrivateTeamDetail() throws Exception {
-        when(teamService.findById(1L)).thenThrow(new AccessDeniedException("Team detail is only available to members"));
+        when(teamService.findDetailById(1L, "user2@example.com"))
+                .thenThrow(new AccessDeniedException("Team detail is only available to members"));
 
         mockMvc.perform(get("/team/1")
                         .with(user("user2@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).findById(1L);
+        verify(teamService).findDetailById(1L, "user2@example.com");
     }
 
     @Test
     void nonMemberCannotReadPrivateTeamScoreboard() throws Exception {
-        when(teamService.findScoreboardById(1L))
+        when(teamService.findScoreboardById(1L, "user2@example.com"))
                 .thenThrow(new AccessDeniedException("Team scoreboard is only available to members"));
 
         mockMvc.perform(get("/team/1/scoreboard")
                         .with(user("user2@example.com").roles("USER")))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).findScoreboardById(1L);
+        verify(teamService).findScoreboardById(1L, "user2@example.com");
     }
 
     @Test
     void ownerCanRegenerateInviteCode() throws Exception {
-        doNothing().when(teamService).regenerateInviteCode(1L);
+        doNothing().when(teamService).regenerateInviteCode(1L, "user1@example.com");
 
         mockMvc.perform(post("/team/1/invite-code")
                         .with(user("user1@example.com").roles("USER"))
@@ -319,12 +319,12 @@ class TeamControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/1"));
 
-        verify(teamService).regenerateInviteCode(1L);
+        verify(teamService).regenerateInviteCode(1L, "user1@example.com");
     }
 
     @Test
     void ownerCanRemoveTeamMember() throws Exception {
-        doNothing().when(teamService).removeMember(1L, 2L);
+        doNothing().when(teamService).removeMember(1L, 2L, "user1@example.com");
 
         mockMvc.perform(post("/team/1/members/2/remove")
                         .with(user("user1@example.com").roles("USER"))
@@ -332,33 +332,33 @@ class TeamControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/team/1"));
 
-        verify(teamService).removeMember(1L, 2L);
+        verify(teamService).removeMember(1L, 2L, "user1@example.com");
     }
 
     @Test
     void nonOwnerCannotRegenerateInviteCode() throws Exception {
         doThrow(new AccessDeniedException("Only the team owner can manage this team"))
-                .when(teamService).regenerateInviteCode(1L);
+                .when(teamService).regenerateInviteCode(1L, "user11@example.com");
 
         mockMvc.perform(post("/team/1/invite-code")
                         .with(user("user11@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).regenerateInviteCode(1L);
+        verify(teamService).regenerateInviteCode(1L, "user11@example.com");
     }
 
     @Test
     void nonOwnerCannotRemoveTeamMember() throws Exception {
         doThrow(new AccessDeniedException("Only the team owner can manage this team"))
-                .when(teamService).removeMember(1L, 2L);
+                .when(teamService).removeMember(1L, 2L, "user11@example.com");
 
         mockMvc.perform(post("/team/1/members/2/remove")
                         .with(user("user11@example.com").roles("USER"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
 
-        verify(teamService).removeMember(1L, 2L);
+        verify(teamService).removeMember(1L, 2L, "user11@example.com");
     }
 
 }

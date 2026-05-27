@@ -1,9 +1,10 @@
 package com.example.callthematch.controller;
 
+import com.example.callthematch.advice.CompetitionValidatorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputRegistrationDTO;
 import com.example.callthematch.service.UserService;
-import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -12,6 +13,8 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,7 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(AccountController.class)
+@WebMvcTest(
+        controllers = AccountController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {
+                        CompetitionValidatorAdvice.class,
+                        TeamValidatorAdvice.class
+                }))
 @AutoConfigureMockMvc(addFilters = true)
 @Import(SecurityConfig.class)
 @ImportAutoConfiguration({
@@ -43,15 +53,12 @@ class AccountControllerTests {
     @MockitoBean
     private UserService userService;
 
-    @MockitoBean
-    private CompetitionValidator competitionValidator;
-
     @Test
     void registerViewExists() throws Exception {
         mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
-                .andExpect(model().attributeExists("inputRegistrationDto"));
+                .andExpect(model().attributeExists("inputRegistrationDTO"));
     }
 
     @Test
@@ -63,7 +70,7 @@ class AccountControllerTests {
 
     @Test
     void validRegistrationRedirectsToLoginView() throws Exception {
-        InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
+        InputRegistrationDTO inputRegistrationDTO = new InputRegistrationDTO(
                 "Test",
                 "User",
                 "testuser_unique1",
@@ -72,16 +79,16 @@ class AccountControllerTests {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .flashAttr("inputRegistrationDto", inputRegistrationDto))
+                        .flashAttr("inputRegistrationDTO", inputRegistrationDTO))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"));
 
-        verify(userService).register(inputRegistrationDto);
+        verify(userService).register(inputRegistrationDTO);
     }
 
     @Test
     void invalidRegistrationReturnsRegisterViewWithFieldErrors() throws Exception {
-        InputRegistrationDTO inputRegistrationDto = new InputRegistrationDTO(
+        InputRegistrationDTO inputRegistrationDTO = new InputRegistrationDTO(
                 "",
                 "",
                 "",
@@ -90,11 +97,11 @@ class AccountControllerTests {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .flashAttr("inputRegistrationDto", inputRegistrationDto))
+                        .flashAttr("inputRegistrationDTO", inputRegistrationDTO))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/register"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputRegistrationDto",
+                        "inputRegistrationDTO",
                         "firstName", "lastName", "userName", "email", "password"));
 
         verify(userService, never()).register(any(InputRegistrationDTO.class));

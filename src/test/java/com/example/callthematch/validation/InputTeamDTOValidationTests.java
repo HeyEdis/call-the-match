@@ -19,6 +19,20 @@ class InputTeamDTOValidationTests {
     }
 
     @Test
+    void createTeamRejectsNullName() {
+        assertThat(validator.validate(new InputTeamDTO(null)))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("name");
+    }
+
+    @Test
+    void createTeamRejectsWhitespaceOnlyName() {
+        assertThat(validator.validate(new InputTeamDTO("   ")))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("name");
+    }
+
+    @Test
     void validTeamNameProducesNoViolations() {
         assertThat(validator.validate(new InputTeamDTO("Red Lions"))).isEmpty();
     }

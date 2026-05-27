@@ -1,10 +1,12 @@
 package com.example.callthematch.controller;
 
+import com.example.callthematch.advice.CompetitionValidatorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
+import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.PredictionService;
-import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -13,12 +15,16 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static com.example.callthematch.support.TestCompetitions.competitionDto;
-import static com.example.callthematch.support.TestPredictions.inputPredictionDto;
+import static com.example.callthematch.support.TestPredictions.inputPredictionDTO;
 import static com.example.callthematch.support.TestPredictions.predictionOverviewDtos;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -37,7 +43,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(PredictionController.class)
+@WebMvcTest(
+        controllers = PredictionController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {
+                        CompetitionValidatorAdvice.class,
+                        TeamValidatorAdvice.class
+                }))
 @AutoConfigureMockMvc(addFilters = true)
 @Import(SecurityConfig.class)
 @ImportAutoConfiguration({
@@ -54,11 +67,11 @@ class PredictionControllerTests {
     private PredictionService predictionService;
 
     @MockitoBean
-    private CompetitionValidator competitionValidator;
+    private CompetitionService competitionService;
 
     @Test
     void showsCurrentUserPredictions() throws Exception {
-        when(predictionService.getCurrentUserPredictions()).thenReturn(predictionOverviewDtos());
+        when(predictionService.getCurrentUserPredictions("user1@example.com")).thenReturn(predictionOverviewDtos());
 
         mockMvc.perform(get("/predictions").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
@@ -69,25 +82,25 @@ class PredictionControllerTests {
                 .andExpect(content().string(containsString("4 - 3")))
                 .andExpect(content().string(containsString("2 - 1")));
 
-        verify(predictionService).getCurrentUserPredictions();
+        verify(predictionService).getCurrentUserPredictions("user1@example.com");
     }
 
     @Test
     void predictionFormRendersMatchAndPrefillsExistingPrediction() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
-        when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDto());
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(false);
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(3L, "user1@example.com"))
+                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("prediction/form"))
-                .andExpect(model().attributeExists("competition", "inputPredictionDto"))
+                .andExpect(model().attributeExists("competition", "inputPredictionDTO"))
                 .andExpect(content().string(containsString("Belgium")))
                 .andExpect(content().string(containsString("Canada")))
                 .andExpect(content().string(containsString("value=\"2\"")));
 
-        verify(predictionService).findCompetitionDTOById(3L);
-        verify(predictionService).findCurrentUserInputByCompetitionId(3L);
+        verify(competitionService).findById(3L);
         verify(predictionService).isCutoffPassed(3L);
     }
 
@@ -106,7 +119,7 @@ class PredictionControllerTests {
 
     @Test
     void invalidPredictionReturnsFieldErrorsAndDoesNotSave() throws Exception {
-        when(predictionService.findCompetitionDTOById(5L)).thenReturn(competitionDto(5L));
+        when(competitionService.findById(5L)).thenReturn(competitionDto(5L));
         when(predictionService.isCutoffPassed(5L)).thenReturn(false);
 
         mockMvc.perform(post("/predictions/5")
@@ -116,14 +129,14 @@ class PredictionControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("prediction/form"))
                 .andExpect(model().attributeHasFieldErrors(
-                        "inputPredictionDto", "predictedScoreA", "predictedScoreB"));
+                        "inputPredictionDTO", "predictedScoreA", "predictedScoreB"));
 
-        verify(predictionService, never()).saveCurrentUserPrediction(any(), any(InputPredictionDTO.class));
+        verify(predictionService, never()).saveCurrentUserPrediction(any(), any(InputPredictionDTO.class), any());
     }
 
     @Test
     void validPredictionRedirectsAndCallsService() throws Exception {
-        when(predictionService.findCompetitionDTOById(5L)).thenReturn(competitionDto(5L));
+        when(competitionService.findById(5L)).thenReturn(competitionDto(5L));
         when(predictionService.isCutoffPassed(5L)).thenReturn(false);
 
         mockMvc.perform(post("/predictions/5")
@@ -134,13 +147,12 @@ class PredictionControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/competition/5"));
 
-        verify(predictionService).saveCurrentUserPrediction(5L, inputPredictionDto());
+        verify(predictionService).saveCurrentUserPrediction(5L, inputPredictionDTO(), "user1@example.com");
     }
 
     @Test
     void closedPredictionFormHidesFormAndShowsDeadlineMessage() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
-        when(predictionService.findCurrentUserInputByCompetitionId(3L)).thenReturn(inputPredictionDto());
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
@@ -152,10 +164,10 @@ class PredictionControllerTests {
 
     @Test
     void postToPastCutoffPredictionShowsCutoffError() throws Exception {
-        when(predictionService.findCompetitionDTOById(3L)).thenReturn(competitionDto(3L));
+        when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(true);
         doThrow(new PredictionCutoffPassed())
-                .when(predictionService).saveCurrentUserPrediction(3L, inputPredictionDto());
+                .when(predictionService).saveCurrentUserPrediction(3L, inputPredictionDTO(), "user1@example.com");
 
         mockMvc.perform(post("/predictions/3")
                         .with(user("user1@example.com").roles("USER"))
@@ -166,6 +178,6 @@ class PredictionControllerTests {
                 .andExpect(view().name("prediction/form"))
                 .andExpect(model().attributeExists("errorMessage"));
 
-        verify(predictionService).saveCurrentUserPrediction(3L, inputPredictionDto());
+        verify(predictionService).saveCurrentUserPrediction(3L, inputPredictionDTO(), "user1@example.com");
     }
 }

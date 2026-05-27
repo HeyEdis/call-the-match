@@ -14,12 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.Locale;
 
 @Controller
@@ -41,10 +41,14 @@ public class CompetitionController {
     }
 
     @GetMapping(value = "/{id}")
-    public String show(@PathVariable Long id, Model model) {
+    public String show(@PathVariable Long id, Model model, Principal principal) {
         model.addAttribute("competition", competitionService.findById(id));
-        predictionService.findCurrentUserPredictionStatusByCompetitionId(id)
-                .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
+
+        if (principal != null) {
+            predictionService.findPredictionStatusByCompetitionIdAndEmail(id, principal.getName())
+                    .ifPresent(prediction -> model.addAttribute("currentUserPrediction", prediction));
+        }
+
         return "competition/show";
     }
 
@@ -134,7 +138,7 @@ public class CompetitionController {
             return "competition/result";
         }
 
-        Long competitionId = competitionService.updateResult(id, inputCompetitionResultDTO);
+        Long competitionId = competitionService.updateOfficialResult(id, inputCompetitionResultDTO);
         log.info("Official result updated successfully for competition {}", competitionId);
 
         String successMessage =

@@ -1,10 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputTeamDTO;
-import com.example.callthematch.dto.response.PublicRankingDTO;
-import com.example.callthematch.dto.response.TeamDTO;
-import com.example.callthematch.dto.response.TeamMemberScoreDTO;
-import com.example.callthematch.dto.response.TeamScoreboardDTO;
+import com.example.callthematch.dto.response.*;
 import com.example.callthematch.exception.InviteCodeNotFound;
 import com.example.callthematch.exception.TeamNameAlreadyExists;
 import com.example.callthematch.exception.TeamNotFound;
@@ -17,9 +14,9 @@ import com.example.callthematch.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -55,8 +52,45 @@ public class TeamService {
         return teamRepository.findById(id).orElseThrow(() -> new TeamNotFound(id));
     }
 
-    public List<TeamDTO> getCurrentUserTeams() {
-        MyUser user = userService.getCurrentUser();
+    private void requireMembership(Team team, MyUser user) {
+        if (!teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
+            throw new AccessDeniedException("Team detail is only available to members");
+        }
+    }
+
+    private void requireOwner(Team team, MyUser user) {
+        if (!isOwner(team, user)) {
+            throw new AccessDeniedException("Only the team owner can manage this team");
+        }
+    }
+
+    private boolean isOwner(Team team, MyUser user) {
+        return team.getOwner().getId().equals(user.getId());
+    }
+
+    private String rankFor(Team team) {
+        if (team.getScore() == null) {
+            return "unknown";
+        }
+
+        long teamsAbove = teamRepository.countByScoreGreaterThan(team.getScore());
+        return String.valueOf(teamsAbove + 1);
+    }
+
+    public TeamDetailDTO findDetailById(Long id, String email) {
+        Team team = findTeamById(id);
+        MyUser user = userService.findByEmail(email);
+
+        requireMembership(team, user);
+
+        return new TeamDetailDTO(
+                toDTO(team),
+                isOwner(team, user),
+                rankFor(team));
+    }
+
+    public List<TeamDTO> getCurrentUserTeams(String email) {
+        MyUser user = userService.findByEmail(email);
 
         return teamMemberRepository.findAllByUserId(user.getId())
                 .stream()
@@ -66,47 +100,35 @@ public class TeamService {
     }
 
     public List<PublicRankingDTO> getTop10Teams() {
-        return teamRepository.findAll()
+        return teamRepository.findTop10ByOrderByScoreDesc()
                 .stream()
                 .map(this::toPublicRankingDTO)
-                .sorted(Comparator.comparing(PublicRankingDTO::score).reversed())
-                .limit(10)
                 .toList();
     }
 
-    public TeamDTO findById(Long id) {
+    public TeamDTO findById(Long id, String email) {
         Team team = findTeamById(id);
-        requireCurrentUserMembership(team);
+        MyUser user = userService.findByEmail(email);
+
+        requireMembership(team, user);
         return toDTO(team);
     }
 
-    public TeamScoreboardDTO findScoreboardById(Long id) {
+    public TeamScoreboardDTO findScoreboardById(Long id, String email) {
         Team team = findTeamById(id);
-        requireCurrentUserMembership(team);
+        MyUser user = userService.findByEmail(email);
+
+        requireMembership(team, user);
         return toScoreboardDTO(team);
     }
 
-    public String getTeamRank(Long id) {
-        Team team = findTeamById(id);
-        if (team.getScore() == null) {
-            return "unknown";
-        }
-        long teamsAbove = teamRepository.countByScoreGreaterThan(team.getScore());
-        return String.valueOf(teamsAbove + 1);
-    }
-
-    public boolean isCurrentUserOwner(Long id) {
-        Team team = findTeamById(id);
-        MyUser user = userService.getCurrentUser();
-        return team.getOwner().getId().equals(user.getId());
-    }
-
-    public void createTeam(InputTeamDTO inputTeamDTO) {
+    @Transactional
+    public void createTeam(InputTeamDTO inputTeamDTO, String email) {
         if (teamRepository.existsByName(inputTeamDTO.name())) {
             throw new TeamNameAlreadyExists(inputTeamDTO.name());
         }
 
-        MyUser owner = userService.getCurrentUser();
+        MyUser owner = userService.findByEmail(email);
         LocalDateTime createdAt = LocalDateTime.now();
         Team team = Team.builder()
                 .name(inputTeamDTO.name())
@@ -130,9 +152,11 @@ public class TeamService {
         teamMemberRepository.save(ownerMember);
     }
 
-    public void regenerateInviteCode(Long id) {
+    public void regenerateInviteCode(Long id, String email) {
         Team team = findTeamById(id);
-        requireCurrentUserOwner(team);
+        MyUser user = userService.findByEmail(email);
+
+        requireOwner(team, user);
 
         do {
             team.regenerateInviteCode();
@@ -141,9 +165,11 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-    public void removeMember(Long teamId, Long memberId) {
+    public void removeMember(Long teamId, Long memberId, String email) {
         Team team = findTeamById(teamId);
-        requireCurrentUserOwner(team);
+        MyUser user = userService.findByEmail(email);
+
+        requireOwner(team, user);
 
         TeamMember teamMember = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
                 .orElseThrow(() -> new AccessDeniedException("Team member not available"));
@@ -155,33 +181,17 @@ public class TeamService {
         teamMemberRepository.delete(teamMember);
     }
 
-    public void joinTeamWithInviteCode(String inviteCode) {
+    public void joinTeamWithInviteCode(String inviteCode, String email) {
         Team team = teamRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new InviteCodeNotFound(inviteCode));
 
-        MyUser user = userService.getCurrentUser();
+        MyUser user = userService.findByEmail(email);
 
         if (teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
             return;
         }
 
-        TeamMember teamMember = team.addMember(user);
-        teamMemberRepository.save(teamMember);
+        teamMemberRepository.save(team.addMember(user));
 
     }
-
-    private void requireCurrentUserMembership(Team team) {
-        MyUser user = userService.getCurrentUser();
-        if (!teamMemberRepository.existsTeamMembersByUserIdAndTeamId(user.getId(), team.getId())) {
-            throw new AccessDeniedException("Team detail is only available to members");
-        }
-    }
-
-    private void requireCurrentUserOwner(Team team) {
-        MyUser user = userService.getCurrentUser();
-        if (!team.getOwner().getId().equals(user.getId())) {
-            throw new AccessDeniedException("Only the team owner can manage this team");
-        }
-    }
-
 }

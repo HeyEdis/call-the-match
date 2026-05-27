@@ -10,7 +10,7 @@ public final class TestPredictions {
     private TestPredictions() {
     }
 
-    public static InputPredictionDTO inputPredictionDto() {
+    public static InputPredictionDTO inputPredictionDTO() {
         return new InputPredictionDTO(2, 1);
     }
 

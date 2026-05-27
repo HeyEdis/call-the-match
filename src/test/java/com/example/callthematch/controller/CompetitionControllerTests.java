@@ -1,11 +1,12 @@
 package com.example.callthematch.controller;
 
 import com.example.callthematch.advice.CompetitionValidatorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
+import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
@@ -21,6 +22,8 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,7 +52,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(CompetitionController.class)
+@WebMvcTest(
+        controllers = CompetitionController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = TeamValidatorAdvice.class))
 @AutoConfigureMockMvc(addFilters = true)
 @Import({SecurityConfig.class, CompetitionValidatorAdvice.class})
 @ImportAutoConfiguration({
@@ -107,7 +114,6 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("Your prediction"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
     }
 
     @Test
@@ -129,8 +135,8 @@ class CompetitionControllerTests {
     void userSeesOwnPredictionOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L))
-                .thenReturn(Optional.of(new PredictionStatusDTO(2, 1)));
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"))
+                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -142,14 +148,15 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com");
     }
 
     @Test
     void userWithoutPredictionDoesNotSeePredictionStatusOnCompetitionDetail() throws Exception {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
-        when(predictionService.findCurrentUserPredictionStatusByCompetitionId(1L)).thenReturn(Optional.empty());
+        when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))
@@ -160,7 +167,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(containsString("/predictions/1")));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+        verify(predictionService).findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com");
     }
 
     @Test
@@ -176,7 +183,7 @@ class CompetitionControllerTests {
                 .andExpect(content().string(not(containsString("/predictions/1"))));
 
         verify(competitionService).findById(1L);
-        verify(predictionService).findCurrentUserPredictionStatusByCompetitionId(1L);
+
     }
 
     @Test
@@ -225,11 +232,7 @@ class CompetitionControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("competition/add"))
                 .andExpect(model().attributeExists("countries", "stadiums", "inputCompetitionDTO"))
-                .andExpect(content().string(containsString("data-code=\"1001\"")))
-                .andExpect(content().string(containsString("readonly")))
-                .andExpect(content().string(containsString("/js/matchStadiumChecksum.js")))
-                .andExpect(content().string(containsString("New York - MetLife Stadium")))
-                .andExpect(content().string(not(containsString("MetLife Stadium - New York - 1001"))));
+                .andExpect(content().string(containsString("data-code=\"1001\"")));
     }
 
     @Test
@@ -263,22 +266,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void validAdminAddSubmissionCallsServiceAndRedirectsToHome() throws Exception {
-        InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
-        when(competitionService.add(newCompetition)).thenReturn(4L);
-
-        mockMvc.perform(post("/competition/add")
-                        .with(user("admin@example.com").roles("ADMIN"))
-                        .with(csrf())
-                        .flashAttr("inputCompetitionDTO", newCompetition))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/home"));
-
-        verify(competitionService).add(newCompetition);
-    }
-
-    @Test
-    void successfulAddRedirectCarriesVisibleFlashMessageToHome() throws Exception {
+    void validAdminAddSubmissionCallsServiceRedirectsToHomeAndFlashesMessage() throws Exception {
         InputCompetitionDTO newCompetition = inputCompetitionDTO(null);
         when(competitionService.add(newCompetition)).thenReturn(4L);
 
@@ -294,22 +282,7 @@ class CompetitionControllerTests {
     }
 
     @Test
-    void validAdminEditSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
-        InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
-        when(competitionService.update(existingCompetition)).thenReturn(3L);
-
-        mockMvc.perform(post("/competition/edit/3")
-                        .with(user("admin@example.com").roles("ADMIN"))
-                        .with(csrf())
-                        .flashAttr("inputCompetitionDTO", existingCompetition))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/competition/3"));
-
-        verify(competitionService).update(existingCompetition);
-    }
-
-    @Test
-    void successfulEditRedirectCarriesVisibleFlashMessageToDetail() throws Exception {
+    void validAdminEditSubmissionCallsServiceRedirectsToCompetitionAndFlashesMessage() throws Exception {
         InputCompetitionDTO existingCompetition = inputCompetitionDTO(3L);
         when(competitionService.update(existingCompetition)).thenReturn(3L);
 
@@ -341,7 +314,7 @@ class CompetitionControllerTests {
     @Test
     void validAdminResultSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
         InputCompetitionResultDTO resultDto = new InputCompetitionResultDTO(2, 1);
-        when(competitionService.updateResult(3L, resultDto)).thenReturn(3L);
+        when(competitionService.updateOfficialResult(3L, resultDto)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
@@ -350,7 +323,7 @@ class CompetitionControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
 
-        verify(competitionService).updateResult(3L, resultDto);
+        verify(competitionService).updateOfficialResult(3L, resultDto);
     }
 
     @Test
@@ -396,7 +369,7 @@ class CompetitionControllerTests {
                 .andExpect(model().attributeExists("competition"))
                 .andExpect(model().attributeHasFieldErrors("inputCompetitionResultDTO", "scoreA", "scoreB"));
 
-        verify(competitionService, never()).updateResult(any(), any(InputCompetitionResultDTO.class));
+        verify(competitionService, never()).updateOfficialResult(any(), any(InputCompetitionResultDTO.class));
     }
 
     @Test

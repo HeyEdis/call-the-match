@@ -27,7 +27,7 @@ Each iteration appends what was done, decisions made, files changed, verificatio
 
 - Task: Account Views
 - What changed: no template changes needed; existing login and registration views already match the task requirements.
-- Decisions made: avoided cosmetic churn after verifying that login uses `name="email"`, login includes CSRF, register binds to `inputRegistrationDto`, registration fields use `th:field`, field errors use `th:errors`, and account text uses resource-bundle keys.
+- Decisions made: avoided cosmetic churn after verifying that login uses `name="email"`, login includes CSRF, register binds to `inputRegistrationDTO`, registration fields use `th:field`, field errors use `th:errors`, and account text uses resource-bundle keys.
 - Files changed: `src/main/resources/plan/09-school-conform-view-refactor/plan.json`, `src/main/resources/ralph/09-school-conform-view-refactor/progress.md`.
 - Verification: `.\mvnw.cmd '-Dtest=AccountControllerTests,AccessSecurityTests' test` passed with 18 tests.
 - Result: acceptance criteria verified; marked `passes` true.

@@ -60,9 +60,9 @@
     {
       "id": "account-controller-tests",
       "title": "MVC Controller Tests – AccountController (nieuw)",
-      "description": "Create src/test/java/com/example/callthematch/controller/AccountControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /register (status 200, view account/register, model has inputRegistrationDto), GET /login (status 200, view account/login), POST /register with valid data (redirect to login), POST /register with invalid data (returns view account/register with field errors), POST /register without CSRF token (403).",
+      "description": "Create src/test/java/com/example/callthematch/controller/AccountControllerTests.java using @SpringBootTest + @AutoConfigureMockMvc. Test GET /register (status 200, view account/register, model has inputRegistrationDTO), GET /login (status 200, view account/login), POST /register with valid data (redirect to login), POST /register with invalid data (returns view account/register with field errors), POST /register without CSRF token (403).",
       "acceptance_criteria": [
-        "GET /register returns status 200 with view name account/register and model attribute inputRegistrationDto",
+        "GET /register returns status 200 with view name account/register and model attribute inputRegistrationDTO",
         "GET /login returns status 200 with view name account/login",
         "POST /register with valid params redirects to login or success page",
         "POST /register with blank/invalid params returns view account/register with field errors",

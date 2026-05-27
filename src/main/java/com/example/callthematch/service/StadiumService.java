@@ -1,11 +1,8 @@
 package com.example.callthematch.service;
 
-import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.StadiumCapacityDTO;
 import com.example.callthematch.dto.response.StadiumDTO;
-import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.StadiumNotFound;
-import com.example.callthematch.model.Competition;
 import com.example.callthematch.model.Stadium;
 import com.example.callthematch.repository.StadiumRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,27 +20,23 @@ public class StadiumService {
         return new StadiumDTO(s.getId(), s.getLocation(),s.getName(),s.getCode(),s.getCapacity());
     }
 
-    private StadiumCapacityDTO toCapacityDTO(Stadium s) {
-        return new StadiumCapacityDTO(s.getId(), s.getName(), s.getCapacity());
-    }
-
-    private Stadium findStadiumById(Long id)
+    private Stadium findById(Long id)
     {
         return stadiumRepository.findById(id).orElseThrow(() -> new StadiumNotFound(id));
     }
 
-    public StadiumDTO findById(Long id) {
-        return toDTO(findStadiumById(id));
+    private StadiumCapacityDTO toCapacityDTO(Stadium s) {
+        return new StadiumCapacityDTO(s.getName(),s.getCapacity());
     }
 
     public StadiumCapacityDTO findCapacityById(Long id) {
-        return toCapacityDTO(findStadiumById(id));
+        return toCapacityDTO(findById(id));
     }
 
     public List<StadiumDTO> getAllStadiums() {
-        return stadiumRepository.findAll()
+        return stadiumRepository.findAllByOrderByNameAsc()
                 .stream()
-                .map(s -> toDTO(s))
+                .map(this::toDTO)
                 .toList();
     }
 }

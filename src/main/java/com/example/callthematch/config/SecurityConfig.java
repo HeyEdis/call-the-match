@@ -3,6 +3,8 @@ package com.example.callthematch.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -10,8 +12,14 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(requests -> requests
+        http
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/competition",
                                 "/competition/add",
@@ -25,31 +33,28 @@ public class SecurityConfig {
                                 "/login**",
                                 "/register**",
                                 "/css/**",
+                                "/js/**",
                                 "/api/**",
-                                "/error/**"
+                                "/403**",
+                                "/404**",
+                                "/500**"
                         ).permitAll()
-                        .requestMatchers("/predictions/**", "/team/*/scoreboard", "/team/**").hasRole("USER")
-                        .anyRequest().permitAll())
+                        .requestMatchers(
+                                "/predictions/**",
+                                "/team/*/scoreboard",
+                                "/team/**").hasRole("USER")
+                        .anyRequest().hasRole("USER"))
                 .formLogin(login -> login
                         .loginPage("/login")
+                        .defaultSuccessUrl("/home", true)
                         .usernameParameter("email")
-                        .successHandler(roleBasedSuccessHandler())
+                        .passwordParameter("password")
                         .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll())
-                .exceptionHandling(handling -> handling
-                        .accessDeniedHandler((request, response, ex) -> response.sendError(403)));
+                .exceptionHandling(handler -> handler
+                        .accessDeniedHandler((request, response, ex) -> response.sendError(403))
+                )
+                .logout(logout -> logout.permitAll());
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler roleBasedSuccessHandler() {
-        return (request, response, authentication) -> {
-            boolean isAdmin = authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-            response.sendRedirect(isAdmin ? "/competition" : "/home");
-        };
     }
 }

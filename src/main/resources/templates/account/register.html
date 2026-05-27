@@ -15,7 +15,7 @@
     <section class="signin-panel register-panel">
         <h1 th:text="#{register.createAccount}"></h1>
 
-        <form class="signin-form" th:action="@{/register}" th:object="${inputRegistrationDto}" method="post">
+        <form class="signin-form" th:action="@{/register}" th:object="${inputRegistrationDTO}" method="post">
             <p class="signin-field">
                 <label for="firstName" th:text="#{label.account.firstName}"></label>
                 <input id="firstName" type="text" th:field="*{firstName}" autocomplete="given-name"/>

@@ -1,9 +1,7 @@
 package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
-import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.dto.response.PredictionOverviewDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
@@ -12,8 +10,6 @@ import com.example.callthematch.model.Prediction;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.PredictionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +24,12 @@ public class PredictionService {
     private final CompetitionRepository competitionRepository;
     private final UserService userService;
 
+    private InputPredictionDTO toStatusDTO(Prediction prediction) {
+        return new InputPredictionDTO(
+                prediction.getPredictedScoreA(),
+                prediction.getPredictedScoreB());
+    }
+
     private PredictionOverviewDTO toOverviewDTO(Prediction prediction) {
         Competition competition = prediction.getCompetition();
         return new PredictionOverviewDTO(
@@ -40,54 +42,28 @@ public class PredictionService {
                 prediction.getPredictedScoreB());
     }
 
-    public List<PredictionOverviewDTO> getCurrentUserPredictions() {
-        MyUser user = userService.getCurrentUser();
+    private Competition findCompetitionById(Long id) {
+        return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
+    }
+
+    public List<PredictionOverviewDTO> getCurrentUserPredictions(String email) {
+        MyUser user = userService.findByEmail(email);
         return predictionRepository.findAllByUserOrderByCompetitionDateAscCompetitionTimeAsc(user)
                 .stream()
                 .map(this::toOverviewDTO)
                 .toList();
     }
 
-    public CompetitionDTO findCompetitionDTOById(Long competitionId) {
-        Competition competition = findCompetitionById(competitionId);
-        return new CompetitionDTO(
-                competition.getId(),
-                competition.getTeamA(),
-                competition.getTeamB(),
-                competition.getStadium(),
-                competition.getScoreA(),
-                competition.getScoreB(),
-                competition.getDate(),
-                competition.getTime());
-    }
-
-    public InputPredictionDTO findCurrentUserInputByCompetitionId(Long competitionId) {
-        MyUser user = userService.getCurrentUser();
+    public Optional<InputPredictionDTO> findPredictionStatusByCompetitionIdAndEmail(Long competitionId, String email) {
+        MyUser user = userService.findByEmail(email);
         Competition competition = findCompetitionById(competitionId);
 
         return predictionRepository.findByUserAndCompetition(user, competition)
-                .map(prediction -> new InputPredictionDTO(
-                        prediction.getPredictedScoreA(),
-                        prediction.getPredictedScoreB()))
-                .orElseGet(InputPredictionDTO::new);
+                .map(this::toStatusDTO);
     }
 
-    public Optional<PredictionStatusDTO> findCurrentUserPredictionStatusByCompetitionId(Long competitionId) {
-        if (!isCurrentUser()) {
-            return Optional.empty();
-        }
-
-        MyUser user = userService.getCurrentUser();
-        Competition competition = findCompetitionById(competitionId);
-
-        return predictionRepository.findByUserAndCompetition(user, competition)
-                .map(prediction -> new PredictionStatusDTO(
-                        prediction.getPredictedScoreA(),
-                        prediction.getPredictedScoreB()));
-    }
-
-    public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto) {
-        MyUser user = userService.getCurrentUser();
+    public void saveCurrentUserPrediction(Long competitionId, InputPredictionDTO dto, String email) {
+        MyUser user = userService.findByEmail(email);
         Competition competition = findCompetitionById(competitionId);
 
         savePrediction(user, competition, dto);
@@ -118,17 +94,5 @@ public class PredictionService {
     private boolean isCutoffPassed(Competition competition) {
         LocalDateTime kickoff = LocalDateTime.of(competition.getDate(), competition.getTime());
         return !LocalDateTime.now().isBefore(kickoff.minusHours(1));
-    }
-
-    private boolean isCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null
-                && authentication.isAuthenticated()
-                && authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
-    }
-
-    private Competition findCompetitionById(Long id) {
-        return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
     }
 }

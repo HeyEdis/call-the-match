@@ -1,0 +1,167 @@
+{
+  "sources": [
+    {
+      "url": "src/main/resources/prd/11-validation-tests-audit-prd.md",
+      "description": "PRD for cleaning up and strengthening the validation test package after the validation-tests audit."
+    },
+    {
+      "url": "src/main/resources/prd/11-validation-tests-audit/plan.md",
+      "description": "Approved Markdown implementation plan for the validation tests audit cleanup."
+    },
+    {
+      "url": "src/main/resources/handoff/validation-tests-audit-handoff.md",
+      "description": "Handoff containing the validation test audit findings, verification command, and recommended cleanup sequence."
+    },
+    {
+      "url": "src/test/java/com/example/callthematch/validation",
+      "description": "Existing validation tests for DTO annotations, Spring validator classes, and the custom stadium checksum validator."
+    },
+    {
+      "url": "src/main/java/com/example/callthematch/dto/request",
+      "description": "Request DTOs whose Jakarta validation annotations are covered by the validation tests."
+    },
+    {
+      "url": "src/main/java/com/example/callthematch/validator",
+      "description": "Custom Spring validators and the custom stadium checksum annotation/validator."
+    },
+    {
+      "url": "src/main/resources/i18n/messages.properties",
+      "description": "Default resource bundle containing validation and validator message keys."
+    },
+    {
+      "url": "src/main/resources/i18n/messages_nl.properties",
+      "description": "Dutch resource bundle containing validation and validator message keys."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/SKILL.md",
+      "description": "Project guidelines for HOGENT EWD school conventions."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/validation-i18n-exceptions.md",
+      "description": "Local guidance for DTO validation, custom annotations, validator classes, resource bundles, and error handling."
+    },
+    {
+      "url": ".agents/skills/project-guidelines/references/testing.md",
+      "description": "Local testing guidance for validation tests, including Jakarta Validator and BeanPropertyBindingResult patterns."
+    },
+    {
+      "url": "src/main/resources/prd/06-testing-prd.md",
+      "description": "Existing testing PRD describing the required school test categories."
+    },
+    {
+      "url": "src/main/resources/prd/08-school-conform-test-refactor-prd.md",
+      "description": "Broader school-conform test refactor PRD that this narrower validation audit plan complements."
+    },
+    {
+      "url": "local://Notes/13-03-26-Validation.md",
+      "description": "Lesson note cited by the handoff for DTO validation, BindingResult flow, and avoiding hardcoded validation messages."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation/src/test/java/com/example/spring_boot_validation/dto/request/InputRegistrationDTOTest.java",
+      "description": "School-style DTO annotation validation test example using a Jakarta Validator."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation/src/test/java/com/example/spring_boot_validation/validator/RegistrationValidatorTest.java",
+      "description": "School-style Spring Validator test example using BeanPropertyBindingResult."
+    },
+    {
+      "url": "local://WorkspacesIntelij/EWDJ_Spring/Spring_validatie/Spring_Boot_Validation/src/main/java/com/example/spring_boot_validation/validator/ValidPasswords.java",
+      "description": "School-style custom annotation example with Constraint, message, groups, and payload."
+    },
+    {
+      "url": "https://github.com/HeyEdis/call-the-match.git",
+      "description": "Git repository for the call-the-match project."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "fix-checksum-message-key",
+      "title": "Fix Checksum Validator Message Key",
+      "description": "Update the direct custom checksum validator test so its mocked default constraint message template matches the real annotation message key. Keep this as a narrow test-evidence cleanup for StadiumChecksumValidatorTests: the custom validator behavior should not change, and the test should continue to prove valid checksum, invalid checksum, null input, and null relevant field behavior.",
+      "acceptance_criteria": [
+        "StadiumChecksumValidatorTests uses {validator.stadiumChecksum} as the mocked default constraint message template",
+        "The stale {competition.checksum.valid} message key is no longer used as the checksum validator default message template in the test",
+        "Existing checksum validator behavior tests still pass",
+        "No production validator or annotation behavior is changed",
+        "The test remains direct coverage for the required custom annotation and custom validator validation category"
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": "add-competition-validator-edge-cases",
+      "title": "Add Competition Validator Edge-Case Tests",
+      "description": "Extend CompetitionValidatorTests with missing Spring validator class coverage. Keep the tests at the validator layer using BeanPropertyBindingResult, mocked repositories, and existing DTO fixtures where practical. Cover the match date upper bound, null input safety, repository skip behavior for incomplete stadium/time data, update-aware conflict lookup, and a valid no-error case.",
+      "acceptance_criteria": [
+        "A date after 6 June 2026 rejects field date through CompetitionValidatorTests",
+        "A null date does not throw and leaves required-field validation to DTO annotations",
+        "Null stadium, date, or time skips the stadium/time conflict repository lookup",
+        "An existing-match DTO with an id uses the update-aware conflict repository lookup instead of the create lookup",
+        "A valid competition input produces no custom validator field errors",
+        "Tests use BeanPropertyBindingResult for Spring Validator coverage",
+        "Tests assert field-level behavior and repository interactions only where those interactions prove validator responsibility"
+      ],
+      "priority": 2,
+      "passes": true
+    },
+    {
+      "id": "add-competition-dto-numeric-validation",
+      "title": "Add Competition DTO Numeric Annotation Tests",
+      "description": "Add missing InputCompetitionDTOValidationTests for annotation-owned numeric constraints. Use a Jakarta Validator, not Spring Validator or repository mocks, so these tests remain clean evidence for existing annotation validation on the competition request DTO.",
+      "acceptance_criteria": [
+        "Negative stadiumCode rejects through Jakarta annotation validation",
+        "Negative checksum rejects through Jakarta annotation validation",
+        "Existing class-level stadium checksum validation remains covered through normal Jakarta validation",
+        "Tests make the failing field or violation path clear enough to defend",
+        "No Spring Validator or repository mocking is introduced in InputCompetitionDTOValidationTests"
+      ],
+      "priority": 3,
+      "passes": true
+    },
+    {
+      "id": "expand-registration-dto-validation",
+      "title": "Expand Registration DTO Validation Tests",
+      "description": "Make registration DTO annotation coverage more explicit for required login data. Add or clarify focused InputRegistrationDTOValidationTests for blank password, blank email, invalid email, and valid registration behavior while keeping the tests at the DTO-level Jakarta validation layer.",
+      "acceptance_criteria": [
+        "Blank password is rejected as a clear registration DTO validation case",
+        "Blank email is rejected as a clear registration DTO validation case",
+        "Invalid email is rejected if this is not already clearly covered",
+        "Existing valid registration DTO coverage remains",
+        "Tests use Jakarta Validator for existing annotation validation coverage",
+        "Tests do not hardcode user-facing validation message text"
+      ],
+      "priority": 4,
+      "passes": true
+    },
+    {
+      "id": "expand-team-invite-dto-validation",
+      "title": "Expand Team And Invite DTO Validation Tests",
+      "description": "Add missing null and whitespace-only DTO validation cases for team creation and team joining. Keep the tests as Jakarta Validator annotation coverage, and use parameterized tests only if they keep the expected failing field obvious and the test shorter.",
+      "acceptance_criteria": [
+        "InputTeamDTOValidationTests rejects null team name",
+        "InputTeamDTOValidationTests rejects whitespace-only team name",
+        "InputTeamJoinDTOValidationTests rejects null invite code",
+        "InputTeamJoinDTOValidationTests rejects whitespace-only invite code",
+        "Existing valid DTO cases remain",
+        "Parameterized tests are used only if they improve readability and keep the expected failing field obvious"
+      ],
+      "priority": 5,
+      "passes": true
+    },
+    {
+      "id": "verify-validation-suite",
+      "title": "Verify Validation Test Suite",
+      "description": "Run the narrow validation test command after the cleanup and resolve failures only within the validation-test scope. Confirm that DTO annotation tests, Spring validator class tests, and custom annotation/custom validator coverage all remain present and school-conform.",
+      "acceptance_criteria": [
+        "The command .\\mvnw.cmd -q \"-Dtest=*ValidationTests,*ValidatorTests\" test is run after the validation test cleanup",
+        "All DTO annotation validation tests pass",
+        "All Spring validator class tests pass",
+        "Custom annotation and custom validator coverage remains present",
+        "No controller, security, REST, WebClient, service, or unrelated test cleanup is introduced by this task",
+        "Any remaining risk or intentionally skipped optional validation test is documented before closing the task"
+      ],
+      "priority": 6,
+      "passes": true
+    }
+  ]
+}

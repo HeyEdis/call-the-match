@@ -2,7 +2,6 @@ package com.example.callthematch.controller;
 
 import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputPredictionDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.PredictionService;
@@ -92,7 +91,7 @@ class PredictionControllerTests {
         when(competitionService.findById(3L)).thenReturn(competitionDto(3L));
         when(predictionService.isCutoffPassed(3L)).thenReturn(false);
         when(predictionService.findPredictionStatusByCompetitionIdAndEmail(3L, "user1@example.com"))
-                .thenReturn(Optional.of(new PredictionStatusDTO(2, 1)));
+                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
 
         mockMvc.perform(get("/predictions/3").with(user("user1@example.com").roles("USER")))
                 .andExpect(status().isOk())

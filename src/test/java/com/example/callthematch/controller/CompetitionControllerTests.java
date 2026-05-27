@@ -5,7 +5,7 @@ import com.example.callthematch.config.SecurityConfig;
 import com.example.callthematch.dto.request.InputCompetitionDTO;
 import com.example.callthematch.dto.request.InputCompetitionResultDTO;
 import com.example.callthematch.dto.response.CompetitionDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
+import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.service.CompetitionService;
 import com.example.callthematch.service.CountryService;
@@ -129,7 +129,7 @@ class CompetitionControllerTests {
         CompetitionDTO competition = competitionDto(1L);
         when(competitionService.findById(1L)).thenReturn(competition);
         when(predictionService.findPredictionStatusByCompetitionIdAndEmail(1L, "user1@example.com"))
-                .thenReturn(Optional.of(new PredictionStatusDTO(2, 1)));
+                .thenReturn(Optional.of(new InputPredictionDTO(2, 1)));
 
         mockMvc.perform(get("/competition/1")
                         .with(user("user1@example.com").roles("USER")))

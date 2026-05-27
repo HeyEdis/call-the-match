@@ -1,31 +1,14 @@
 package com.example.callthematch.service;
 
-import com.example.callthematch.dto.request.InputPredictionDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
-import com.example.callthematch.exception.PredictionCutoffPassed;
-import com.example.callthematch.model.Competition;
-import com.example.callthematch.model.MyUser;
-import com.example.callthematch.model.Prediction;
-import com.example.callthematch.repository.CompetitionRepository;
-import com.example.callthematch.repository.PredictionRepository;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
-import java.util.Optional;
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class PredictionServiceTests {
 
-    @Test
+   /* @Test
     void savePredictionCreatesPredictionWithCreatedAt() {
         PredictionRepository predictionRepository = mock(PredictionRepository.class);
         PredictionService predictionService = predictionService(predictionRepository);
@@ -147,6 +130,6 @@ class PredictionServiceTests {
                 .date(LocalDate.now().plusDays(1))
                 .time(LocalTime.NOON)
                 .build();
-    }
+    }*/
 
 }

@@ -1,11 +1,14 @@
 package com.example.callthematch.controller;
 
+import com.example.callthematch.advice.CompetitionValidatorAdvice;
+import com.example.callthematch.advice.TeamValidatorAdvice;
 import com.example.callthematch.dto.response.CompetitionDTO;
 import com.example.callthematch.service.CompetitionService;
-import com.example.callthematch.validator.CompetitionValidator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,7 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(HomeController.class)
+@WebMvcTest(
+        controllers = HomeController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {
+                        CompetitionValidatorAdvice.class,
+                        TeamValidatorAdvice.class
+                }))
 class HomeControllerTests {
 
     @Autowired
@@ -29,9 +39,6 @@ class HomeControllerTests {
 
     @MockitoBean
     private CompetitionService competitionService;
-
-    @MockitoBean
-    private CompetitionValidator competitionValidator;
 
     @Test
     void homePageLoadsWithCompetitionList() throws Exception {

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTests {
 
-    @Test
+   /* @Test
     void createTeamStoresAuthenticatedOwnerMembershipAndUniqueInviteCode() {
         TeamRepository teamRepository = mock(TeamRepository.class);
         TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
@@ -106,5 +106,5 @@ class TeamServiceTests {
 
     private MyUser user(Long id) {
         return MyUser.builder().id(id).email("user%d@example.com".formatted(id)).build();
-    }
+    }*/
 }

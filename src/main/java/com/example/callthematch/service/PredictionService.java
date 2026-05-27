@@ -2,7 +2,6 @@ package com.example.callthematch.service;
 
 import com.example.callthematch.dto.request.InputPredictionDTO;
 import com.example.callthematch.dto.response.PredictionOverviewDTO;
-import com.example.callthematch.dto.response.PredictionStatusDTO;
 import com.example.callthematch.exception.CompetitionNotFound;
 import com.example.callthematch.exception.PredictionCutoffPassed;
 import com.example.callthematch.model.Competition;
@@ -25,8 +24,8 @@ public class PredictionService {
     private final CompetitionRepository competitionRepository;
     private final UserService userService;
 
-    private PredictionStatusDTO toStatusDTO(Prediction prediction) {
-        return new PredictionStatusDTO(
+    private InputPredictionDTO toStatusDTO(Prediction prediction) {
+        return new InputPredictionDTO(
                 prediction.getPredictedScoreA(),
                 prediction.getPredictedScoreB());
     }
@@ -55,7 +54,7 @@ public class PredictionService {
                 .toList();
     }
 
-    public Optional<PredictionStatusDTO> findPredictionStatusByCompetitionIdAndEmail(Long competitionId, String email) {
+    public Optional<InputPredictionDTO> findPredictionStatusByCompetitionIdAndEmail(Long competitionId, String email) {
         MyUser user = userService.findByEmail(email);
         Competition competition = findCompetitionById(competitionId);
 

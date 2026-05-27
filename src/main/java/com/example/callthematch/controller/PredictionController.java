@@ -38,7 +38,8 @@ public class PredictionController {
     public String form(@PathVariable Long competitionId, Model model, Principal principal) {
         model.addAttribute("competition", competitionService.findById(competitionId));
         model.addAttribute("cutoffPassed", predictionService.isCutoffPassed(competitionId));
-        model.addAttribute("inputPredictionDTO", predictionService.findPredictionStatusByCompetitionIdAndEmail(competitionId, principal.getName()));
+        model.addAttribute("inputPredictionDTO", predictionService.findPredictionStatusByCompetitionIdAndEmail(competitionId, principal.getName())
+                .orElseGet(InputPredictionDTO::new));
         return "prediction/form";
     }
 

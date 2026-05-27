@@ -61,6 +61,21 @@ public class CompetitionService {
         return new InputCompetitionResultDTO(c.getScoreA(), c.getScoreB());
     }
 
+    private Country findCountryById(Long id) {
+        return countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFound(id));
+    }
+
+    private Stadium findStadiumById(Long id) {
+        return stadiumRepository.findById(id)
+                .orElseThrow(() -> new StadiumNotFound(id));
+    }
+
+    private Competition findCompetitionById(Long id) {
+        return competitionRepository.findById(id)
+                .orElseThrow(() -> new CompetitionNotFound(id));
+    }
+
     public List<CompetitionDTO> getAllCompetitions() {
         return competitionRepository.findAllByOrderByDateAscTimeAsc()
                 .stream()
@@ -128,20 +143,5 @@ public class CompetitionService {
         Competition savedCompetition = competitionRepository.save(competition);
         teamMemberService.recalculateScoresAfterResult(savedCompetition);
         return savedCompetition.getId();
-    }
-
-    private Country findCountryById(Long id) {
-        return countryRepository.findById(id)
-                .orElseThrow(() -> new CountryNotFound(id));
-    }
-
-    private Stadium findStadiumById(Long id) {
-        return stadiumRepository.findById(id)
-                .orElseThrow(() -> new StadiumNotFound(id));
-    }
-
-    private Competition findCompetitionById(Long id) {
-        return competitionRepository.findById(id)
-                .orElseThrow(() -> new CompetitionNotFound(id));
     }
 }

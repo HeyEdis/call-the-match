@@ -19,20 +19,10 @@ public class CountryService {
         return new CountryDTO(c.getId(), c.getLandCode(), c.getName());
     }
 
-
-    private Country findCountryById(Long id)
-    {
-        return countryRepository.findById(id).orElseThrow(() -> new CountryNotFound(id));
-    }
-
-    public CountryDTO findById(Long id) {
-        return toDTO(findCountryById(id));
-    }
-
     public List<CountryDTO> getAllCountries() {
         return countryRepository.findAll()
                 .stream()
-                .map(c -> toDTO(c))
+                .map(this::toDTO)
                 .toList();
     }
 }

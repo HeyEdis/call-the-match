@@ -341,7 +341,7 @@ class CompetitionControllerTests {
     @Test
     void validAdminResultSubmissionCallsServiceAndRedirectsToCompetition() throws Exception {
         InputCompetitionResultDTO resultDto = new InputCompetitionResultDTO(2, 1);
-        when(competitionService.updateResult(3L, resultDto)).thenReturn(3L);
+        when(competitionService.updateOfficialResult(3L, resultDto)).thenReturn(3L);
 
         mockMvc.perform(post("/competition/3/result")
                         .with(user("admin@example.com").roles("ADMIN"))
@@ -350,7 +350,7 @@ class CompetitionControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/competition/3"));
 
-        verify(competitionService).updateResult(3L, resultDto);
+        verify(competitionService).updateOfficialResult(3L, resultDto);
     }
 
     @Test
@@ -396,7 +396,7 @@ class CompetitionControllerTests {
                 .andExpect(model().attributeExists("competition"))
                 .andExpect(model().attributeHasFieldErrors("inputCompetitionResultDTO", "scoreA", "scoreB"));
 
-        verify(competitionService, never()).updateResult(any(), any(InputCompetitionResultDTO.class));
+        verify(competitionService, never()).updateOfficialResult(any(), any(InputCompetitionResultDTO.class));
     }
 
     @Test

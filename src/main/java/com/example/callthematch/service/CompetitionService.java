@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -62,25 +61,17 @@ public class CompetitionService {
         return new InputCompetitionResultDTO(c.getScoreA(), c.getScoreB());
     }
 
-    private Competition findCompetitionById(Long id)
-    {
-        return competitionRepository.findById(id).orElseThrow(() -> new CompetitionNotFound(id));
-    }
-
     public List<CompetitionDTO> getAllCompetitions() {
-        return competitionRepository.findAll()
+        return competitionRepository.findAllByOrderByDateAscTimeAsc()
                 .stream()
-                .map(c -> toDTO(c))
-                .sorted(Comparator.comparing(CompetitionDTO::date)
-                        .thenComparing(CompetitionDTO::time))
+                .map(this::toDTO)
                 .toList();
     }
 
     public List<MatchRestDTO> findRestMatchesByDate(LocalDate date) {
-        return competitionRepository.findByDate(date)
+        return competitionRepository.findByDateOrderByTimeAsc(date)
                 .stream()
                 .map(this::toRestDTO)
-                .sorted(Comparator.comparing(MatchRestDTO::time))
                 .toList();
     }
 
@@ -98,12 +89,9 @@ public class CompetitionService {
 
     public Long add(InputCompetitionDTO dto) {
 
-        Country teamA = countryRepository.findById(dto.teamA())
-                .orElseThrow(() -> new CountryNotFound(dto.teamA()));
-        Country teamB = countryRepository.findById(dto.teamB())
-                .orElseThrow(() -> new CountryNotFound(dto.teamB()));
-        Stadium stadium = stadiumRepository.findById(dto.stadium())
-                .orElseThrow(() -> new StadiumNotFound(dto.stadium()));
+        Country teamA = findCountryById(dto.teamA());
+        Country teamB = findCountryById(dto.teamB());
+        Stadium stadium = findStadiumById(dto.stadium());
 
         Competition competition = Competition.builder()
                 .teamA(teamA)
@@ -117,17 +105,22 @@ public class CompetitionService {
     }
 
     public Long update(InputCompetitionDTO dto) {
+
+        Country teamA = findCountryById(dto.teamA());
+        Country teamB = findCountryById(dto.teamB());
+        Stadium stadium = findStadiumById(dto.stadium());
+
         Competition competition = findCompetitionById(dto.id());
-        competition.setTeamA(countryRepository.findById(dto.teamA()).orElseThrow(() -> new CountryNotFound(dto.teamA())));
-        competition.setTeamB(countryRepository.findById(dto.teamB()).orElseThrow(() -> new CountryNotFound(dto.teamB())));
-        competition.setStadium(stadiumRepository.findById(dto.stadium()).orElseThrow(() -> new StadiumNotFound(dto.stadium())));
+        competition.setTeamA(teamA);
+        competition.setTeamB(teamB);
+        competition.setStadium(stadium);
         competition.setDate(dto.date());
         competition.setTime(dto.time());
 
         return competitionRepository.save(competition).getId();
     }
 
-    public Long updateResult(Long id, InputCompetitionResultDTO dto) {
+    public Long updateOfficialResult(Long id, InputCompetitionResultDTO dto) {
         Competition competition = findCompetitionById(id);
         competition.setScoreA(dto.scoreA());
         competition.setScoreB(dto.scoreB());
@@ -135,5 +128,20 @@ public class CompetitionService {
         Competition savedCompetition = competitionRepository.save(competition);
         teamMemberService.recalculateScoresAfterResult(savedCompetition);
         return savedCompetition.getId();
+    }
+
+    private Country findCountryById(Long id) {
+        return countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFound(id));
+    }
+
+    private Stadium findStadiumById(Long id) {
+        return stadiumRepository.findById(id)
+                .orElseThrow(() -> new StadiumNotFound(id));
+    }
+
+    private Competition findCompetitionById(Long id) {
+        return competitionRepository.findById(id)
+                .orElseThrow(() -> new CompetitionNotFound(id));
     }
 }

@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 "/competition/{id}/result"
                         ).hasRole("ADMIN")
                         .requestMatchers(
+                                "/",
                                 "/home",
                                 "/team/ranking",
                                 "/competition/{id}",

@@ -28,7 +28,7 @@ Keep REST/WebClient as a separate late feature block.
 
 Recommended endpoints:
 
-- `GET /api/competitions?date=YYYY-MM-DD`: returns matches for a date.
+- `GET /api/{date}/matches`: returns matches for a date.
 - `GET /api/stadiums/{id}/capacity`: returns stadium capacity.
 
 Permit public GET REST endpoints in security config.
@@ -66,6 +66,17 @@ public class CompetitionRestController {
 ```
 
 The fruit exercise returns its REST model directly. For `call-the-match`, keep that school style when the returned object is safe and serializes cleanly. Use a response DTO when an entity relationship would cause a JSON loop, expose fields that should not leave the API, or the existing assignment design already uses a DTO boundary.
+
+For matches by date, keep the selected path-variable route:
+
+```java
+@GetMapping("/{date}/matches")
+public List<MatchRestDTO> getMatchByDate(@PathVariable("date") String date, Locale locale) {
+    return competitionService.findRestMatchesByDate(dateFormatter.parse(date, locale));
+}
+```
+
+`@GetMapping("{date}/matches")` also works at runtime when the class mapping supplies the slash, but the leading slash is visually closer to the exercise examples.
 
 ## REST Error Advice
 
@@ -128,6 +139,19 @@ private Mono<Competition> getCompetition(int id) {
 
 The demo constructor may use `doOnNext(...).block()`, `blockLast()`, and a not-found path with `doOnError(...)`, `onErrorResume(...)`, and `Mono.empty()` like the fruit exercise.
 
+When calling the matches-by-date endpoint, use the same path shape as the controller:
+
+```java
+webClient.get()
+        .uri(uriBuilder -> uriBuilder.path("/api/{date}/matches").build(date))
+        .retrieve()
+        .bodyToFlux(MatchRestDTO.class);
+```
+
+The WebClient demo deserializes into whatever the REST endpoint returns. The school fruit exercise uses model objects because the endpoint returns model objects. `call-the-match` should use REST DTOs when the endpoint returns DTOs.
+
+`ClientRunner` does not start the Spring Boot server. If it throws `Connection refused: localhost/127.0.0.1:8080`, the application is not running on that port or the base URL is wrong.
+
 ## REST Test Pattern
 
 Use `FruitRestControllerTest` as the good REST test example.
@@ -143,6 +167,7 @@ Expected shape:
 - test detail GET success.
 - test not-found REST advice response with JSON fields `status`, `message`, and `timestamp`.
 - test list GET for an empty result and a non-empty result.
+- when the controller route changes, update the WebClient and REST tests in the same refactor.
 
 Good structure, adapted only in domain names:
 

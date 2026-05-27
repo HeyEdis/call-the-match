@@ -30,6 +30,18 @@ If there is a conflict, prefer the school convention and the local exercise styl
 4. Keep the change minimal and school-conform.
 5. Verify with targeted tests or, if tests cannot run, clearly state why.
 
+## Accountability Audit Workflow
+
+When the user asks why code was written a certain way, do not answer from memory alone. Use the audit shape from `references/audit-playbook.md`:
+
+1. Give the verdict first.
+2. Cite evidence from the current codebase, `Richtlijnen`, `Notes`, or `WorkspacesIntelij`.
+3. Explain how the code works.
+4. Name the tradeoff or risk.
+5. Give the school-style recommendation or code shape.
+
+If a pattern is generic Spring but not visible in the school material, say so plainly.
+
 ## Project Rules For call-the-match
 
 - Admin is not a normal user for team or prediction flows.
@@ -59,6 +71,7 @@ If there is a conflict, prefer the school convention and the local exercise styl
 Load only the reference needed for the current task:
 
 - `references/source-map.md`: where to look in Richtlijnen, Notes, and WorkspacesIntelij.
+- `references/audit-playbook.md`: answer shape and cross-cutting audit verdicts from the accountability audit.
 - `references/mvc-jpa-layering.md`: controller/service/repository/model/DTO conventions.
 - `references/security-login.md`: login, registration, roles, CSRF, current user, and 403.
 - `references/validation-i18n-exceptions.md`: DTO validation, custom annotations, validator classes, resource bundles, type mismatch, and error pages.

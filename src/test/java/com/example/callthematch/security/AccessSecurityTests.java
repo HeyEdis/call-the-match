@@ -30,6 +30,33 @@ class AccessSecurityTests {
 
     @Test
     @WithAnonymousUser
+    void guestRootRedirectsToHome() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/home"))
+                .andExpect(unauthenticated());
+    }
+
+    @Test
+    @WithMockUser(username = "user1@example.com", roles = "USER")
+    void userRootRedirectsToHome() throws Exception {
+        mockMvc.perform(get("/")
+                        .with(testSecurityContext()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/home"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    void adminRootRedirectsToHome() throws Exception {
+        mockMvc.perform(get("/")
+                        .with(testSecurityContext()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/home"));
+    }
+
+    @Test
+    @WithAnonymousUser
     void guestCanOpenPublicAccessScreens() throws Exception {
         mockMvc.perform(get("/home"))
                 .andExpect(status().isOk());

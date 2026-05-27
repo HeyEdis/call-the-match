@@ -13,6 +13,8 @@
 - Admin is not a normal user for team/prediction flows.
 - Admin manages matches and official results only.
 - Split security lookup service from normal user/domain service.
+- `Principal.getName()` is the logged-in email in this project because the username parameter is `email`.
+- Keep route-level security explicit enough that invalid public URLs can still reach MVC 404 handling.
 
 ## School Pattern
 
@@ -22,7 +24,7 @@ Use a `SecurityConfig` with:
 - `SecurityFilterChain` bean.
 - `requestMatchers(...).permitAll()` for login, register, CSS, error pages, public pages, and public REST GET endpoints.
 - `.formLogin(...)` with custom login page.
-- `.exceptionHandling(...accessDeniedPage("/403"))`.
+- error handling for 403. Use `.accessDeniedPage("/403")` only when a real `/403` route exists. If the project relies on `templates/error/403.html`, prefer `response.sendError(403)`.
 
 Good:
 
@@ -39,7 +41,8 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             .defaultSuccessUrl("/home", true)
             .usernameParameter("email")
             .passwordParameter("password"))
-        .exceptionHandling(handling -> handling.accessDeniedPage("/403"));
+        .exceptionHandling(handling -> handling
+            .accessDeniedHandler((request, response, ex) -> response.sendError(403)));
     return http.build();
 }
 ```
@@ -67,6 +70,56 @@ Bad:
 Long temporaryUserId = 1L; // never use this after auth exists
 teamService.joinTeamWithInviteCode(inviteCode, temporaryUserId);
 ```
+
+Good controller use of the principal:
+
+```java
+@PostMapping("/join")
+public String join(@Valid InputTeamJoinDTO dto,
+                   BindingResult result,
+                   Principal principal) {
+    if (result.hasErrors()) {
+        return "team/dashboard";
+    }
+    teamService.joinTeamWithInviteCode(dto.inviteCode(), principal.getName());
+    return "redirect:/team/dashboard";
+}
+```
+
+## Config Placement
+
+Keep simple security beans in `SecurityConfig` unless there is a real reason to split them.
+
+Good:
+
+```java
+@Bean
+PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+```
+
+Avoid a separate `SecurityBeansConfig` when it only contains the password encoder.
+
+## Login Redirects
+
+The school exercises use the built-in form login flow. Prefer:
+
+```java
+.defaultSuccessUrl("/home", true)
+```
+
+Avoid custom `AuthenticationSuccessHandler` beans for role-based redirects unless the assignment explicitly requires different landing pages.
+
+## Fallback Routes And 404
+
+Be careful with:
+
+```java
+.anyRequest().hasRole("USER")
+```
+
+For a guest, Spring Security can intercept an unknown URL before MVC can return the error page, causing a login redirect instead of 404. Protect concrete user/admin routes explicitly when public 404 behavior matters.
 
 ## Thymeleaf CSRF
 

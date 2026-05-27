@@ -44,3 +44,23 @@ Most useful projects:
 - REST/WebClient secondary examples: `EWDJ_REST/Spring_Boot_rest_example`, `Spring_Boot_rest_example2` only when the fruit exercise does not answer the question.
 - Exceptions/type mismatch: `EWDJ_Multirow` and `Slides_Spring_MultipleRow.pdf` patterns.
 - JPA/MySQL: `EWDJ_SpringAndJPA`, `EWDJ_JPA`.
+
+## Audit Memory Documents
+
+Path: `C:\Users\Armour\Documents\HOGENT\EWD\call-the-match\src\main\resources\handoff`
+
+Use these as conversation memory after checking the primary sources above:
+
+- `accountability-audit-conversation-mode.md`: expected answer style for accountability questions.
+- `rest-date-pathvariable-refactor.md`: decision to keep `GET /api/{date}/matches` and refactor WebClient/tests around it.
+- `team-validator-advice-refactor.md`: move duplicate team name and unknown invite code form errors into validators/advice.
+- `service-layer-audit-ralph-handoff.md`: service-layer audit rules and Ralph-ready task shape.
+- `controller-tests-audit-handoff.md`: controller test keep/cut/missing-case audit.
+- `security-tests-audit-handoff.md`: security test keep/cut/missing-case audit.
+- `validation-tests-audit-handoff.md`: validation test keep/cut/missing-case audit.
+
+Path: `C:\Users\Armour\Documents\HOGENT\EWD\call-the-match\src\main\resources\audit`
+
+- `conversation-accountability-summary-2026-05-27.md`: broad audit decisions from the long accountability conversation.
+
+These documents are not stronger than `Richtlijnen`, `Notes`, or `WorkspacesIntelij`; they help future chats remember what was already investigated and which tradeoffs were accepted.

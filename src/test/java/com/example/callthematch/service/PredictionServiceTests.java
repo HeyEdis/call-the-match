@@ -8,14 +8,9 @@ import com.example.callthematch.model.MyUser;
 import com.example.callthematch.model.Prediction;
 import com.example.callthematch.repository.CompetitionRepository;
 import com.example.callthematch.repository.PredictionRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,11 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PredictionServiceTests {
-
-    @AfterEach
-    void clearSecurityContext() {
-        SecurityContextHolder.clearContext();
-    }
 
     @Test
     void savePredictionCreatesPredictionWithCreatedAt() {
@@ -111,34 +101,37 @@ class PredictionServiceTests {
                 .predictedScoreB(1)
                 .build();
 
-        authenticateAs("user1@example.com", "ROLE_USER");
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.findByEmail("user1@example.com")).thenReturn(user);
         when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
         when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.of(prediction));
 
         Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"user1@example.com");
 
         assertThat(result).contains(new PredictionStatusDTO(2, 1));
-        verify(userService).getCurrentUser();
+        verify(userService).findByEmail("user1@example.com");
         verify(predictionRepository).findByUserAndCompetition(user, competition);
     }
 
     @Test
-    void currentUserPredictionStatusSkipsLookupForAdminRole() {
+    void currentUserPredictionStatusReturnsEmptyWhenUserHasNoPrediction() {
         PredictionRepository predictionRepository = mock(PredictionRepository.class);
         CompetitionRepository competitionRepository = mock(CompetitionRepository.class);
         UserService userService = mock(UserService.class);
         PredictionService predictionService = new PredictionService(
                 predictionRepository, competitionRepository, userService);
+        MyUser user = MyUser.builder().id(1L).email("user1@example.com").build();
+        Competition competition = openCompetition();
 
-        authenticateAs("admin@example.com", "ROLE_ADMIN");
+        when(userService.findByEmail("user1@example.com")).thenReturn(user);
+        when(competitionRepository.findById(2L)).thenReturn(Optional.of(competition));
+        when(predictionRepository.findByUserAndCompetition(user, competition)).thenReturn(Optional.empty());
 
-        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L,"admin@example.com");
+        Optional<PredictionStatusDTO> result = predictionService.findPredictionStatusByCompetitionIdAndEmail(2L, "user1@example.com");
 
         assertThat(result).isEmpty();
-        verify(userService, never()).getCurrentUser();
-        verify(competitionRepository, never()).findById(any());
-        verify(predictionRepository, never()).findByUserAndCompetition(any(), any());
+        verify(userService).findByEmail("user1@example.com");
+        verify(competitionRepository).findById(2L);
+        verify(predictionRepository).findByUserAndCompetition(user, competition);
     }
 
     private PredictionService predictionService(PredictionRepository predictionRepository) {
@@ -156,11 +149,4 @@ class PredictionServiceTests {
                 .build();
     }
 
-    private void authenticateAs(String name, String role) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        name,
-                        "password",
-                        List.of(new SimpleGrantedAuthority(role))));
-    }
 }

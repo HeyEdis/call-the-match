@@ -35,14 +35,14 @@ class TeamServiceTests {
         TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
         MyUser owner = user(7L);
 
-        when(userService.getCurrentUser()).thenReturn(owner);
+        when(userService.findByEmail("user7@example.com")).thenReturn(owner);
         when(teamRepository.save(any(Team.class))).thenAnswer(invocation -> {
             Team team = invocation.getArgument(0);
             team.setId(11L);
             return team;
         });
 
-        teamService.createTeam(new InputTeamDTO("Boundary Team"));
+        teamService.createTeam(new InputTeamDTO("Boundary Team"), "user7@example.com");
 
         ArgumentCaptor<Team> teamCaptor = ArgumentCaptor.forClass(Team.class);
         verify(teamRepository).save(teamCaptor.capture());
@@ -66,7 +66,7 @@ class TeamServiceTests {
 
         when(teamRepository.existsByName("Existing Team")).thenReturn(true);
 
-        assertThatThrownBy(() -> teamService.createTeam(new InputTeamDTO("Existing Team")))
+        assertThatThrownBy(() -> teamService.createTeam(new InputTeamDTO("Existing Team"), "user7@example.com"))
                 .isInstanceOf(TeamNameAlreadyExists.class);
 
         verify(teamRepository, never()).save(any(Team.class));
@@ -83,10 +83,10 @@ class TeamServiceTests {
         MyUser user = user(5L);
 
         when(teamRepository.findByInviteCode("JOIN2026")).thenReturn(Optional.of(team));
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.findByEmail("user5@example.com")).thenReturn(user);
         when(teamMemberRepository.existsTeamMembersByUserIdAndTeamId(5L, 13L)).thenReturn(true);
 
-        teamService.joinTeamWithInviteCode("JOIN2026");
+        teamService.joinTeamWithInviteCode("JOIN2026", "user5@example.com");
 
         verify(teamMemberRepository, never()).save(any(TeamMember.class));
     }
@@ -98,7 +98,7 @@ class TeamServiceTests {
         UserService userService = mock(UserService.class);
         TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
 
-        assertThatThrownBy(() -> teamService.joinTeamWithInviteCode("UNKNOWN1"))
+        assertThatThrownBy(() -> teamService.joinTeamWithInviteCode("UNKNOWN1", "user5@example.com"))
                 .isInstanceOf(InviteCodeNotFound.class);
 
         verify(teamMemberRepository, never()).save(any(TeamMember.class));

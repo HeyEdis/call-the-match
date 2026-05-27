@@ -8,26 +8,41 @@ import com.example.callthematch.model.TeamMember;
 import com.example.callthematch.repository.PredictionRepository;
 import com.example.callthematch.repository.TeamMemberRepository;
 import com.example.callthematch.repository.TeamRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class TeamMemberServiceTests {
 
-   /* private final TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
-    private final TeamRepository teamRepository = mock(TeamRepository.class);
-    private final PredictionRepository predictionRepository = mock(PredictionRepository.class);
-    private final TeamMemberService teamMemberService = new TeamMemberService(
-            teamMemberRepository,
-            teamRepository,
-            predictionRepository,
-            new ScoringService());
+    @Mock
+    private TeamMemberRepository teamMemberRepository;
+
+    @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
+    private PredictionRepository predictionRepository;
+
+    private TeamMemberService teamMemberService;
+
+    @BeforeEach
+    void setUp() {
+        teamMemberService = new TeamMemberService(
+                teamMemberRepository,
+                teamRepository,
+                predictionRepository,
+                new ScoringService());
+    }
 
     @Test
     void recalculatesPredictionBasePointsMemberScoresAndTeamTotalAfterResult() {
@@ -83,5 +98,5 @@ class TeamMemberServiceTests {
                 .team(team)
                 .score(0)
                 .build();
-    }*/
+    }
 }

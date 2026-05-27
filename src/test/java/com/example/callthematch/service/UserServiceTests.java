@@ -7,24 +7,30 @@ import com.example.callthematch.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTests {
 
-   /* @Test
-    void registrationStoresEncodedPasswordAndUserRole() {
-        UserRepository userRepository = mock(UserRepository.class);
-        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-        when(passwordEncoder.encode("team-secret")).thenReturn("encoded-password");
+    @Mock
+    private UserRepository userRepository;
 
-        UserService userService = new UserService(userRepository, passwordEncoder);
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private UserService userService;
+
+    @Test
+    void registrationStoresEncodedPasswordAndUserRole() {
+        when(passwordEncoder.encode("team-secret")).thenReturn("encoded-password");
 
         userService.register(new InputRegistrationDTO(
                 "Ada",
@@ -43,5 +49,5 @@ class UserServiceTests {
         assertThat(registeredUser.getRole()).isEqualTo(Role.USER);
         assertThat(registeredUser.getCreatedAt()).isNotNull();
         assertThat(registeredUser.getUpdatedAt()).isNotNull();
-    }*/
+    }
 }

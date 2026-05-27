@@ -12,6 +12,8 @@ import com.example.callthematch.repository.TeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -19,7 +21,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,12 +28,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTests {
 
-   /* @Test
+    @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
+    private TeamMemberRepository teamMemberRepository;
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private TeamService teamService;
+
+    @Test
     void createTeamStoresAuthenticatedOwnerMembershipAndUniqueInviteCode() {
-        TeamRepository teamRepository = mock(TeamRepository.class);
-        TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
-        UserService userService = mock(UserService.class);
-        TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
         MyUser owner = user(7L);
 
         when(userService.findByEmail("user7@example.com")).thenReturn(owner);
@@ -59,11 +68,6 @@ class TeamServiceTests {
 
     @Test
     void createTeamRejectsDuplicateNameBeforePersistence() {
-        TeamRepository teamRepository = mock(TeamRepository.class);
-        TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
-        UserService userService = mock(UserService.class);
-        TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
-
         when(teamRepository.existsByName("Existing Team")).thenReturn(true);
 
         assertThatThrownBy(() -> teamService.createTeam(new InputTeamDTO("Existing Team"), "user7@example.com"))
@@ -75,10 +79,6 @@ class TeamServiceTests {
 
     @Test
     void joinTeamSkipsDuplicateMembership() {
-        TeamRepository teamRepository = mock(TeamRepository.class);
-        TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
-        UserService userService = mock(UserService.class);
-        TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
         Team team = Team.builder().id(13L).build();
         MyUser user = user(5L);
 
@@ -93,11 +93,6 @@ class TeamServiceTests {
 
     @Test
     void joinTeamRejectsUnknownInviteCode() {
-        TeamRepository teamRepository = mock(TeamRepository.class);
-        TeamMemberRepository teamMemberRepository = mock(TeamMemberRepository.class);
-        UserService userService = mock(UserService.class);
-        TeamService teamService = new TeamService(teamRepository, teamMemberRepository, userService);
-
         assertThatThrownBy(() -> teamService.joinTeamWithInviteCode("UNKNOWN1", "user5@example.com"))
                 .isInstanceOf(InviteCodeNotFound.class);
 
@@ -106,5 +101,5 @@ class TeamServiceTests {
 
     private MyUser user(Long id) {
         return MyUser.builder().id(id).email("user%d@example.com".formatted(id)).build();
-    }*/
+    }
 }

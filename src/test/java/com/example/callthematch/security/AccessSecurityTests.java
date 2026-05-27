@@ -76,6 +76,17 @@ class AccessSecurityTests {
 
     @Test
     @WithAnonymousUser
+    void guestCanChangeLocale() throws Exception {
+        mockMvc.perform(get("/changeLocale")
+                        .param("lang", "nl")
+                        .header("Referer", "/home"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/home"))
+                .andExpect(unauthenticated());
+    }
+
+    @Test
+    @WithAnonymousUser
     void guestCanLoadStaticJavaScriptAssets() throws Exception {
         mockMvc.perform(get("/js/matchStadiumChecksum.js"))
                 .andExpect(status().isOk());

@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 "/home",
                                 "/team/ranking",
                                 "/competition/{id}",
+                                "/changeLocale",
                                 "/login**",
                                 "/register**",
                                 "/css/**",

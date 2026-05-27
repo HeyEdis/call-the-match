@@ -67,7 +67,7 @@ a {
     align-items: center;
     gap: 0.85rem 1.25rem;
     color: var(--nav-ink);
-    font: 700 0.86rem 'Inter', sans-serif;
+    font: inherit;
 }
 
 .nav-inner span:first-child {
@@ -105,7 +105,7 @@ a {
     padding: 0.35rem 0.55rem;
     background: #ffffff;
     color: var(--nav-ink);
-    font: 700 0.86rem 'Inter', sans-serif;
+    font: inherit;
 }
 
 .home-variant,
@@ -340,7 +340,7 @@ a {
     align-items: center;
     justify-content: center;
     border-radius: 999px;
-    font: 800 1rem 'Inter', sans-serif;
+    font: inherit;
     text-decoration: none;
 }
 
@@ -498,7 +498,7 @@ a {
 .dashboard-team-table th {
     padding: 0 1.35rem 0.2rem;
     color: var(--green-muted);
-    font: 800 0.72rem 'Inter', sans-serif;
+    font: inherit;
     letter-spacing: 0.11em;
     text-align: left;
     text-transform: uppercase;

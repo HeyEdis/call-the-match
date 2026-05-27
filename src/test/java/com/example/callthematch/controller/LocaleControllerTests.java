@@ -37,4 +37,12 @@ class LocaleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
     }
+
+    @Test
+    void changeLocaleRedirectsHomeWithoutReferer() throws Exception {
+        mockMvc.perform(get("/changeLocale")
+                        .param("lang", "nl"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/home"));
+    }
 }

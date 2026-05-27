@@ -23,6 +23,7 @@ public class LocaleController {
             @RequestParam("lang") String lang) {
         Locale locale = Locale.forLanguageTag(lang);
         localeResolver.setLocale(request, response, locale);
-        return "redirect:" + request.getHeader("Referer");
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer == null ? "/home" : referer);
     }
 }

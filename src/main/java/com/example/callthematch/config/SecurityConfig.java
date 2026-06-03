@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 "/changeLocale",
                                 "/login**",
                                 "/register**",
+                                "/favicon.ico",
                                 "/css/**",
                                 "/js/**",
                                 "/api/**",

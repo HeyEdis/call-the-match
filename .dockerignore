@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.agents
+target
+*.iml
+*.log
+README.md
+docs
+prompts
+scripts

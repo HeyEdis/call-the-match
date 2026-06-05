@@ -2,6 +2,8 @@
 
 Call The Match is a Spring Boot application where users predict FIFA World Cup 2026 match results and compete with friends in teams.
 
+<img src="./assets/homepage.jpg" alt="Homepage" width="768" height="480">
+
 ## Context for this project
 
 This project was built to learn how to setup my own agentic workflow for building web applications. The workflow is based on the "shift left" concept: instead of writing documentation at the end, documentation is created first and used as the source of truth for planning, implementation and verification.
